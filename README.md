@@ -44,3 +44,4 @@ Esta sección explicará cómo clonar el repositorio e instalar el proyecto loca
 - [cite_start]Johan Alexis Salas Restrepo [cite: 6]
 
 Aswin estuvo aqui xd
+en el susuario de nekro
