@@ -12,21 +12,21 @@ Este proyecto es parte de la formación en **Análisis y Desarrollo de Software 
 
 ## ✨ Características Principales
 
-* [cite_start]**Registro de Usuarios:** Gestión de roles (Administrador, Seguridad, Usuario)[cite: 108].
-* **Registro de Equipos:** Cada usuario puede registrar sus dispositivos (serial, modelo, marca).
-* [cite_start]**Verificación QR:** El personal de seguridad puede escanear un QR para validar el ingreso o salida de un equipo en segundos[cite: 71, 200].
-* [cite_start]**Trazabilidad:** Historial completo de movimientos de equipos para auditorías[cite: 74, 202].
-* [cite_start]**Reportes:** Generación de reportes de ingreso/salida en PDF/Excel[cite: 111, 203].
+- [cite_start]**Registro de Usuarios:** Gestión de roles (Administrador, Seguridad, Usuario)[cite: 108].
+- **Registro de Equipos:** Cada usuario puede registrar sus dispositivos (serial, modelo, marca).
+- [cite_start]**Verificación QR:** El personal de seguridad puede escanear un QR para validar el ingreso o salida de un equipo en segundos[cite: 71, 200].
+- [cite_start]**Trazabilidad:** Historial completo de movimientos de equipos para auditorías[cite: 74, 202].
+- [cite_start]**Reportes:** Generación de reportes de ingreso/salida en PDF/Excel[cite: 111, 203].
 
 ## 🛠️ Stack de Tecnologías (Sugerido)
 
-*(Aquí pones las tecnologías que planean usar)*
+_(Aquí pones las tecnologías que planean usar)_
 
-* **Backend:** Java 17+, Spring Boot 3
-* **Base de Datos:** MySQL
-* **Seguridad:** Spring Security (Gestión de Roles, JWT)
-* **Frontend:** React / Angular / Vue (A definir)
-* **Pruebas:** JUnit, Postman
+- **Backend:** Java 17+, Spring Boot 3
+- **Base de Datos:** MySQL
+- **Seguridad:** Spring Security (Gestión de Roles, JWT)
+- **Frontend:** React / Angular / Vue (A definir)
+- **Pruebas:** JUnit, Postman
 
 ## 🚀 Cómo Empezar (Próximamente)
 
@@ -39,6 +39,8 @@ Esta sección explicará cómo clonar el repositorio e instalar el proyecto loca
 
 ## 👥 Equipo
 
-* [cite_start]Juan Carlos Olaya Lozano [cite: 4]
-* [cite_start]Karen Daniela Triana Romero [cite: 5]
-* [cite_start]Johan Alexis Salas Restrepo [cite: 6]
+- [cite_start]Juan Carlos Olaya Lozano [cite: 4]
+- [cite_start]Karen Daniela Triana Romero [cite: 5]
+- [cite_start]Johan Alexis Salas Restrepo [cite: 6]
+
+Aswin estuvo aqui xd
