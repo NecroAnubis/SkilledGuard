@@ -12,7 +12,7 @@ GO
 USE auditoria_sistema;
 GO
 
--- Tabla: Tipo_Accion
+-- Tabla: Tipo_Acciona
 CREATE TABLE dbo.Tipo_Accion (
     id INT IDENTITY(1,1) PRIMARY KEY,
     nombre NVARCHAR(255) NOT NULL,
