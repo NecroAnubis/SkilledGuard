@@ -8,7 +8,7 @@ Este proyecto es parte de la formación en **Análisis y Desarrollo de Software 
 
 ## 🎯 Problema que Resuelve
 
-[cite_start]Actualmente, el registro manual de equipos consume un promedio de 15 minutos por usuario y genera riesgos de seguridad [cite: 22][cite_start], con un 35% de empresas en Bogotá reportando pérdidas por fallos en estos sistemas[cite: 21]. [cite_start]Skilled Guard ataca este problema automatizando el registro mediante tecnología QR [cite: 23, 71] [cite_start]y bases de datos encriptadas[cite: 75].
+Actualmente, el registro manual de equipos consume un promedio de 15 minutos por usuario y genera riesgos de seguridad [cite: 22][cite_start], con un 35% de empresas en Bogotá reportando pérdidas por fallos en estos sistemas[cite: 21]. [cite_start]Skilled Guard ataca este problema automatizando el registro mediante tecnología QR [cite: 23, 71] [cite_start]y bases de datos encriptadas[cite: 75].
 
 ## ✨ Características Principales
 
