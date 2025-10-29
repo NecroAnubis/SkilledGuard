@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CódigoBackend", "CódigoBackend", "{AF368D5A-0C17-F01D-DBCF-DE7391D60591}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auditorias", "CódigoBackend\Auditorias\Auditorias.csproj", "{3722B6E7-77CC-94D8-A28D-7F93DFBF7373}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3722B6E7-77CC-94D8-A28D-7F93DFBF7373}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3722B6E7-77CC-94D8-A28D-7F93DFBF7373}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3722B6E7-77CC-94D8-A28D-7F93DFBF7373}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3722B6E7-77CC-94D8-A28D-7F93DFBF7373}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3722B6E7-77CC-94D8-A28D-7F93DFBF7373} = {AF368D5A-0C17-F01D-DBCF-DE7391D60591}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EE5D01EF-F281-4766-8A95-7BD926E2D8E8}
+	EndGlobalSection
+EndGlobal
