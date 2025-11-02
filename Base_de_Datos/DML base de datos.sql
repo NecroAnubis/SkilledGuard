@@ -1,153 +1,84 @@
 USE auditoria_sistema;
 GO
 
--- =====================================
--- TABLA: Tipo_Accion
--- =====================================
-INSERT INTO Tipo_Accion (nombre, descripcion)
+
+INSERT INTO Rol (id, nombre, descripcion)
 VALUES 
-('Creación', 'Registro de creación de datos'),
-('Actualización', 'Registro de actualización de datos'),
-('Eliminación', 'Registro de eliminación de datos'),
-('Consulta', 'Registro de consultas realizadas');
-GO
+(NEWID(), 'Administrador', 'Tiene acceso completo al sistema'),
+(NEWID(), 'Auditor', 'Puede generar y revisar reportes de auditoría'),
+(NEWID(), 'Usuario', 'Usuario estándar con permisos limitados');
 
--- =====================================
--- TABLA: Objeto_Afectado
--- =====================================
-INSERT INTO Objeto_Afectado (nombre_tabla, descripcion)
+-- Tabla Tipo_documento
+INSERT INTO Tipo_documento (id, nombre, acronimo)
 VALUES
-('Usuario', 'Tabla que almacena los usuarios del sistema'),
-('Dispositivo', 'Tabla que almacena los dispositivos registrados'),
-('Reporte', 'Tabla con los reportes generados');
-GO
+(NEWID(), 'Cédula de Ciudadanía', 'CC'),
+(NEWID(), 'Tarjeta de Identidad', 'TI'),
+(NEWID(), 'Pasaporte', 'PA');
 
--- =====================================
--- TABLA: Tipo_documento
--- =====================================
-INSERT INTO Tipo_documento (nombre, acronimo, descripcion)
+-- Tabla Usuario
+INSERT INTO Usuario (id, nombres, apellidos, id_tipo_documento, documento, tipo_usuario, email, direccion, contraseña)
 VALUES
-('Cédula de ciudadanía', 'CC', 'Documento nacional'),
-('Tarjeta de identidad', 'TI', 'Documento para menores de edad'),
-('Cédula extranjera', 'CE', 'Documento para extranjeros');
-GO
+(NEWID(), 'Juan', 'Pérez', (SELECT TOP 1 id FROM Tipo_documento WHERE acronimo = 'CC'), '10101010', 'Administrador', 'juan.perez@example.com', 'Calle 123', '12345'),
+(NEWID(), 'Ana', 'García', (SELECT TOP 1 id FROM Tipo_documento WHERE acronimo = 'TI'), '20202020', 'Usuario', 'ana.garcia@example.com', 'Carrera 45', 'abcde');
 
--- =====================================
--- TABLA: Usuario
--- =====================================
-INSERT INTO Usuario (nombres, apellidos, id_tipo_documento, documento, direccion, contrasena)
+-- Tabla Usuario_rol
+INSERT INTO Usuario_rol (id, id_usuario, id_rol)
 VALUES
-('Carlos', 'Oliveira', 1, '1002003001', 'Cra 45 #12-34', '12345'),
-('María', 'Gómez', 2, '1002003002', 'Cl 56 #45-21', 'abcde'),
-('Juan', 'Martínez', 1, '1002003003', 'Av 10 #8-19', 'password');
-GO
+(NEWID(), (SELECT TOP 1 id FROM Usuario WHERE email = 'juan.perez@example.com'),
+          (SELECT TOP 1 id FROM Rol WHERE nombre = 'Administrador')),
+(NEWID(), (SELECT TOP 1 id FROM Usuario WHERE email = 'ana.garcia@example.com'),
+          (SELECT TOP 1 id FROM Rol WHERE nombre = 'Usuario'));
 
--- =====================================
--- TABLA: Rol
--- =====================================
-INSERT INTO Rol (nombre, descripcion)
+-- Tabla Tipo_dispositivo
+INSERT INTO Tipo_dispositivo (id, nombre)
 VALUES
-('Administrador', 'Gestión total del sistema'),
-('Auditor', 'Acceso a reportes y auditorías'),
-('Usuario', 'Acceso limitado a funcionalidades básicas');
-GO
+(NEWID(), 'Computador'),
+(NEWID(), 'Celular'),
+(NEWID(), 'Tablet');
 
--- =====================================
--- TABLA: Usuario_Rol
--- =====================================
-INSERT INTO Usuario_Rol (id_usuario, id_rol)
+-- Tabla Dispositivo
+INSERT INTO Dispositivo (id, serial, marca, modelo, sistema, descripcion, foto_url, qr, id_tipo_dispositivo, id_usuario)
 VALUES
-(1, 1),
-(2, 2),
-(3, 3);
-GO
+(NEWID(), 'ABC123', 'HP', 'EliteBook', 'Windows 11', 'Portátil asignado a Juan Pérez', NULL, NULL,
+ (SELECT TOP 1 id FROM Tipo_dispositivo WHERE nombre = 'Computador'),
+ (SELECT TOP 1 id FROM Usuario WHERE email = 'juan.perez@example.com')),
 
--- =====================================
--- TABLA: Tipo_dispositivo
--- =====================================
-INSERT INTO Tipo_dispositivo (nombre, descripcion)
-VALUES
-('Computador', 'Equipo portátil o de escritorio'),
-('Celular', 'Teléfono móvil'),
-('Tablet', 'Dispositivo tipo tableta');
-GO
+(NEWID(), 'XYZ789', 'Samsung', 'Galaxy S22', 'Android', 'Celular corporativo de Ana García', NULL, NULL,
+ (SELECT TOP 1 id FROM Tipo_dispositivo WHERE nombre = 'Celular'),
+ (SELECT TOP 1 id FROM Usuario WHERE email = 'ana.garcia@example.com'));
 
--- =====================================
--- TABLA: Dispositivo
--- =====================================
-INSERT INTO Dispositivo (serial, marca, modelo, sistema, id_tipo_dispositivo, id_usuario)
+-- Tabla Tipo_registro
+INSERT INTO Tipo_registro (id, nombre)
 VALUES
-('PC-12345', 'HP', 'Pavilion', 'Windows 11', 1, 1),
-('MB-67890', 'Samsung', 'Galaxy S22', 'Android 13', 2, 2),
-('TB-11122', 'Apple', 'iPad Pro', 'iOS 17', 3, 3);
-GO
+(NEWID(), 'Inicio de Sesión'),
+(NEWID(), 'Actualización de Datos'),
+(NEWID(), 'Eliminación de Registro');
 
--- =====================================
--- TABLA: Tipo_registro
--- =====================================
-INSERT INTO Tipo_registro (nombre, descripcion)
+-- Tabla Auditoria_Negocio
+INSERT INTO Auditoria_Negocio (id, fecha_registro, id_tipo_registro, registrado_por, descripcion)
 VALUES
-('Transacción', 'Registro de una transacción realizada'),
-('Cambio de estado', 'Registro de modificaciones de estado'),
-('Ingreso', 'Registro de inicio de sesión o acceso');
-GO
+(NEWID(), GETDATE(), (SELECT TOP 1 id FROM Tipo_registro WHERE nombre = 'Inicio de Sesión'),
+ (SELECT TOP 1 id FROM Usuario WHERE email = 'juan.perez@example.com'),
+ 'Inicio de sesión exitoso del usuario administrador');
 
--- =====================================
--- TABLA: Auditoria_Negocio
--- =====================================
-INSERT INTO Auditoria_Negocio (id_tipo_registro, registrado_por, ejemplo_data)
+-- Tabla Tipo_Reporte
+INSERT INTO Tipo_Reporte (id, nombre)
 VALUES
-(1, 1, 'Compra realizada por el usuario'),
-(2, 2, 'Cambio de contraseña del usuario'),
-(3, 3, 'Inicio de sesión exitoso');
-GO
+(NEWID(), 'Reporte General'),
+(NEWID(), 'Reporte de Actividad'),
+(NEWID(), 'Reporte de Auditoría');
 
--- =====================================
--- TABLA: Log_Sistema
--- =====================================
-INSERT INTO Log_Sistema (id_accion, id_usuario, id_objeto_afectado, iv_firma)
+-- Tabla Sede
+INSERT INTO Sede (id, nombre_sede)
 VALUES
-(1, 1, 1, 'firmaABC123'),
-(2, 2, 2, 'firmaDEF456'),
-(3, 3, 3, 'firmaGHI789');
-GO
+(NEWID(), 'Sede Principal'),
+(NEWID(), 'Sucursal Norte');
 
--- =====================================
--- TABLA: Log_Detalle
--- =====================================
-INSERT INTO Log_Detalle (id_log, campo_afectado, valor_anterior, valor_nuevo)
+-- Tabla Reporte
+INSERT INTO Reporte (id, generado_por, sede, descripcion, id_tipo_reporte)
 VALUES
-(1, 'nombres', NULL, 'Carlos'),
-(2, 'direccion', 'Cl 12 #34-56', 'Cl 45 #67-89'),
-(3, 'sistema', 'Android 12', 'Android 13');
-GO
-
--- =====================================
--- TABLA: Tipo_Reporte
--- =====================================
-INSERT INTO Tipo_Reporte (nombre, descripcion)
-VALUES
-('Reporte de usuarios', 'Listados de usuarios del sistema'),
-('Reporte de auditoría', 'Registros de acciones en el sistema'),
-('Reporte de dispositivos', 'Listado y control de dispositivos');
-GO
-
--- =====================================
--- TABLA: Reporte
--- =====================================
-INSERT INTO Reporte (generado_por, filtros_aplicados, url_archivo, id_tipo_reporte)
-VALUES
-(1, 'Usuarios activos', 'reporte_usuarios.pdf', 1),
-(2, 'Acciones recientes', 'reporte_auditoria.pdf', 2),
-(3, 'Dispositivos asignados', 'reporte_dispositivos.pdf', 3);
-GO
-
--- =====================================
--- TABLA: Consulta_Reporte
--- =====================================
-INSERT INTO Consulta_Reporte (entidad_consultada, filtro_aplicado, id_reporte)
-VALUES
-('Usuario', 'Activos', 1),
-('Log_Sistema', 'Últimos 7 días', 2),
-('Dispositivo', 'Asignados', 3);
-GO
+(NEWID(),
+ (SELECT TOP 1 id FROM Usuario WHERE email = 'juan.perez@example.com'),
+ (SELECT TOP 1 id FROM Sede WHERE nombre_sede = 'Sede Principal'),
+ 'Reporte general de actividades del sistema',
+ (SELECT TOP 1 id FROM Tipo_Reporte WHERE nombre = 'Reporte General'));
