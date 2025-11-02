@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace Auditorias.Models
 {
-    public class TipoReporte
+    public class Sede
     {
         public Guid Id { get; set; } = Guid.NewGuid();
-        public string Nombre { get; set; }
+        public string NombreSede { get; set; }
 
         // Relaciones
         public ICollection<Reporte> Reportes { get; set; }

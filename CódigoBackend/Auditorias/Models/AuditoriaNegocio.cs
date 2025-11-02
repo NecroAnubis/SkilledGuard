@@ -4,14 +4,14 @@ namespace Auditorias.Models
 {
     public class AuditoriaNegocio
     {
-        public int Id { get; set; }
-        public int IdTipoRegistro { get; set; }
-        public int RegistradoPor { get; set; }
-        public string EjemploData { get; set; } = string.Empty;
-        public DateTime FechaCreado { get; set; } = DateTime.Now;
-        public DateTime? FechaActualizado { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
+        public DateTime FechaRegistro { get; set; } = DateTime.Now;
+        public Guid IdTipoRegistro { get; set; }
+        public Guid RegistradoPor { get; set; }
+        public string Descripcion { get; set; }
 
-        public TipoRegistro? TipoRegistro { get; set; }
-        public Usuario? Usuario { get; set; }
+        // Relaciones
+        public TipoRegistro TipoRegistro { get; set; }
+        public Usuario Usuario { get; set; }
     }
 }

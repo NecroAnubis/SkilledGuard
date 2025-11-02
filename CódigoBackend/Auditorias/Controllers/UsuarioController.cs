@@ -7,20 +7,20 @@ namespace Auditorias.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class TipoAccionController : ControllerBase
+    public class UsuarioController : ControllerBase
     {
         private readonly AuditoriaContext _context;
 
-        public TipoAccionController(AuditoriaContext context)
+        public UsuarioController(AuditoriaContext context)
         {
             _context = context;
         }
 
-        // GET: api/tipoaccion
+        // GET: api/Usuarios
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TipoAccion>>> GetTipoAcciones()
+        public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
         {
-            var acciones = await _context.TipoAcciones.ToListAsync();
+            var acciones = await _context.Usuarios.ToListAsync();
             return Ok(acciones);
         }
     }
