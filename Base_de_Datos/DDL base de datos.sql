@@ -1,175 +1,113 @@
--- Crear la base
 CREATE DATABASE auditoria_sistema;
 GO
 
 USE auditoria_sistema;
 GO
 
--- Tabla: Tipo_Accion
-CREATE TABLE Tipo_Accion (
-    id INT uniqueidentifier (1,1) PRIMARY KEY,
+CREATE TABLE Rol (
+    id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
     nombre NVARCHAR(100) NOT NULL,
-    descripcion NVARCHAR(255),
-    fecha_creado DATETIME DEFAULT GETDATE(),
-    fecha_actualizado DATETIME NULL
+    descripcion NVARCHAR(500),
+    fecha_creado DATE DEFAULT GETDATE(),
+    fecha_actualizado DATE
 );
 
--- Tabla: Objeto_Afectado
-CREATE TABLE Objeto_Afectado (
-    id uniqueidentifier  PRIMARY KEY,
-    nombre_tabla NVARCHAR(100) NOT NULL,
-    descripcion NVARCHAR(255),
-    fecha_creado DATETIME DEFAULT GETDATE(),
-    fecha_actualizado DATETIME NULL
-);
-
--- Tabla: Tipo_documento
 CREATE TABLE Tipo_documento (
-    id uniqueidentifier  PRIMARY KEY,
+    id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
     nombre NVARCHAR(100) NOT NULL,
-    acronimo NVARCHAR(10),
-    descripcion NVARCHAR(255),
-    fecha_creado DATETIME DEFAULT GETDATE(),
-    fecha_actualizado DATETIME NULL
+    acronimo NVARCHAR(20)
 );
 
--- Tabla: Usuario
 CREATE TABLE Usuario (
-    id uniqueidentifier  PRIMARY KEY,
-    nombres NVARCHAR(100),
+    id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    nombres NVARCHAR(100) NOT NULL,
     apellidos NVARCHAR(100),
-    id_tipo_documento uniqueidentifier,
+    id_tipo_documento UNIQUEIDENTIFIER NOT NULL,
     documento NVARCHAR(50),
+    tipo_usuario NVARCHAR(50),
+    email NVARCHAR(150),
     direccion NVARCHAR(255),
-    contrasena NVARCHAR(255),
-    fecha_creado DATETIME DEFAULT GETDATE(),
-    fecha_actualizado DATETIME NULL,
+    contraseña NVARCHAR(255),
+    fecha_creado DATE DEFAULT GETDATE(),
+    fecha_actualizado DATE,
     FOREIGN KEY (id_tipo_documento) REFERENCES Tipo_documento(id)
 );
 
--- Tabla: Rol
-CREATE TABLE Rol (
-    id uniqueidentifier  PRIMARY KEY,
-    nombre NVARCHAR(100),
-    descripcion NVARCHAR(255),
-    fecha_creado DATETIME DEFAULT GETDATE(),
-    fecha_actualizado DATETIME NULL
-);
-
--- Tabla: Usuario_rol
 CREATE TABLE Usuario_rol (
-    id uniqueidentifier  PRIMARY KEY,
-    id_usuario uniqueidentifier NOT NULL,
-    id_rol uniqueidentifier NOT NULL,
-    fecha_creado DATETIME DEFAULT GETDATE(),
+    id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    id_usuario UNIQUEIDENTIFIER NOT NULL, 
+    id_rol UNIQUEIDENTIFIER NOT NULL,     
+    fecha_actualizado DATE,
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id),
     FOREIGN KEY (id_rol) REFERENCES Rol(id)
 );
 
--- Tabla: Tipo_dispositivo
-CREATE TABLE Tipo_dispositivo (
-    id uniqueidentifier  PRIMARY KEY,
-    nombre NVARCHAR(100),
-    descripcion NVARCHAR(255),
-    fecha_creado DATETIME DEFAULT GETDATE(),
-    fecha_actualizado DATETIME NULL
+CREATE TABLE Log_Sistema (
+    id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    id_usuario UNIQUEIDENTIFIER NOT NULL, 
+    descripcion NVARCHAR(500),
+    fecha_creado DATE DEFAULT GETDATE(),
+    FOREIGN KEY (id_usuario) REFERENCES Usuario(id)
 );
 
--- Tabla: Dispositivo
+CREATE TABLE Tipo_dispositivo (
+    id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    nombre NVARCHAR(100) NOT NULL
+);
+
 CREATE TABLE Dispositivo (
-    id uniqueidentifier  PRIMARY KEY,
-    serial NVARCHAR(50),
+    id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    serial NVARCHAR(100),
     marca NVARCHAR(100),
     modelo NVARCHAR(100),
-    sistema NVARCHAR(50),
-    id_tipo_dispositivo INT,
-    id_usuario uniqueidentifier,
-    fecha_url NVARCHAR(255),
+    sistema NVARCHAR(100),
+    descripcion NVARCHAR(500),
+    foto_url NVARCHAR(255),
     qr NVARCHAR(255),
-    fecha_creado DATETIME DEFAULT GETDATE(),
-    fecha_actualizado DATETIME NULL,
+    id_tipo_dispositivo UNIQUEIDENTIFIER NOT NULL, 
+    id_usuario UNIQUEIDENTIFIER NOT NULL,          
+    fecha_creado DATE DEFAULT GETDATE(),
+    fecha_actualizado DATE,
     FOREIGN KEY (id_tipo_dispositivo) REFERENCES Tipo_dispositivo(id),
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id)
 );
 
--- Tabla: Tipo_registro
 CREATE TABLE Tipo_registro (
-    id uniqueidentifier (1,1) PRIMARY KEY,
-    nombre NVARCHAR(100),
-    descripcion NVARCHAR(255),
-    fecha_creado DATETIME DEFAULT GETDATE(),
-    fecha_actualizado DATETIME NULL
+    id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    nombre NVARCHAR(100) NOT NULL
 );
 
--- Tabla: Auditoria_Negocio
 CREATE TABLE Auditoria_Negocio (
-    id uniqueidentifier (1,1) PRIMARY KEY,
-    id_tipo_registro uniqueidentifier,
-    registrado_por uniqueidentifier,
-    ejemplo_data NVARCHAR(500),
-    fecha_creado DATETIME DEFAULT GETDATE(),
-    fecha_actualizado DATETIME NULL,
+    id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    fecha_registro DATE,
+    id_tipo_registro UNIQUEIDENTIFIER NOT NULL,  
+    registrado_por UNIQUEIDENTIFIER NOT NULL,    
+    descripcion NVARCHAR(500),
     FOREIGN KEY (id_tipo_registro) REFERENCES Tipo_registro(id),
     FOREIGN KEY (registrado_por) REFERENCES Usuario(id)
 );
 
--- Tabla: Tipo_Reporte
 CREATE TABLE Tipo_Reporte (
-    id uniqueidentifier  PRIMARY KEY,
-    nombre NVARCHAR(100),
-    descripcion NVARCHAR(255),
-    fecha_creado DATETIME DEFAULT GETDATE(),
-    fecha_actualizado DATETIME NULL
+    id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    nombre NVARCHAR(100) NOT NULL
 );
 
--- Tabla: Reporte
+CREATE TABLE Sede (
+    id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    nombre_sede NVARCHAR(150)
+);
+
 CREATE TABLE Reporte (
-    id uniqueidentifier  PRIMARY KEY,
-    generado_por uniqueidentifier,
-    filtros_aplicados NVARCHAR(255),
+    id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    generado_por UNIQUEIDENTIFIER NOT NULL,   
+    sede UNIQUEIDENTIFIER NOT NULL,           
+    descripcion NVARCHAR(500),
+    fecha_generado DATE DEFAULT GETDATE(),
     url_archivo NVARCHAR(255),
-    id_tipo_reporte uniqueidentifier,
-    fecha_creado DATETIME DEFAULT GETDATE(),
-    fecha_actualizado DATETIME NULL,
+    id_tipo_reporte UNIQUEIDENTIFIER NOT NULL, 
+    fecha_creado DATE,
+    fecha_actualizado DATE,
     FOREIGN KEY (generado_por) REFERENCES Usuario(id),
+    FOREIGN KEY (sede) REFERENCES Sede(id),
     FOREIGN KEY (id_tipo_reporte) REFERENCES Tipo_Reporte(id)
 );
-
--- Tabla: consulta_reporte
-CREATE TABLE consulta_reporte (
-    id uniqueidentifier  PRIMARY KEY,
-    entidad_consultada NVARCHAR(100),
-    filtro_aplicado NVARCHAR(255),
-    id_reporte uniqueidentifier,
-    fecha_creado DATETIME DEFAULT GETDATE(),
-    fecha_actualizado DATETIME NULL,
-    FOREIGN KEY (id_reporte) REFERENCES Reporte(id)
-);
-
--- Tabla: Log_Sistema
-CREATE TABLE Log_Sistema (
-    id uniqueidentifier  PRIMARY KEY,
-    id_accion uniqueidentifier,
-    id_usuario uniqueidentifier,
-    id_objeto_afectado uniqueidentifier,
-    iv_firma NVARCHAR(255),
-    fecha_creado DATETIME DEFAULT GETDATE(),
-    fecha_actualizado DATETIME NULL,
-    FOREIGN KEY (id_accion) REFERENCES Tipo_Accion(id),
-    FOREIGN KEY (id_usuario) REFERENCES Usuario(id),
-    FOREIGN KEY (id_objeto_afectado) REFERENCES Objeto_Afectado(id)
-);
-
--- Tabla: Log_Detalle
-CREATE TABLE Log_Detalle (
-    id uniqueidentifier  PRIMARY KEY,
-    id_log uniqueidentifier,
-    campo_afectado NVARCHAR(100),
-    valor_anterior NVARCHAR(255),
-    valor_nuevo NVARCHAR(255),
-    fecha_creado DATETIME DEFAULT GETDATE(),
-    fecha_actualizado DATETIME NULL,
-    FOREIGN KEY (id_log) REFERENCES Log_Sistema(id)
-);
-
-

@@ -5,12 +5,13 @@ namespace Auditorias.Models
 {
     public class Rol
     {
-        public int Id { get; set; }
-        public string Nombre { get; set; } = string.Empty;
-        public string? Descripcion { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
+        public string Nombre { get; set; }
+        public string Descripcion { get; set; }
         public DateTime FechaCreado { get; set; } = DateTime.Now;
         public DateTime? FechaActualizado { get; set; }
 
-        public ICollection<UsuarioRol>? UsuarioRoles { get; set; }
+        // Relaciones
+        public ICollection<UsuarioRol> UsuarioRoles { get; set; }
     }
 }
