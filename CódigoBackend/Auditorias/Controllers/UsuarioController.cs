@@ -40,8 +40,25 @@ namespace Auditorias.Controllers
             }
 
         }
+        // DELETE: api/Usuarios/
+        
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteUsuario(int id)
+        {
+            var usuario = await _context.Usuarios.FindAsync(id);
+            if (usuario == null)
+                return NotFound("Usuario no encontrado.");
 
+                _context.Usuarios.Remove(usuario);
+                await _context.SaveChangesAsync();
 
+                return Ok("Usuario eliminado exitosamente.");
+
+            }
+        }
     }
-}
+
 
