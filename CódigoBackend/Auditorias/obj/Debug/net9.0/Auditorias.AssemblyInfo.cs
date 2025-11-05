@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Auditorias")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ca68dc596238b6c64afad60eb84639a33dec436a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+90c82456ae025bad4b03a437564902964c906aae")]
 [assembly: System.Reflection.AssemblyProductAttribute("Auditorias")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Auditorias")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
