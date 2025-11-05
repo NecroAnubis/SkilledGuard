@@ -18,10 +18,30 @@ namespace Auditorias.Controllers
 
         // GET: api/Usuarios
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+
         public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
         {
-            var acciones = await _context.Usuarios.ToListAsync();
-            return Ok(acciones);
+            try
+
+            {
+                var Usuarios = await _context.Usuarios.ToListAsync();
+                if (Usuarios == null || !Usuarios.Any())
+                {
+                    return NotFound("No se encontraron usuarios.");
+                }
+                return Ok(Usuarios);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error al obtener los usuarios: {ex.Message}");
+            }
+
         }
+
+
     }
 }
+
