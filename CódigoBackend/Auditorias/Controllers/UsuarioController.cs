@@ -18,10 +18,47 @@ namespace Auditorias.Controllers
 
         // GET: api/Usuarios
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+
         public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
         {
-            var acciones = await _context.Usuarios.ToListAsync();
-            return Ok(acciones);
+            try
+
+            {
+                var Usuarios = await _context.Usuarios.ToListAsync();
+                if (Usuarios == null || !Usuarios.Any())
+                {
+                    return NotFound("No se encontraron usuarios.");
+                }
+                return Ok(Usuarios);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error al obtener los usuarios: {ex.Message}");
+            }
+
+        }
+        // DELETE: api/Usuarios/
+        
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteUsuario(int id)
+        {
+            var usuario = await _context.Usuarios.FindAsync(id);
+            if (usuario == null)
+                return NotFound("Usuario no encontrado.");
+
+                _context.Usuarios.Remove(usuario);
+                await _context.SaveChangesAsync();
+
+                return Ok("Usuario eliminado exitosamente.");
+
+            }
         }
     }
-}
+
+
