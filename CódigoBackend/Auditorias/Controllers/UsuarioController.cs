@@ -9,7 +9,7 @@ namespace Auditorias.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize] // notacion que indica que todos los controladores necesitan un token de autorizacion en los headers
     public class UsuarioController : ControllerBase
     {
         private readonly AuditoriaContext _context;
@@ -26,9 +26,9 @@ namespace Auditorias.Controllers
             try
             {
                 var usuarios = await _context.Usuarios
-                    .Include(u => u.Rol)
-                    .Include(u => u.TipoDocumento)
-                    .Select(u => new
+                    .Include(u => u.Rol) // le indica a entity framework que cargue tambien la informacion del rol asociado a cada usuario
+                    .Include(u => u.TipoDocumento) // carga informacion del tipo de documento 
+                    .Select(u => new // creacion del objeto anonimo para devolver solo los campos que se requieren en la respuesta 
                     {
                         u.Id,
                         u.Nombres,
@@ -42,7 +42,7 @@ namespace Auditorias.Controllers
                         Rol = u.Rol != null ? u.Rol.Nombre : null,
                         TipoDocumento = u.TipoDocumento != null ? u.TipoDocumento.Nombre : null
                     })
-                    .ToListAsync();
+                    .ToListAsync(); // devuelve los objetos creados a partir de las funciones lambda o anonimas 
 
                 if (usuarios == null || !usuarios.Any())
                     return NotFound("No se encontraron usuarios.");
@@ -86,16 +86,16 @@ namespace Auditorias.Controllers
         }
 
         // POST: api/usuario
-        [HttpPost]
-        [AllowAnonymous]
+        [HttpPost] // controlador pensado para permitir creacion sin token de primer usuario en base de datos
+        [AllowAnonymous] // indica que no es necesario token de autorizacion para su invocacion
         public async Task<ActionResult<object>> CreateUsuario([FromBody] Usuario usuario)
         {
             if (usuario == null)
                 return BadRequest("Datos inválidos.");
 
             // Permite crear el primer usuario sin autenticación
-            if (await _context.Usuarios.AnyAsync() && !(User.Identity?.IsAuthenticated ?? false))
-                return Unauthorized("Debes estar autenticado para crear más usuarios.");
+            if (await _context.Usuarios.AnyAsync() && !(User.Identity?.IsAuthenticated ?? false)) // verificamos que no hayan usuarios en la base de datos, si los hay, se bloquea su funcionamiento
+                return Unauthorized("Debes estar autenticado para crear más usuarios."); // bloquea su funcionamiento si ya hay usuarios en base de datos hasta que se añada token de autorizacion
 
             usuario.Id = Guid.NewGuid();
             usuario.FechaCreado = DateTime.Now;
@@ -158,8 +158,7 @@ namespace Auditorias.Controllers
         }
 
         // DELETE: api/usuario/{id}
-        [HttpDelete("{id}")]
-       
+        [HttpDelete("{id}")] // elimina primero todas las foraneas de usuario en las demas tablas y finalmente el usuario, evitando asi errores de borrado al no habilitar delete on cascade
         public async Task<IActionResult> DeleteUsuario(Guid id)
         {
             var usuario = await _context.Usuarios.FindAsync(id);

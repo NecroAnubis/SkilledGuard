@@ -24,7 +24,7 @@ namespace Auditorias.Controllers
         }
 
         [HttpPost("login")]
-        [AllowAnonymous]
+        [AllowAnonymous] // indica que no es necesario un token de autorizacion 
         public IActionResult Login([FromBody] LoginRequest request)
         {
             var usuario = _context.Usuarios
