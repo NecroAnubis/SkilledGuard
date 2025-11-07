@@ -9,7 +9,6 @@ namespace Auditorias.Data
 
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Rol> Roles { get; set; }
-        public DbSet<UsuarioRol> UsuarioRoles { get; set; }
         public DbSet<LogSistema> LogsSistema { get; set; }
         public DbSet<TipoDispositivo> TiposDispositivo { get; set; }
         public DbSet<Dispositivo> Dispositivos { get; set; }

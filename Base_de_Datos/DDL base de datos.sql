@@ -7,9 +7,7 @@ GO
 CREATE TABLE Rol (
     id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
     nombre NVARCHAR(100) NOT NULL,
-    descripcion NVARCHAR(500),
-    fecha_creado DATE DEFAULT GETDATE(),
-    fecha_actualizado DATE
+    descripcion NVARCHAR(500)
 );
 
 CREATE TABLE Tipo_documento (
@@ -30,15 +28,8 @@ CREATE TABLE Usuario (
     contraseña NVARCHAR(255),
     fecha_creado DATE DEFAULT GETDATE(),
     fecha_actualizado DATE,
-    FOREIGN KEY (id_tipo_documento) REFERENCES Tipo_documento(id)
-);
-
-CREATE TABLE Usuario_rol (
-    id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    id_usuario UNIQUEIDENTIFIER NOT NULL, 
-    id_rol UNIQUEIDENTIFIER NOT NULL,     
-    fecha_actualizado DATE,
-    FOREIGN KEY (id_usuario) REFERENCES Usuario(id),
+    id_rol UNIQUEIDENTIFIER NOT NULL, 
+    FOREIGN KEY (id_tipo_documento) REFERENCES Tipo_documento(id),
     FOREIGN KEY (id_rol) REFERENCES Rol(id)
 );
 
