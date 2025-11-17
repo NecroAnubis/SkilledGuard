@@ -1,25 +1,31 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\alexa\\OneDrive\\Documentos\\Repositorios Daniela Triana\\SkilledGuard\\CódigoBackend\\Auditorias\\Auditorias.csproj": {}
+    "C:\\Users\\User\\OneDrive\\Documentos\\Repos\\SkilledGuard\\CódigoBackend\\Auditorias\\Auditorias.csproj": {}
   },
   "projects": {
-    "C:\\Users\\alexa\\OneDrive\\Documentos\\Repositorios Daniela Triana\\SkilledGuard\\CódigoBackend\\Auditorias\\Auditorias.csproj": {
+    "C:\\Users\\User\\OneDrive\\Documentos\\Repos\\SkilledGuard\\CódigoBackend\\Auditorias\\Auditorias.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\alexa\\OneDrive\\Documentos\\Repositorios Daniela Triana\\SkilledGuard\\CódigoBackend\\Auditorias\\Auditorias.csproj",
+        "projectUniqueName": "C:\\Users\\User\\OneDrive\\Documentos\\Repos\\SkilledGuard\\CódigoBackend\\Auditorias\\Auditorias.csproj",
         "projectName": "Auditorias",
-        "projectPath": "C:\\Users\\alexa\\OneDrive\\Documentos\\Repositorios Daniela Triana\\SkilledGuard\\CódigoBackend\\Auditorias\\Auditorias.csproj",
-        "packagesPath": "C:\\Users\\alexa\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\alexa\\OneDrive\\Documentos\\Repositorios Daniela Triana\\SkilledGuard\\CódigoBackend\\Auditorias\\obj\\",
+        "projectPath": "C:\\Users\\User\\OneDrive\\Documentos\\Repos\\SkilledGuard\\CódigoBackend\\Auditorias\\Auditorias.csproj",
+        "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\User\\OneDrive\\Documentos\\Repos\\SkilledGuard\\CódigoBackend\\Auditorias\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\alexa\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -64,7 +70,7 @@
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[9.0.10, )"
+              "version": "[10.0.0, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
@@ -90,7 +96,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

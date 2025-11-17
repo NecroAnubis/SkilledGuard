@@ -21,6 +21,9 @@ namespace Auditorias.Controllers
 
         // GET: api/usuario
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<object>>> GetUsuarios()
         {
             try
@@ -57,6 +60,9 @@ namespace Auditorias.Controllers
 
         // GET: api/usuario/{id}
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<object>> GetUsuarioById(Guid id)
         {
             var usuario = await _context.Usuarios
@@ -87,11 +93,30 @@ namespace Auditorias.Controllers
 
         // POST: api/usuario
         [HttpPost] // controlador pensado para permitir creacion sin token de primer usuario en base de datos
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [AllowAnonymous] // indica que no es necesario token de autorizacion para su invocacion
         public async Task<ActionResult<object>> CreateUsuario([FromBody] Usuario usuario)
         {
             if (usuario == null)
                 return BadRequest("Datos inválidos.");
+
+           var usuarioExistente = await _context.Usuarios
+                .Where(u => u.Email == usuario.Email || u.Documento == usuario.Documento)
+                .Select(u => new { u.Email, u.Documento })
+                .FirstOrDefaultAsync();
+
+            if (usuarioExistente != null)
+            {
+                if (usuarioExistente.Email == usuario.Email)
+                    return BadRequest("El correo ya está registrado.");
+
+                if (usuarioExistente.Documento == usuario.Documento)
+                    return BadRequest("El documento ya está registrado.");
+            }
+                
+
 
             // Permite crear el primer usuario sin autenticación
             if (await _context.Usuarios.AnyAsync() && !(User.Identity?.IsAuthenticated ?? false)) // verificamos que no hayan usuarios en la base de datos, si los hay, se bloquea su funcionamiento
@@ -129,6 +154,9 @@ namespace Auditorias.Controllers
 
         // PUT: api/usuario/{id}
         [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateUsuario(Guid id, [FromBody] Usuario usuario)
         {
             if (usuario == null || id != usuario.Id)
@@ -159,6 +187,9 @@ namespace Auditorias.Controllers
 
         // DELETE: api/usuario/{id}
         [HttpDelete("{id}")] // elimina primero todas las foraneas de usuario en las demas tablas y finalmente el usuario, evitando asi errores de borrado al no habilitar delete on cascade
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteUsuario(Guid id)
         {
             var usuario = await _context.Usuarios.FindAsync(id);
@@ -185,6 +216,9 @@ namespace Auditorias.Controllers
 
         // POST: api/usuario/changePassword
         [HttpPost("changePassword")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CambiarContraseña([FromBody] CambiarContraseñaRequest request)
         {
             var usuario = await _context.Usuarios.FindAsync(request.IdUsuario);
