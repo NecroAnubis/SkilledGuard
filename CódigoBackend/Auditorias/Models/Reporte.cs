@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Auditorias.Models
 {
@@ -26,8 +27,9 @@ namespace Auditorias.Models
         [Column("id_tipo_reporte")]
         public Guid IdTipoReporte { get; set; }
 
+        [JsonIgnore]
         [Column("fecha_creado")]
-        public DateTime? FechaCreado { get; set; }
+        public DateTime? FechaCreado { get; set; } = DateTime.Now;
 
         [Column("fecha_actualizado")]
         public DateTime? FechaActualizado { get; set; }
