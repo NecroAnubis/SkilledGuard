@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\User\\OneDrive\\Documentos\\Proyecto\\SkilledGuard\\CódigoBackend\\Auditorias\\Auditorias.csproj": {}
+    "C:\\Users\\User\\OneDrive\\Documentos\\Repos\\SkilledGuard\\CódigoBackend\\Auditorias\\Auditorias.csproj": {}
   },
   "projects": {
-    "C:\\Users\\User\\OneDrive\\Documentos\\Proyecto\\SkilledGuard\\CódigoBackend\\Auditorias\\Auditorias.csproj": {
+    "C:\\Users\\User\\OneDrive\\Documentos\\Repos\\SkilledGuard\\CódigoBackend\\Auditorias\\Auditorias.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\User\\OneDrive\\Documentos\\Proyecto\\SkilledGuard\\CódigoBackend\\Auditorias\\Auditorias.csproj",
+        "projectUniqueName": "C:\\Users\\User\\OneDrive\\Documentos\\Repos\\SkilledGuard\\CódigoBackend\\Auditorias\\Auditorias.csproj",
         "projectName": "Auditorias",
-        "projectPath": "C:\\Users\\User\\OneDrive\\Documentos\\Proyecto\\SkilledGuard\\CódigoBackend\\Auditorias\\Auditorias.csproj",
+        "projectPath": "C:\\Users\\User\\OneDrive\\Documentos\\Repos\\SkilledGuard\\CódigoBackend\\Auditorias\\Auditorias.csproj",
         "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\User\\OneDrive\\Documentos\\Proyecto\\SkilledGuard\\CódigoBackend\\Auditorias\\obj\\",
+        "outputPath": "C:\\Users\\User\\OneDrive\\Documentos\\Repos\\SkilledGuard\\CódigoBackend\\Auditorias\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -50,6 +50,10 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[9.0.10, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[9.0.7, )"
@@ -66,7 +70,7 @@
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[9.0.10, )"
+              "version": "[10.0.0, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
