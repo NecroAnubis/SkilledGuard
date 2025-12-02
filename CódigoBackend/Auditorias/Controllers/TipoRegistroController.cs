@@ -9,65 +9,69 @@ namespace Auditorias.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class TipoDocumentoController : ControllerBase
+    public class TipoRegistroController : ControllerBase
     {
         private readonly AuditoriaContext _context;
 
-        public TipoDocumentoController(AuditoriaContext context)
+        public TipoRegistroController(AuditoriaContext context)
         {
             _context = context;
         }
 
         // GET
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<object>>> GetTiposDocumento()
+        public async Task<ActionResult<IEnumerable<object>>> GetTiposRegistro()
         {
             try
             {
-                var data = await _context.TiposDocumento
-                    .Select(t => new
+                var data = await _context.TiposRegistro
+                    .Include(tr => tr.TipoDocumento)
+                    .Select(tr => new
                     {
-                        t.Id,
-                        t.Nombre,
-                        t.Descripcion,
-                        t.FechaCreado,
-                        t.FechaActualizado
+                        tr.Id,
+                        tr.Nombre,
+                        tr.Descripcion,
+                        tr.FechaCreado,
+                        tr.FechaActualizado,
+                        TipoDocumento = tr.TipoDocumento != null ? tr.TipoDocumento.Nombre : null
                     })
                     .ToListAsync();
 
                 if (!data.Any())
-                    return NotFound("No existen registros en TipoDocumento");
+                    return NotFound("No existen registros en TipoRegistro");
 
                 return Ok(data);
             }
             catch
             {
-                return StatusCode(500, "Error obteniendo los tipos de documento");
+                return StatusCode(500, "Error obteniendo los tipos de registro");
             }
         }
 
         // GET BY ID
         [HttpGet("{id}")]
-        public async Task<ActionResult<object>> GetTipoDocumento(Guid id)
+        public async Task<ActionResult<object>> GetTipoRegistro(Guid id)
         {
             try
             {
-                var tipo = await _context.TiposDocumento
-                    .Where(t => t.Id == id)
-                    .Select(t => new
+                var registro = await _context.TiposRegistro
+                    .Include(tr => tr.TipoDocumento)
+                    .Where(tr => tr.Id == id)
+                    .Select(tr => new
                     {
-                        t.Id,
-                        t.Nombre,
-                        t.Descripcion,
-                        t.FechaCreado,
-                        t.FechaActualizado
+                        tr.Id,
+                        tr.Nombre,
+                        tr.Descripcion,
+                        tr.FechaCreado,
+                        tr.FechaActualizado,
+                        TipoDocumento = tr.TipoDocumento != null ? tr.TipoDocumento.Nombre : null
                     })
                     .FirstOrDefaultAsync();
 
-                if (tipo == null)
-                    return NotFound("No se encontró el tipo de documento");
+                if (registro == null)
+                    return NotFound("No se encontró el tipo de registro");
 
-                return Ok(tipo);
+                return Ok(registro);
             }
             catch
             {
@@ -77,7 +81,7 @@ namespace Auditorias.Controllers
 
         // POST
         [HttpPost]
-        public async Task<ActionResult<object>> CreateTipoDocumento([FromBody] TipoDocumento obj)
+        public async Task<ActionResult<object>> CreateTipoRegistro([FromBody] TipoRegistro obj)
         {
             if (obj == null)
                 return BadRequest("El objeto enviado es nulo");
@@ -87,17 +91,18 @@ namespace Auditorias.Controllers
                 obj.Id = Guid.NewGuid();
                 obj.FechaCreado = DateTime.Now;
 
-                _context.TiposDocumento.Add(obj);
+                _context.TiposRegistro.Add(obj);
                 await _context.SaveChangesAsync();
 
-                return CreatedAtAction(nameof(GetTipoDocumento), new { id = obj.Id }, obj);
+                return CreatedAtAction(nameof(GetTipoRegistro), new { id = obj.Id }, obj);
             }
             catch
             {
-                return StatusCode(500, "Error creando el tipo de documento");
+                return StatusCode(500, "Error creando el tipo de registro");
             }
         }
     }
 }
+
 
 
