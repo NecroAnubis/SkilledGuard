@@ -1,90 +1,166 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using Auditorias.Data;
-using Microsoft.AspNetCore.Authorization;
+using Auditorias.Models;
 using Microsoft.EntityFrameworkCore;
-using Auditorias.utils;
+using Microsoft.AspNetCore.Authorization;
 
-namespace Auditoria.Controllers
+namespace Auditorias.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     [Authorize]
     public class TipoDocumentoController : ControllerBase
     {
-           private readonly AuditoriaContext _context;
+        private readonly AuditoriaContext _context;
 
         public TipoDocumentoController(AuditoriaContext context)
         {
             _context = context;
         }
 
-        // GET: api/TipoDocumento
+        //  api/TipoDocumento
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TipoDocumento>>> GetTipoDocumentos()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<IEnumerable<object>>> GetTiposDocumento()
         {
-            return await _context.TipoDocumentos.ToListAsync();
-        }
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<TipoDocumento>> GetTipoDocumento(int id)
-        {
-            var tipoDocumento = await _context.TipoDocumentos.FindAsync(id);
-
-            if (tipoDocumento == null)
-                return NotFound();
-
-            return tipoDocumento;
-        }
-
-        // POST: api/TipoDocumento
-        [HttpPost]
-        public async Task<ActionResult<TipoDocumento>> PostTipoDocumento(TipoDocumento tipoDocumento)
-        {
-            _context.TipoDocumentos.Add(tipoDocumento);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetTipoDocumento), new { id = tipoDocumento.Id }, tipoDocumento);
-        }
-
-        // PUT: api/TipoDocumento/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutTipoDocumento(int id, TipoDocumento tipoDocumento)
-        {
-            if (id != tipoDocumento.Id)
-                return BadRequest();
-
-            _context.Entry(tipoDocumento).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!_context.TipoDocumentos.Any(e => e.Id == id))
-                    return NotFound();
-                throw;
-            }
+                var tipos = await _context.TipoDocumentos
+                    .Select(t => new
+                    {
+                        t.Id,
+                        t.Nombre,
+                        t.FechaCreado,
+                        t.FechaActualizado
+                    })
+                    .ToListAsync();
 
-            return NoContent();
+                if (!tipos.Any())
+                    return NotFound("No se encontraron tipos de documento.");
+
+                return Ok(tipos);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Ocurrió un error al obtener los tipos de documento.");
+            }
         }
 
-        // DELETE: api/TipoDocumento/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTipoDocumento(int id)
+        //  api/TipoDocumento/{id}
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<object>> GetTipoDocumentoById(Guid id)
         {
-            var tipoDocumento = await _context.TipoDocumentos.FindAsync(id);
-            if (tipoDocumento == null)
-                return NotFound();
+            try
+            {
+                var tipo = await _context.TipoDocumentos
+                    .Where(t => t.Id == id)
+                    .Select(t => new
+                    {
+                        t.Id,
+                        t.Nombre,
+                        t.FechaCreado,
+                        t.FechaActualizado
+                    })
+                    .FirstOrDefaultAsync();
 
-            _context.TipoDocumentos.Remove(tipoDocumento);
-            await _context.SaveChangesAsync();
+                if (tipo == null)
+                    return NotFound("Tipo de documento no encontrado.");
 
-            return NoContent();
+                return Ok(tipo);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Ocurrió un error al obtener el registro solicitado.");
+            }
+        }
+
+        //  api/TipoDocumento
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<object>> CreateTipoDocumento([FromBody] TipoDocumento tipo)
+        {
+            try
+            {
+                if (tipo == null)
+                    return BadRequest("Datos inválidos.");
+
+                tipo.Id = Guid.NewGuid();
+                tipo.FechaCreado = DateTime.Now;
+
+                _context.TipoDocumentos.Add(tipo);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction(nameof(GetTipoDocumentoById), new { id = tipo.Id }, tipo);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Ocurrió un error al intentar crear el tipo de documento.");
+            }
+        }
+
+        // PUT: api/TipoDocumento/{id}
+        [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UpdateTipoDocumento(Guid id, [FromBody] TipoDocumento tipo)
+        {
+            try
+            {
+                if (id != tipo.Id)
+                    return BadRequest("IDs no coinciden.");
+
+                var existente = await _context.TipoDocumentos.FindAsync(id);
+                if (existente == null)
+                    return NotFound("Tipo de documento no encontrado.");
+
+                existente.Nombre = tipo.Nombre;
+                existente.FechaActualizado = DateTime.Now;
+
+                await _context.SaveChangesAsync();
+                return Ok("Tipo de documento actualizado correctamente.");
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Ocurrió un error al intentar actualizar el registro.");
+            }
+        }
+
+        // DELETE: api/TipoDocumento/{id}
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteTipoDocumento(Guid id)
+        {
+            try
+            {
+                var tipo = await _context.TipoDocumentos.FindAsync(id);
+                if (tipo == null)
+                    return NotFound("Tipo de documento no encontrado.");
+
+               
+                var usuarios = _context.Usuarios.Where(u => u.IdTipoDocumento == id);
+                _context.Usuarios.RemoveRange(usuarios);
+
+                _context.TipoDocumentos.Remove(tipo);
+                await _context.SaveChangesAsync();
+
+                return Ok("Tipo de documento eliminado correctamente.");
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Ocurrió un error al intentar eliminar el tipo de documento.");
+            }
         }
     }
 }
+
