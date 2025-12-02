@@ -1,9 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
 using Auditorias.Data;
 using Auditorias.Models;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
-using Auditorias.utils;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Auditorias.Controllers
 {
@@ -19,63 +18,88 @@ namespace Auditorias.Controllers
             _context = context;
         }
 
+        // GET
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TipoReporte>>> GetTiposReporte()
+        public async Task<ActionResult<IEnumerable<object>>> GetTiposReporte()
         {
-            var tipos = await _context.TipoReportes.ToListAsync();
-            if (!tipos.Any())
-                return NotFound("No se encontraron tipos de reporte.");
+            try
+            {
+                var data = await _context.TiposReporte
+                    .Include(tp => tp.TipoRegistro)
+                    .Select(tp => new
+                    {
+                        tp.Id,
+                        tp.Nombre,
+                        tp.Descripcion,
+                        tp.FechaCreado,
+                        tp.FechaActualizado,
+                        TipoRegistro = tp.TipoRegistro != null ? tp.TipoRegistro.Nombre : null
+                    })
+                    .ToListAsync();
 
-            return Ok(tipos);
+                if (!data.Any())
+                    return NotFound("No existen registros en TipoReporte");
+
+                return Ok(data);
+            }
+            catch
+            {
+                return StatusCode(500, "Error obteniendo los tipos de reporte");
+            }
         }
 
+        // GET BY ID
         [HttpGet("{id}")]
-        public async Task<ActionResult<TipoReporte>> GetTipoReporteById(Guid id)
+        public async Task<ActionResult<object>> GetTipoReporte(Guid id)
         {
-            var tipo = await _context.TipoReportes.FindAsync(id);
-            if (tipo == null)
-                return NotFound("Tipo de reporte no encontrado.");
+            try
+            {
+                var reporte = await _context.TiposReporte
+                    .Include(tp => tp.TipoRegistro)
+                    .Where(tp => tp.Id == id)
+                    .Select(tp => new
+                    {
+                        tp.Id,
+                        tp.Nombre,
+                        tp.Descripcion,
+                        tp.FechaCreado,
+                        tp.FechaActualizado,
+                        TipoRegistro = tp.TipoRegistro != null ? tp.TipoRegistro.Nombre : null
+                    })
+                    .FirstOrDefaultAsync();
 
-            return Ok(tipo);
+                if (reporte == null)
+                    return NotFound("No se encontró el tipo de reporte");
+
+                return Ok(reporte);
+            }
+            catch
+            {
+                return StatusCode(500, "Error obteniendo el registro");
+            }
         }
 
+        // POST
         [HttpPost]
-        public async Task<ActionResult<TipoReporte>> CreateTipoReporte([FromBody] TipoReporte tipoReporte)
+        public async Task<ActionResult<object>> CreateTipoReporte([FromBody] TipoReporte obj)
         {
-            tipoReporte.Id = Guid.NewGuid();
-            _context.TipoReportes.Add(tipoReporte);
-            await _context.SaveChangesAsync();
+            if (obj == null)
+                return BadRequest("El objeto enviado es nulo");
 
-            return CreatedAtAction(nameof(GetTipoReporteById), new { id = tipoReporte.Id }, tipoReporte);
-        }
+            try
+            {
+                obj.Id = Guid.NewGuid();
+                obj.FechaCreado = DateTime.Now;
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTipoReporte(Guid id, [FromBody] TipoReporte tipoReporte)
-        {
-            if (id != tipoReporte.Id)
-                return BadRequest("El ID no coincide.");
+                _context.TiposReporte.Add(obj);
+                await _context.SaveChangesAsync();
 
-            var existente = await _context.TipoReportes.FindAsync(id);
-            if (existente == null)
-                return NotFound("Tipo de reporte no encontrado.");
-
-            existente.Nombre = tipoReporte.Nombre;
-
-            await _context.SaveChangesAsync();
-            return Ok("Tipo de reporte actualizado correctamente.");
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTipoReporte(Guid id)
-        {
-            var tipo = await _context.TipoReportes.FindAsync(id);
-            if (tipo == null)
-                return NotFound("Tipo de reporte no encontrado.");
-
-            _context.TipoReportes.Remove(tipo);
-            await _context.SaveChangesAsync();
-
-            return Ok("Tipo de reporte eliminado correctamente.");
+                return CreatedAtAction(nameof(GetTipoReporte), new { id = obj.Id }, obj);
+            }
+            catch
+            {
+                return StatusCode(500, "Error creando el tipo de reporte");
+            }
         }
     }
 }
