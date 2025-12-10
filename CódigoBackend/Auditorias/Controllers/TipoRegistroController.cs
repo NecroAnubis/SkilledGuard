@@ -1,14 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
-using Auditorias.Data;
 using Auditorias.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
+using Auditorias.IServices;
+using System;
+using System.Threading.Tasks;
 
 namespace Auditorias.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
     public class TipoRegistroController : ControllerBase
     {
         private readonly AuditoriaContext _context;
@@ -18,137 +17,96 @@ namespace Auditorias.Controllers
             _context = context;
         }
 
-        // GET: api/tiporegistro
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<object>>> GetTiposRegistro()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+
+        public async Task<IActionResult> Get()
         {
             try
             {
-                var tipos = await _context.TipoRegistros
-                    .Select(t => new
-                    {
-                        t.Id,
-                        t.Nombre,
-                        t.FechaCreado,
-                        t.FechaActualizado
-                    })
-                    .ToListAsync();
-
-                if (!tipos.Any())
-                    return NotFound("No se encontraron tipos de registro.");
-
-                return Ok(tipos);
+                var data = await _service.GetAll();
+                return Ok(data);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(500, "Ocurrió un error al obtener los tipos de registro.");
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
             }
         }
 
-        // GET: api/tiporegistro/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<object>> GetTipoRegistroById(Guid id)
+        public async Task<IActionResult> Get(int id)
         {
             try
             {
-                var tipo = await _context.TipoRegistros
-                    .Where(t => t.Id == id)
-                    .Select(t => new
-                    {
-                        t.Id,
-                        t.Nombre,
-                        t.FechaCreado,
-                        t.FechaActualizado
-                    })
-                    .FirstOrDefaultAsync();
+                var tipo = await _service.GetById(id);
 
                 if (tipo == null)
-                    return NotFound("Tipo de registro no encontrado.");
+                    return NotFound($"No existe un tipo de registro con ID {id}");
 
                 return Ok(tipo);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(500, "Ocurrió un error al obtener el tipo de registro.");
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
             }
         }
 
-        // POST: api/tiporegistro
         [HttpPost]
-        public async Task<ActionResult<object>> CreateTipoRegistro([FromBody] TipoRegistro tipo)
+        public async Task<IActionResult> Post([FromBody] TipoRegistro tipo)
         {
             try
             {
-                if (tipo == null)
-                    return BadRequest("Datos inválidos.");
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
 
-                tipo.Id = Guid.NewGuid();
-                tipo.FechaCreado = DateTime.Now;
-
-                _context.TipoRegistros.Add(tipo);
-                await _context.SaveChangesAsync();
-
-                return CreatedAtAction(nameof(GetTipoRegistroById), new { id = tipo.Id }, tipo);
+                var nuevo = await _service.Add(tipo);
+                return CreatedAtAction(nameof(Get), new { id = nuevo.Id }, nuevo);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(500, "Ocurrió un error al crear el tipo de registro.");
+                return StatusCode(500, $"Error al crear el registro: {ex.Message}");
             }
         }
 
-        // PUT: api/tiporegistro/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTipoRegistro(Guid id, [FromBody] TipoRegistro tipo)
+        public async Task<IActionResult> Put(int id, [FromBody] TipoRegistro tipo)
         {
             try
             {
-                if (id != tipo.Id)
-                    return BadRequest("Los IDs no coinciden.");
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
 
-                var existente = await _context.TipoRegistros.FindAsync(id);
-                if (existente == null)
-                    return NotFound("Tipo de registro no encontrado.");
+                var actualizado = await _service.Update(id, tipo);
 
-                existente.Nombre = tipo.Nombre;
-                existente.FechaActualizado = DateTime.Now;
+                if (actualizado == null)
+                    return NotFound($"No existe un tipo de registro con ID {id}");
 
-                await _context.SaveChangesAsync();
-
-                return Ok("Tipo de registro actualizado correctamente.");
+                return Ok(actualizado);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(500, "Ocurrió un error al actualizar el tipo de registro.");
+                return StatusCode(500, $"Error al actualizar el registro: {ex.Message}");
             }
         }
 
-        // DELETE: api/tiporegistro/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTipoRegistro(Guid id)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                var tipo = await _context.TipoRegistros.FindAsync(id);
-                if (tipo == null)
-                    return NotFound("Tipo de registro no encontrado.");
+                var eliminado = await _service.Delete(id);
 
-            
-                var auditorias = _context.AuditoriasNegocio.Where(a => a.IdTipoRegistro == id);
-                _context.AuditoriasNegocio.RemoveRange(auditorias);
+                if (!eliminado)
+                    return NotFound($"No existe un tipo de registro con ID {id}");
 
-                _context.TipoRegistros.Remove(tipo);
-                await _context.SaveChangesAsync();
-
-                return Ok("Tipo de registro eliminado correctamente.");
+                return NoContent();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(500, "Ocurrió un error al eliminar el tipo de registro.");
+                return StatusCode(500, $"Error al eliminar el registro: {ex.Message}");
             }
         }
     }
 }
-
-
-
-
