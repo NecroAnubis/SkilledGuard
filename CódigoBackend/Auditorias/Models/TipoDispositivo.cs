@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Auditorias.Models
 {
+    [Table("Tipo_Dispositivo")]
     public class TipoDispositivo
     {
         public Guid Id { get; set; } = Guid.NewGuid();

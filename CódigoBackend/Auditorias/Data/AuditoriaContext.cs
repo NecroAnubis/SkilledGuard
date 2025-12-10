@@ -19,8 +19,19 @@ namespace Auditorias.Data
         public DbSet<Sede> Sedes { get; set; }
         public DbSet<TipoDocumento> TipoDocumentos { get; set; }
 
+        internal async Task<bool> DeleteDispositivoAsync(Guid id)
+        {
+            throw new NotImplementedException();
+        }
 
+        internal async Task GetLogByIdAsync(Guid id)
+        {
+            throw new NotImplementedException();
+        }
 
-
+        internal async Task GetPaginatedAuditsAsync(AuditoriaNegocio filters)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
