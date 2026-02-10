@@ -8,13 +8,15 @@ Skilled Guard es un proyecto desarrollado como parte de la formación en **Anál
 ## ✅ Problema que Soluciona
 Actualmente, el ingreso y salida de equipos tecnológicos se registra de forma manual, lo que genera:
 
-- Procesos lentos (promedio 10 minutos por usuario)
-- Pérdida de trazabilidad
-- Riesgo de fraude o pérdida de bienes
+Actualmente, el registro manual de equipos consume un promedio de 10 minutos por usuario y genera riesgos de seguridad, con un 35% de empresas en Bogotá reportando pérdidas por fallos en estos sistemas. Skilled Guard ataca este problema automatizando el registro mediante tecnología QR y bases de datos encriptadas.
 
 **Skilled Guard automatiza este proceso** mediante un registro digital de usuarios y equipos, permitiendo validación rápida en portería.
 
----
+- **Registro de Usuarios:** Gestión de roles (Administrador, Seguridad, Usuario).
+- **Registro de Equipos:** Cada usuario puede registrar sus dispositivos (serial, modelo, marca).
+- [cite_start]**Verificación QR:** El personal de seguridad puede escanear un QR para validar el ingreso o salida de un equipo en segundos[cite: 71, 200].
+- [cite_start]**Trazabilidad:** Historial completo de movimientos de equipos para auditorías[cite: 74, 202].
+- [cite_start]**Reportes:** Generación de reportes de ingreso/salida en PDF/Excel[cite: 111, 203].
 
 ## ✅ Funcionalidades Planeadas
 ✔ Registro de usuarios con roles (Administrador – Seguridad – Usuario)  

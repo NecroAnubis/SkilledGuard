@@ -1,16 +1,12 @@
-using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Auditorias.Models
 {
+    [Table("Rol")]
     public class Rol
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         public string Nombre { get; set; } = string.Empty;
         public string? Descripcion { get; set; }
-        public DateTime FechaCreado { get; set; } = DateTime.Now;
-        public DateTime? FechaActualizado { get; set; }
-
-        public ICollection<UsuarioRol>? UsuarioRoles { get; set; }
     }
 }

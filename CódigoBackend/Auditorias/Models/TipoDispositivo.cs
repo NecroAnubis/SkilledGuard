@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Auditorias.Models
 {
+    [Table("Tipo_Dispositivo")]
     public class TipoDispositivo
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         public string Nombre { get; set; } = string.Empty;
-        public string? Descripcion { get; set; }
-        public DateTime FechaCreado { get; set; } = DateTime.Now;
-        public DateTime? FechaActualizado { get; set; }
 
-        public ICollection<Dispositivo>? Dispositivos { get; set; }
+        // Relaciones
+        public ICollection<Dispositivo> Dispositivos { get; set; } = new List<Dispositivo>();
     }
 }

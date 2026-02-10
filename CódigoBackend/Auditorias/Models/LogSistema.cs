@@ -1,21 +1,21 @@
 using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Auditorias.Models
 {
+    [Table ("Log_Sistema")]
     public class LogSistema
     {
-        public int Id { get; set; }
-        public int IdAccion { get; set; }
-        public int IdUsuario { get; set; }
-        public int IdObjetoAfectado { get; set; }
-        public string IvFirma { get; set; } = string.Empty;
+        public Guid Id { get; set; } = Guid.NewGuid();
+        [Column("id_usuario")]
+        public Guid IdUsuario { get; set; }
+        [Column("descripcion")]
+        public string Descripcion { get; set; } = string.Empty;
+        [Column("fecha_creado")]
         public DateTime FechaCreado { get; set; } = DateTime.Now;
-        public DateTime? FechaActualizado { get; set; }
 
-        public TipoAccion? TipoAccion { get; set; }
+        // Relaciones
+        [ForeignKey("IdUsuario")]
         public Usuario? Usuario { get; set; }
-        public ObjetoAfectado? ObjetoAfectado { get; set; }
-        public ICollection<LogDetalle>? Detalles { get; set; }
     }
 }

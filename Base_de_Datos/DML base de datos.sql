@@ -1,153 +1,61 @@
-USE auditoria_sistema;
-GO
+-- 1. Tablas base
 
--- =====================================
--- TABLA: Tipo_Accion
--- =====================================
-INSERT INTO Tipo_Accion (nombre, descripcion)
-VALUES 
-('Creación', 'Registro de creación de datos'),
-('Actualización', 'Registro de actualización de datos'),
-('Eliminación', 'Registro de eliminación de datos'),
-('Consulta', 'Registro de consultas realizadas');
-GO
+-- Rol
+INSERT INTO Rol (id, nombre, descripcion) VALUES
+('11111111-1111-1111-1111-111111111111', 'Administrador', 'Rol con todos los permisos'),
+('22222222-2222-2222-2222-222222222222', 'Usuario', 'Rol con permisos limitados');
 
--- =====================================
--- TABLA: Objeto_Afectado
--- =====================================
-INSERT INTO Objeto_Afectado (nombre_tabla, descripcion)
+-- Tipo_documento
+INSERT INTO Tipo_documento (id, nombre, acronimo) VALUES
+('33333333-3333-3333-3333-333333333333', 'Cédula de Ciudadanía', 'CC'),
+('44444444-4444-4444-4444-444444444444', 'Pasaporte', 'PASS');
+
+-- Tipo_dispositivo
+INSERT INTO Tipo_dispositivo (id, nombre) VALUES
+('55555555-5555-5555-5555-555555555555', 'Laptop'),
+('66666666-6666-6666-6666-666666666666', 'Smartphone');
+
+-- Tipo_registro
+INSERT INTO Tipo_registro (id, nombre) VALUES
+('77777777-7777-7777-7777-777777777777', 'Ingreso'),
+('88888888-8888-8888-8888-888888888888', 'Salida');
+
+-- Tipo_Reporte
+INSERT INTO Tipo_Reporte (id, nombre) VALUES
+('99999999-9999-9999-9999-999999999999', 'Reporte Diario'),
+('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Reporte Mensual');
+
+-- Sede
+INSERT INTO Sede (id, nombre_sede) VALUES
+('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'Sede Central'),
+('cccccccc-cccc-cccc-cccc-cccccccccccc', 'Sede Norte');
+
+-- 2. Usuario
+INSERT INTO Usuario (id, nombres, apellidos, id_tipo_documento, documento, tipo_usuario, email, direccion, contraseña, fecha_creado, fecha_actualizado, id_rol)
 VALUES
-('Usuario', 'Tabla que almacena los usuarios del sistema'),
-('Dispositivo', 'Tabla que almacena los dispositivos registrados'),
-('Reporte', 'Tabla con los reportes generados');
-GO
+('dddddddd-dddd-dddd-dddd-dddddddddddd', 'Juan', 'Pérez', '33333333-3333-3333-3333-333333333333', '12345678', 'admin', 'juan@correo.com', 'Calle 1', 'clave123', GETDATE(), NULL, '11111111-1111-1111-1111-111111111111'),
+('eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee', 'Ana', 'Gómez', '44444444-4444-4444-4444-444444444444', '87654321', 'user', 'ana@correo.com', 'Calle 2', 'clave456', GETDATE(), NULL, '22222222-2222-2222-2222-222222222222');
 
--- =====================================
--- TABLA: Tipo_documento
--- =====================================
-INSERT INTO Tipo_documento (nombre, acronimo, descripcion)
+-- 3. Log_Sistema
+INSERT INTO Log_Sistema (id, id_usuario, descripcion, fecha_creado)
 VALUES
-('Cédula de ciudadanía', 'CC', 'Documento nacional'),
-('Tarjeta de identidad', 'TI', 'Documento para menores de edad'),
-('Cédula extranjera', 'CE', 'Documento para extranjeros');
-GO
+('ffffffff-ffff-ffff-ffff-ffffffffffff', 'dddddddd-dddd-dddd-dddd-dddddddddddd', 'Primer log de Juan', GETDATE()),
+('10101010-1010-1010-1010-101010101010', 'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee', 'Primer log de Ana', GETDATE());
 
--- =====================================
--- TABLA: Usuario
--- =====================================
-INSERT INTO Usuario (nombres, apellidos, id_tipo_documento, documento, direccion, contrasena)
+-- 4. Dispositivo
+INSERT INTO Dispositivo (id, serial, marca, modelo, sistema, descripcion, foto_url, qr, id_tipo_dispositivo, id_usuario, fecha_creado, fecha_actualizado)
 VALUES
-('Carlos', 'Oliveira', 1, '1002003001', 'Cra 45 #12-34', '12345'),
-('María', 'Gómez', 2, '1002003002', 'Cl 56 #45-21', 'abcde'),
-('Juan', 'Martínez', 1, '1002003003', 'Av 10 #8-19', 'password');
-GO
+('12121212-1212-1212-1212-121212121212', 'ABC123', 'Dell', 'XPS 13', 'Windows 10', 'Laptop de Juan', 'http://foto1.com', 'QR1', '55555555-5555-5555-5555-555555555555', 'dddddddd-dddd-dddd-dddd-dddddddddddd', GETDATE(), NULL),
+('13131313-1313-1313-1313-131313131313', 'XYZ789', 'Apple', 'iPhone 12', 'iOS', 'Teléfono de Ana', 'http://foto2.com', 'QR2', '66666666-6666-6666-6666-666666666666', 'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee', GETDATE(), NULL);
 
--- =====================================
--- TABLA: Rol
--- =====================================
-INSERT INTO Rol (nombre, descripcion)
+-- 5. Auditoria_Negocio
+INSERT INTO Auditoria_Negocio (id, fecha_registro, id_tipo_registro, registrado_por, descripcion)
 VALUES
-('Administrador', 'Gestión total del sistema'),
-('Auditor', 'Acceso a reportes y auditorías'),
-('Usuario', 'Acceso limitado a funcionalidades básicas');
-GO
+('14141414-1414-1414-1414-141414141414', GETDATE(), '77777777-7777-7777-7777-777777777777', 'dddddddd-dddd-dddd-dddd-dddddddddddd', 'Auditoría de ingreso'),
+('15151515-1515-1515-1515-151515151515', GETDATE(), '88888888-8888-8888-8888-888888888888', 'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee', 'Auditoría de salida');
 
--- =====================================
--- TABLA: Usuario_Rol
--- =====================================
-INSERT INTO Usuario_Rol (id_usuario, id_rol)
+-- 6. Reporte
+INSERT INTO Reporte (id, generado_por, sede, descripcion, fecha_generado, url_archivo, id_tipo_reporte, fecha_creado, fecha_actualizado)
 VALUES
-(1, 1),
-(2, 2),
-(3, 3);
-GO
-
--- =====================================
--- TABLA: Tipo_dispositivo
--- =====================================
-INSERT INTO Tipo_dispositivo (nombre, descripcion)
-VALUES
-('Computador', 'Equipo portátil o de escritorio'),
-('Celular', 'Teléfono móvil'),
-('Tablet', 'Dispositivo tipo tableta');
-GO
-
--- =====================================
--- TABLA: Dispositivo
--- =====================================
-INSERT INTO Dispositivo (serial, marca, modelo, sistema, id_tipo_dispositivo, id_usuario)
-VALUES
-('PC-12345', 'HP', 'Pavilion', 'Windows 11', 1, 1),
-('MB-67890', 'Samsung', 'Galaxy S22', 'Android 13', 2, 2),
-('TB-11122', 'Apple', 'iPad Pro', 'iOS 17', 3, 3);
-GO
-
--- =====================================
--- TABLA: Tipo_registro
--- =====================================
-INSERT INTO Tipo_registro (nombre, descripcion)
-VALUES
-('Transacción', 'Registro de una transacción realizada'),
-('Cambio de estado', 'Registro de modificaciones de estado'),
-('Ingreso', 'Registro de inicio de sesión o acceso');
-GO
-
--- =====================================
--- TABLA: Auditoria_Negocio
--- =====================================
-INSERT INTO Auditoria_Negocio (id_tipo_registro, registrado_por, ejemplo_data)
-VALUES
-(1, 1, 'Compra realizada por el usuario'),
-(2, 2, 'Cambio de contraseña del usuario'),
-(3, 3, 'Inicio de sesión exitoso');
-GO
-
--- =====================================
--- TABLA: Log_Sistema
--- =====================================
-INSERT INTO Log_Sistema (id_accion, id_usuario, id_objeto_afectado, iv_firma)
-VALUES
-(1, 1, 1, 'firmaABC123'),
-(2, 2, 2, 'firmaDEF456'),
-(3, 3, 3, 'firmaGHI789');
-GO
-
--- =====================================
--- TABLA: Log_Detalle
--- =====================================
-INSERT INTO Log_Detalle (id_log, campo_afectado, valor_anterior, valor_nuevo)
-VALUES
-(1, 'nombres', NULL, 'Carlos'),
-(2, 'direccion', 'Cl 12 #34-56', 'Cl 45 #67-89'),
-(3, 'sistema', 'Android 12', 'Android 13');
-GO
-
--- =====================================
--- TABLA: Tipo_Reporte
--- =====================================
-INSERT INTO Tipo_Reporte (nombre, descripcion)
-VALUES
-('Reporte de usuarios', 'Listados de usuarios del sistema'),
-('Reporte de auditoría', 'Registros de acciones en el sistema'),
-('Reporte de dispositivos', 'Listado y control de dispositivos');
-GO
-
--- =====================================
--- TABLA: Reporte
--- =====================================
-INSERT INTO Reporte (generado_por, filtros_aplicados, url_archivo, id_tipo_reporte)
-VALUES
-(1, 'Usuarios activos', 'reporte_usuarios.pdf', 1),
-(2, 'Acciones recientes', 'reporte_auditoria.pdf', 2),
-(3, 'Dispositivos asignados', 'reporte_dispositivos.pdf', 3);
-GO
-
--- =====================================
--- TABLA: Consulta_Reporte
--- =====================================
-INSERT INTO Consulta_Reporte (entidad_consultada, filtro_aplicado, id_reporte)
-VALUES
-('Usuario', 'Activos', 1),
-('Log_Sistema', 'Últimos 7 días', 2),
-('Dispositivo', 'Asignados', 3);
-GO
+('16161616-1616-1616-1616-161616161616', 'dddddddd-dddd-dddd-dddd-dddddddddddd', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'Reporte diario de Juan', GETDATE(), 'http://reporte1.com', '99999999-9999-9999-9999-999999999999', GETDATE(), NULL),
+('17171717-1717-1717-1717-171717171717', 'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee', 'cccccccc-cccc-cccc-cccc-cccccccccccc', 'Reporte mensual de Ana', GETDATE(), 'http://reporte2.com', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', GETDATE(), NULL);

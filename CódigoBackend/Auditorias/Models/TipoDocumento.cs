@@ -1,17 +1,15 @@
-using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Auditorias.Models
 {
+    [Table("Tipo_documento")]
     public class TipoDocumento
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         public string Nombre { get; set; } = string.Empty;
-        public string? Acronimo { get; set; }
-        public string? Descripcion { get; set; }
-        public DateTime FechaCreado { get; set; } = DateTime.Now;
-        public DateTime? FechaActualizado { get; set; }
+        public string Acronimo { get; set; } = string.Empty;
 
-        public ICollection<Usuario>? Usuarios { get; set; }
+        // Relaciones
+        public ICollection<Usuario> Usuarios { get; set; } = new List<Usuario>();
     }
 }
