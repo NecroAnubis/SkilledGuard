@@ -1,16 +1,16 @@
-# 🛡️ Proyecto: Skilled Guard
+# 🛡️ Skilled Guard  
+Sistema de Automatización para el Control de Ingreso de Equipos Tecnológicos – SENA
 
-> Sistema de automatización para el Control de Ingreso de Equipos Tecnológicos en el SENA.
-
-Este proyecto es parte de la formación en **Análisis y Desarrollo de Software (ADSO)** del SENA. Busca reemplazar el registro manual en minutas por una aplicación web moderna, ágil y segura.
+Skilled Guard es un proyecto desarrollado como parte de la formación en **Análisis y Desarrollo de Software (ADSO)** del SENA. Su objetivo es reemplazar el registro manual en minutas por un sistema digital seguro, rápido y auditable.
 
 ---
 
-## 🎯 Problema que Resuelve
+## ✅ Problema que Soluciona
+Actualmente, el ingreso y salida de equipos tecnológicos se registra de forma manual, lo que genera:
 
 Actualmente, el registro manual de equipos consume un promedio de 10 minutos por usuario y genera riesgos de seguridad, con un 35% de empresas en Bogotá reportando pérdidas por fallos en estos sistemas. Skilled Guard ataca este problema automatizando el registro mediante tecnología QR y bases de datos encriptadas.
 
-## ✨ Características Principales
+**Skilled Guard automatiza este proceso** mediante un registro digital de usuarios y equipos, permitiendo validación rápida en portería.
 
 - **Registro de Usuarios:** Gestión de roles (Administrador, Seguridad, Usuario).
 - **Registro de Equipos:** Cada usuario puede registrar sus dispositivos (serial, modelo, marca).
@@ -18,28 +18,43 @@ Actualmente, el registro manual de equipos consume un promedio de 10 minutos por
 - [cite_start]**Trazabilidad:** Historial completo de movimientos de equipos para auditorías[cite: 74, 202].
 - [cite_start]**Reportes:** Generación de reportes de ingreso/salida en PDF/Excel[cite: 111, 203].
 
-## 🛠️ Stack de Tecnologías (Sugerido)
+## ✅ Funcionalidades Planeadas
+✔ Registro de usuarios con roles (Administrador – Seguridad – Usuario)  
+✔ Registro de equipos (serial, marca, modelo, descripción)  
+✔ Validación en portería mediante código QR  
+✔ Trazabilidad completa de entradas y salidas  
+✔ Generación de reportes (PDF / Excel)
 
-_(Aquí pones las tecnologías que planean usar)_
+> Nota: Varias funcionalidades están en desarrollo.
 
-- **Backend:** Java 17+, Spring Boot 3
-- **Base de Datos:** MySQL
-- **Seguridad:** Spring Security (Gestión de Roles, JWT)
-- **Frontend:** React / Angular / Vue (A definir)
-- **Pruebas:** JUnit, Postman
+---
 
-## 🚀 Cómo Empezar (Próximamente)
+## 🏗️ Estado Actual del Proyecto
+✅ Backend iniciado en .NET  
+✅ Arquitectura base del proyecto  
+✅ Compilación y ejecución local  
+❌ Base de datos aún no configurada  
+❌ Frontend sin desarrollo aún  
+❌ Módulo de QR pendiente
 
-Esta sección explicará cómo clonar el repositorio e instalar el proyecto localmente.
+---
 
-1.  Clonar el repositorio: `git clone ...`
-2.  Configurar la base de datos: `...`
-3.  Ejecutar el backend: `...`
-4.  Ejecutar el frontend: `...`
+## 🧰 Tecnologías del Proyecto
 
-## 👥 Equipo
+### ✅ Backend (implementado)
+- .NET 9
+- ASP.NET Core Web API
 
-- [cite_start]Juan Carlos Olaya Lozano [cite: 4]
-- [cite_start]Karen Daniela Triana Romero [cite: 5]
-- [cite_start]Johan Alexis Salas Restrepo [cite: 6]
-  otro commit xd
+### ✅ Planeado
+- Base de Datos: MySQL
+- Seguridad: JWT + Roles
+- Frontend: (por definir)
+- Reportes: (por definir)
+- Pruebas: Postman + Swagger
+
+---
+
+## 🚀 Ejecutar el Backend
+1. Clonar el repositorio:
+```bash
+git clone https://github.com/NecroAnubis/SkilledGuard.git
