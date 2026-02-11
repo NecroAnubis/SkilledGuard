@@ -129,5 +129,29 @@ namespace Auditorias.Controllers
             }
         }
 
+        // DELETE: api/TipoRegistro/{id}
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteTipoRegistro(Guid id)
+        {
+            try
+            {
+                var tipoRegistro = await _context.Tipo_registro.FindAsync(id);
+                if (tipoRegistro == null)
+                {
+                    return NotFound($"No se ha encontrado el registro con id {id}");
+                }
 
+                _context.Tipo_registro.Remove(tipoRegistro);
+                await _context.SaveChangesAsync();
+                return Ok("Registro eliminado correctamente.");
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocurrió un error al intentar eliminar el registro.");
+            }
+        }
+    }
 }
