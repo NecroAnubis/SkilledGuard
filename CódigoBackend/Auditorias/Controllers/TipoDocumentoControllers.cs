@@ -32,8 +32,8 @@ namespace Auditorias.Controllers
                     .Select(t => new
                     {
                         t.Id,
-                        t.nombre,
-                        t.acronimo,
+                        t.Nombre,
+                        t.Acronimo,
                     })
                     .ToListAsync();
 
@@ -90,9 +90,7 @@ namespace Auditorias.Controllers
             try
             {
                 if (objeto_tipo_documento == null)
-                
                     return BadRequest("Datos inválidos.");
-                
 
                 objeto_tipo_documento.Id = Guid.NewGuid();
                 objeto_tipo_documento.FechaCreado = DateTime.Now;
@@ -130,7 +128,7 @@ namespace Auditorias.Controllers
                 TipoDocumentoExistente.FechaActualizado = DateTime.Now;
 
                 await _context.SaveChangesAsync();
-                return Ok("Tipo de documento actualizado correctamente." TipoDocumentoExistente);
+                return Ok(new { mensaje = "Tipo de documento actualizado correctamente.", datos = TipoDocumentoExistente });
             }
             catch (Exception)
             {

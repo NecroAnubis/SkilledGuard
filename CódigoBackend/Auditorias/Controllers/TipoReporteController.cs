@@ -134,9 +134,9 @@ namespace Auditorias.Controllers
 
                 return Ok(tipoReporteExistente);
             }
-            catch (DBConcurrencyException)
+            catch (DbUpdateConcurrencyException)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Error al actualizar en la base de datos: {dbEx.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error al actualizar en la base de datos: Error de concurrencia.");
             }
             catch (Exception ex)
             {
@@ -163,8 +163,7 @@ namespace Auditorias.Controllers
 
                 return Ok("Tipo de reporte eliminado correctamente (Soft Delete).");
             }
-            }
-            catch (Exception )
+            catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, $"Ocurrió un error al eliminar el tipo de reporte: {ex.Message}");
             }

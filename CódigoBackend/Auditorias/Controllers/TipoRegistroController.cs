@@ -55,7 +55,7 @@ namespace Auditorias.Controllers
             {
                 var tipoRegistroid = await _context.Tipo_registro.FindAsync(id);
 
-                if (tipoRegistroid == null|| rol.Id == Guid.Empty)
+                if (tipoRegistroid == null || tipoRegistroid.Id == Guid.Empty)
                 {
                     return NotFound($"No existe un tipo de registro con ID {id}");
                 }
@@ -68,11 +68,11 @@ namespace Auditorias.Controllers
         }
 
         // POST: api/TipoRegistro
-[HttpPost]
-[ProducesResponseType(StatusCodes.Status201Created)]
-[ProducesResponseType(StatusCodes.Status400BadRequest)]
-[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-public async Task<ActionResult<Tipo_registro>> CreateTipoRegistro([FromBody] Tipo_registro objetoTipoRegistro)
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<Tipo_registro>> CreateTipoRegistro([FromBody] Tipo_registro objetoTipoRegistro)
 {
     try
     {
@@ -95,40 +95,39 @@ public async Task<ActionResult<Tipo_registro>> CreateTipoRegistro([FromBody] Tip
 
 
         // PUT: api/TipoRegistro/{id}
-        [[HttpPut("{id}")]
+        [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-public async Task<IActionResult> UpdateTipoRegistro(Guid id, [FromBody] Tipo_registro objetoModificadoTipoRegistro)
-{
-    if (objetoModificadoTipoRegistro == null || id != objetoModificadoTipoRegistro.Id)
-    {
-        return BadRequest("El objeto enviado es nulo o el id no coincide.");
-    }
+        public async Task<IActionResult> UpdateTipoRegistro(Guid id, [FromBody] Tipo_registro objetoModificadoTipoRegistro)
+        {
+            try
+            {
+                if (objetoModificadoTipoRegistro == null || id != objetoModificadoTipoRegistro.Id)
+                {
+                    return BadRequest("El objeto enviado es nulo o el id no coincide.");
+                }
 
-    var tipoRegistroExistente = await _context.Tipo_registro.FindAsync(id);
-    if (tipoRegistroExistente == null)
-    {
-        return NotFound($"No se ha encontrado el registro en la tabla Tipo_registro con el id {id}");
-    }
+                var tipoRegistroExistente = await _context.Tipo_registro.FindAsync(id);
+                if (tipoRegistroExistente == null)
+                {
+                    return NotFound($"No se ha encontrado el registro en la tabla Tipo_registro con el id {id}");
+                }
 
-    _context.Entry(tipoRegistroExistente).CurrentValues.SetValues(objetoModificadoTipoRegistro);
-
-    try
-    {
-        await _context.SaveChangesAsync();
-        return Ok(tipoRegistroExistente); // Devuelve el registro actualizado
-    }
-    catch (DBConcurrencyException)
-    {
-        return StatusCode(StatusCodes.Status500InternalServerError, "Ocurrió un error de concurrencia al intentar actualizar el registro.");
-    }
-    catch (Exception)
-    {
-        return StatusCode(StatusCodes.Status500InternalServerError, "Ocurrió un error al intentar actualizar el registro.");
-    }
-}
+                _context.Entry(tipoRegistroExistente).CurrentValues.SetValues(objetoModificadoTipoRegistro);
+                await _context.SaveChangesAsync();
+                return Ok(tipoRegistroExistente);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocurrió un error de concurrencia al intentar actualizar el registro.");
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocurrió un error al intentar actualizar el registro.");
+            }
+        }
 
 
 }
