@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iniciar sesión – SkilledGuard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Karma:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages/login.css">
+</head>
+<body class="login-page">
+  <div class="login-header">
+    <h1 class="login-title">Skilled Guard</h1>
+    <p class="login-subtitle">Sistema de registro y control de equipos</p>
+  </div>
+
+  <main class="login-card" role="main">
+    <h2 class="login-card__title">Iniciar sesión</h2>
+    <p class="login-card__subtitle">Ingrese sus credenciales para acceder</p>
+
+    <div id="loginError" class="alert alert--error" role="alert" aria-live="polite"></div>
+
+    <form id="formLogin" action="#" method="post" novalidate>
+      <div class="form-group">
+        <label for="email">Usuario</label>
+        <input type="email" id="email" name="email" required autocomplete="email" placeholder="Ingrese su usuario">
+      </div>
+      <div class="form-group">
+        <label for="contraseña">Contraseña</label>
+        <input type="password" id="contraseña" name="contraseña" required autocomplete="current-password" placeholder="Ingrese su contraseña">
+      </div>
+      <button type="submit" class="btn btn--primary btn--login" id="btnLogin">Entrar</button>
+      <a href="#" class="login-forgot">Olvidé mi contraseña</a>
+    </form>
+  </main>
+
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/pages/login.js"></script>
+</body>
+</html>

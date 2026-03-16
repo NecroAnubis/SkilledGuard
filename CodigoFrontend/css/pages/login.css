@@ -1,0 +1,113 @@
+/**
+ * Estilos específicos de la pantalla de login.
+ * Diseño: guía Skilled Guard – Karma (títulos), Segoe UI (cuerpo), paleta #2563EB.
+ */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8);
+  background: var(--color-bg-page);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: var(--space-8);
+}
+
+.login-title {
+  font-family: var(--font-title);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.login-subtitle {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  margin: var(--space-2) 0 0;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--color-bg-card);
+  border-radius: 16px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: var(--space-8);
+}
+
+.login-card__title {
+  font-family: var(--font-title);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text);
+  text-align: center;
+  margin: 0 0 var(--space-2);
+}
+
+.login-card__subtitle {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  text-align: center;
+  margin: 0 0 var(--space-6);
+}
+
+.login-card form {
+  margin-top: 0;
+}
+
+.login-card .form-group label {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.login-card .form-group input {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+}
+
+.login-card .form-group input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.btn--login {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  margin-top: var(--space-4);
+  font-size: 1rem;
+  font-weight: 600;
+  background: var(--color-primary);
+  color: #FFFFFF;
+  border-radius: var(--radius);
+}
+
+.btn--login:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
+.login-forgot {
+  display: block;
+  text-align: center;
+  margin-top: var(--space-4);
+  font-size: 0.9rem;
+  color: var(--color-link);
+  text-decoration: none;
+}
+
+.login-forgot:hover {
+  text-decoration: underline;
+}
+
+.login-card #loginError {
+  margin-top: var(--space-4);
+}

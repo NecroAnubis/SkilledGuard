@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Usuarios – SkilledGuard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Karma:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body class="layout">
+  <header class="layout__header">
+    <a href="index.html" class="layout__title">Skilled Guard</a>
+    <nav class="layout__nav" aria-label="Navegación principal">
+      <a href="dispositivos.html" class="nav-link">&#128187; Dispositivos</a>
+      <a href="usuarios.html" id="navUsuarios" class="nav-link active">&#128101; Usuarios</a>
+      <a href="auditoria.html" class="nav-link">&#128203; Registros</a>
+      <a href="reportes.html" class="nav-link">&#128202; Reportes</a>
+      <div class="layout__user-dropdown" id="userDropdown">
+        <div class="layout__user-info">
+          <strong id="userName">Usuario</strong>
+          <span id="userRole">—</span>
+        </div>
+        <span class="dropdown-arrow" aria-hidden="true">&#9660;</span>
+      </div>
+    </nav>
+  </header>
+  <main class="layout__main">
+    <div class="card">
+      <h2 class="card__title">Usuarios</h2>
+      <p>Gestión de usuarios. (Contenido en desarrollo: listado, crear, editar, eliminar.)</p>
+    </div>
+  </main>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/pages/dashboard.js"></script>
+</body>
+</html>

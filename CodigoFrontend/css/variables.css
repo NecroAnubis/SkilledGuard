@@ -1,0 +1,57 @@
+/**
+ * Variables CSS – SkilledGuard
+ * Colores, tipografía y espaciado para mantener consistencia.
+ * Paleta: guía de estilo Skilled Guard.
+ */
+:root {
+  /* Colores principales (guía de estilo) */
+  --color-primary: #2563EB;
+  --color-primary-hover: #1d4ed8;
+  --color-primary-light: #E4EBF3;
+  --color-accent: #2563EB;
+
+  /* Neutros */
+  --color-text: #1E293B;
+  --color-text-muted: #5D7192;
+  --color-border: #E4EBF3;
+  --color-bg: #F5F8FE;
+  --color-bg-page: #F0F4F8;
+  --color-bg-card: #FFFFFF;
+
+  /* Dashboard (header/footer) */
+  --color-header-bg: #1F3A5F;
+  --color-accent-light: #4A90E2;
+  --color-badge-border: #E74C3C;
+
+  /* Estados */
+  --color-error: #DC2626;
+  --color-error-bg: #FEF2F2;
+  --color-success: #059669;
+  --color-success-bg: #DCFCE7;
+  --color-link: #2563EB;
+
+  /* Tipografía */
+  --font-title: 'Karma', serif;
+  --font-sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+
+  /* Espaciado */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+
+  /* Bordes y sombras */
+  --radius: 8px;
+  --radius-lg: 12px;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+}

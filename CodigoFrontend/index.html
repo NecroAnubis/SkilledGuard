@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkilledGuard – Inicio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Karma:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages/dashboard.css">
+</head>
+<body class="layout">
+  <header class="layout__header">
+    <a href="index.html" class="layout__title">Skilled Guard</a>
+    <nav class="layout__nav" aria-label="Navegación principal">
+      <a href="dispositivos.html" class="nav-link">
+        <span class="nav-icon" aria-hidden="true">&#128187;</span>
+        Dispositivos
+      </a>
+      <a href="usuarios.html" id="navUsuarios" style="display: none;" class="nav-link">
+        <span class="nav-icon" aria-hidden="true">&#128101;</span>
+        Usuarios
+      </a>
+      <a href="auditoria.html" class="nav-link">
+        <span class="nav-icon" aria-hidden="true">&#128203;</span>
+        Registros
+      </a>
+      <a href="reportes.html" class="nav-link">
+        <span class="nav-icon" aria-hidden="true">&#128202;</span>
+        Reportes
+      </a>
+      <div class="layout__user-dropdown" id="userDropdown">
+        <div class="layout__user-info">
+          <strong id="userName">Nombre Usuario</strong>
+          <span id="userRole">Administrador</span>
+        </div>
+        <span class="dropdown-arrow" aria-hidden="true">&#9660;</span>
+      </div>
+    </nav>
+  </header>
+
+  <main class="layout__main dashboard-main">
+    <section class="dashboard-welcome">
+      <div class="dashboard-welcome__left">
+        <h2 class="dashboard-welcome__title" id="welcomeTitle">¡Hola, Nombre Usuario!</h2>
+        <div class="dashboard-welcome__meta">
+          <span class="badge badge--role" id="roleBadge">Administrador</span>
+          <span class="dashboard-welcome__email" id="userEmail">usuario@email.com</span>
+        </div>
+      </div>
+      <div class="dashboard-welcome__date">
+        <span class="date-icon" aria-hidden="true">&#128197;</span>
+        <span id="currentDate">domingo, 21 de septiembre de 2025</span>
+      </div>
+    </section>
+
+    <section class="dashboard-metrics">
+      <div class="metric-card">
+        <div class="metric-card__icon metric-card__icon--devices">&#128187;</div>
+        <div class="metric-card__content">
+          <span class="metric-card__label">Total Dispositivos</span>
+          <span class="metric-card__value" id="totalDispositivos">—</span>
+        </div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-card__icon metric-card__icon--users">&#128101;</div>
+        <div class="metric-card__content">
+          <span class="metric-card__label">Usuarios Activos</span>
+          <span class="metric-card__value" id="usuariosActivos">—</span>
+        </div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-card__icon metric-card__icon--access">&#128200;</div>
+        <div class="metric-card__content">
+          <span class="metric-card__label">Accesos Hoy</span>
+          <span class="metric-card__value" id="accesosHoy">—</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="dashboard-actions">
+      <h3 class="dashboard-section__title">Acciones Disponibles</h3>
+      <p class="dashboard-section__subtitle" id="actionsSubtitle">Funciones habilitadas para tu rol de administrador</p>
+      <div class="dashboard-actions__grid">
+        <a href="dispositivos.html" class="action-card">
+          <span class="action-card__icon">&#128221;</span>
+          <h4 class="action-card__title">Registrar Dispositivo</h4>
+          <p class="action-card__desc">Agregar nuevos equipos al sistema</p>
+        </a>
+        <a href="usuarios.html" class="action-card">
+          <span class="action-card__icon">&#128100;</span>
+          <h4 class="action-card__title">Registrar Usuario</h4>
+          <p class="action-card__desc">Crear nuevos usuarios y asignar roles</p>
+        </a>
+        <a href="#" class="action-card">
+          <span class="action-card__icon">&#9635;</span>
+          <h4 class="action-card__title">Verificar por QR</h4>
+          <p class="action-card__desc">Escanear códigos QR para acceso</p>
+        </a>
+        <a href="reportes.html" class="action-card">
+          <span class="action-card__icon">&#128202;</span>
+          <h4 class="action-card__title">Reportes Completos</h4>
+          <p class="action-card__desc">Ver todos los reportes y estadísticas</p>
+        </a>
+      </div>
+    </section>
+
+    <aside class="dashboard-activity">
+      <div class="activity-card">
+        <h3 class="activity-card__title">&#128200; Actividad Reciente</h3>
+        <ul class="activity-list" id="activityList">
+          <li class="activity-item">
+            <span class="activity-item__dot"></span>
+            <div class="activity-item__content">
+              <strong>Dispositivo registrado</strong>
+              <span>Laptop Dell #LP001</span>
+              <small>Hace 2 minutos</small>
+            </div>
+          </li>
+          <li class="activity-item">
+            <span class="activity-item__dot"></span>
+            <div class="activity-item__content">
+              <strong>Usuario actualizado</strong>
+              <span>María García</span>
+              <small>Hace 15 minutos</small>
+            </div>
+          </li>
+          <li class="activity-item">
+            <span class="activity-item__dot"></span>
+            <div class="activity-item__content">
+              <strong>Dispositivo registrado</strong>
+              <span>PC Lenovo #PC002</span>
+              <small>Hace 1 hora</small>
+            </div>
+          </li>
+        </ul>
+        <a href="auditoria.html" class="btn btn--primary activity-card__btn">Ver Todos los Registros</a>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="layout__footer">
+    <div class="layout__footer-brand">
+      <h2>Skilled Guard</h2>
+      <p>Sistema de registro y control de equipos de cómputo para el SENA. Solución tecnológica para la gestión segura y eficiente de dispositivos personales e institucionales.</p>
+      <small>© 2025 Skilled Guard. Todos los derechos reservados.</small>
+    </div>
+    <div class="layout__footer-support">
+      <h3>Soporte</h3>
+      <p><span aria-hidden="true">&#9993;</span> soporte@skilledguard.com.co</p>
+      <p><span aria-hidden="true">&#128222;</span> +57 (1) 800 0000</p>
+      <p><span aria-hidden="true">&#128205;</span> Bogotá D.C., Colombia</p>
+    </div>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/pages/dashboard.js"></script>
+</body>
+</html>

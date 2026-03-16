@@ -1,0 +1,384 @@
+{
+	"info": {
+		"_postman_id": "skilledguard-api-001",
+		"name": "SkilledGuard API",
+		"description": "Colección de Postman para probar la API REST de SkilledGuard.\n\n**Instrucciones:**\n1. Importar esta colección en Postman.\n2. Configurar la variable de entorno `baseUrl` (por defecto: http://localhost:5164 o https://localhost:7086).\n3. Ejecutar primero **Auth > Login** para obtener el token JWT.\n4. El token se guarda en la variable `token` y se usa automáticamente en las peticiones que requieren autenticación.\n\n**Usuarios de prueba (tras ejecutar DML):**\n- Administrador: juan@correo.com / clave123\n- Usuario: ana@correo.com / clave456\n- Admin: admin@skilledguard.com / admin123\n- Usuario: usuario@skilledguard.com / user123",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5164"
+		},
+		{
+			"key": "token",
+			"value": ""
+		}
+	],
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var json = pm.response.json();",
+									"    if (json.token) {",
+									"        pm.collectionVariables.set('token', json.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"juan@correo.com\",\n  \"contraseña\": \"clave123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "Auth", "login"]
+						},
+						"description": "Obtiene token JWT. No requiere autenticación. El token se guarda automáticamente en la variable `token`."
+					}
+				}
+			]
+		},
+		{
+			"name": "Usuario",
+			"item": [
+				{
+					"name": "Listar usuarios",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/Usuario",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "Usuario"]
+						}
+					}
+				},
+				{
+					"name": "Obtener usuario por ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/Usuario/dddddddd-dddd-dddd-dddd-dddddddddddd",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "Usuario", "dddddddd-dddd-dddd-dddd-dddddddddddd"]
+						}
+					}
+				},
+				{
+					"name": "Crear usuario",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombres\": \"Nuevo\",\n  \"apellidos\": \"Usuario\",\n  \"id_tipo_documento\": \"33333333-3333-3333-3333-333333333333\",\n  \"documento\": \"99887766\",\n  \"tipo_usuario\": \"user\",\n  \"email\": \"nuevo@correo.com\",\n  \"direccion\": \"Calle ejemplo\",\n  \"contraseña\": \"clave789\",\n  \"id_rol\": \"22222222-2222-2222-2222-222222222222\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Usuario",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "Usuario"]
+						}
+					}
+				},
+				{
+					"name": "Cambiar contraseña",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"idUsuario\": \"dddddddd-dddd-dddd-dddd-dddddddddddd\",\n  \"contraseñaActual\": \"clave123\",\n  \"nuevaContraseña\": \"claveNueva123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Usuario/changePassword",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "Usuario", "changePassword"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Rol",
+			"item": [
+				{
+					"name": "Listar roles",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/Rol",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "Rol"]
+						}
+					}
+				},
+				{
+					"name": "Obtener rol por ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/Rol/11111111-1111-1111-1111-111111111111",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "Rol", "11111111-1111-1111-1111-111111111111"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "TipoDocumento",
+			"item": [
+				{
+					"name": "Listar tipos de documento",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/TipoDocumento",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "TipoDocumento"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Dispositivo",
+			"item": [
+				{
+					"name": "Listar dispositivos",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/Dispositivo",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "Dispositivo"]
+						}
+					}
+				},
+				{
+					"name": "Obtener dispositivo por ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/Dispositivo/12121212-1212-1212-1212-121212121212",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "Dispositivo", "12121212-1212-1212-1212-121212121212"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "AuditoriaNegocio",
+			"item": [
+				{
+					"name": "Listar auditorías",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/AudNegocio",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "AudNegocio"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "TipoRegistro",
+			"item": [
+				{
+					"name": "Listar tipos de registro",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/TipoRegistro",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "TipoRegistro"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Reportes",
+			"item": [
+				{
+					"name": "Listar reportes",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/Reportes",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "Reportes"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "TipoReporte",
+			"item": [
+				{
+					"name": "Listar tipos de reporte",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/TipoReporte",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "TipoReporte"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Sede",
+			"item": [
+				{
+					"name": "Listar sedes",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/Sede",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "Sede"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "LogSistema",
+			"item": [
+				{
+					"name": "Obtener log por ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/LogSistema/ffffffff-ffff-ffff-ffff-ffffffffffff",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "LogSistema", "ffffffff-ffff-ffff-ffff-ffffffffffff"]
+						}
+					}
+				}
+			]
+		}
+	]
+}

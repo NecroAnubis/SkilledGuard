@@ -1,0 +1,296 @@
+/**
+ * Estilos de la página Gestión de Dispositivos.
+ * Diseño Skilled Guard – tabla, búsqueda, paginación.
+ */
+
+.dispositivos-main {
+  padding-top: var(--space-6);
+}
+
+.dispositivos-header {
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+.dispositivos-title {
+  font-family: var(--font-title);
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 var(--space-2);
+}
+
+.dispositivos-desc {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.dispositivos-card {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: var(--space-6);
+}
+
+.dispositivos-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-6);
+}
+
+.dispositivos-search {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+  max-width: 400px;
+}
+
+.dispositivos-search .search-icon {
+  position: absolute;
+  left: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  pointer-events: none;
+}
+
+.dispositivos-search input {
+  width: 100%;
+  padding: var(--space-2) var(--space-3) var(--space-2) calc(var(--space-3) + 1.5rem);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg-card);
+  font-size: var(--font-size-base);
+}
+
+.dispositivos-search input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.dispositivos-search input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.dispositivos-actions {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.btn--new {
+  background: var(--color-primary);
+  color: white;
+}
+
+.btn--new:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
+/* Tabla */
+.dispositivos-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.dispositivos-table th {
+  text-align: left;
+  padding: var(--space-4) var(--space-4);
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dispositivos-table td {
+  padding: var(--space-4) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.dispositivos-table tbody tr:hover td {
+  background: var(--color-bg);
+}
+
+/* Marca/Modelo: marca en bold, modelo debajo */
+.dispositivos-table .marca-modelo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dispositivos-table .marca-modelo strong {
+  font-weight: 600;
+}
+
+.dispositivos-table .marca-modelo span {
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
+/* Badges de estado */
+.badge-estado {
+  display: inline-block;
+  padding: var(--space-1) var(--space-3);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-estado--activo {
+  background: #22c55e;
+  color: white;
+}
+
+.badge-estado--mantenimiento {
+  background: #f59e0b;
+  color: white;
+}
+
+.badge-estado--inactivo {
+  background: var(--color-accent-light);
+  color: white;
+}
+
+/* Acciones (editar, eliminar) */
+.dispositivos-table .acciones-cell {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: var(--color-bg);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-icon:hover {
+  background: var(--color-border);
+}
+
+.btn-icon--edit {
+  color: var(--color-text);
+}
+
+.btn-icon--delete {
+  color: var(--color-error);
+}
+
+.btn-icon--delete:hover {
+  background: var(--color-error-bg);
+}
+
+/* Paginación */
+.dispositivos-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.pagination-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.pagination-info select {
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: var(--font-size-sm);
+}
+
+.pagination-range {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.btn-pag {
+  min-width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  background: white;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--color-text);
+}
+
+.btn-pag:hover:not(:disabled) {
+  background: var(--color-bg);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.btn-pag.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+.btn-pag:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-numbers {
+  display: flex;
+  gap: var(--space-1);
+}
+
+/* Estado vacío */
+.dispositivos-empty {
+  text-align: center;
+  padding: var(--space-10);
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 768px) {
+  .dispositivos-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dispositivos-search {
+    max-width: none;
+  }
+
+  .dispositivos-actions {
+    justify-content: flex-start;
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}

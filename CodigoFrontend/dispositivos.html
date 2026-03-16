@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Dispositivos – SkilledGuard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Karma:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages/dispositivos.css">
+</head>
+<body class="layout">
+  <header class="layout__header">
+    <a href="index.html" class="layout__title">Skilled Guard</a>
+    <nav class="layout__nav" aria-label="Navegación principal">
+      <a href="dispositivos.html" class="nav-link active">&#128187; Dispositivos</a>
+      <a href="usuarios.html" id="navUsuarios" style="display: none;" class="nav-link">&#128101; Usuarios</a>
+      <a href="auditoria.html" class="nav-link">&#128203; Registros</a>
+      <a href="reportes.html" class="nav-link">&#128202; Reportes</a>
+      <div class="layout__user-dropdown" id="userDropdown">
+        <div class="layout__user-info">
+          <strong id="userName">Usuario</strong>
+          <span id="userRole">—</span>
+        </div>
+        <span class="dropdown-arrow" aria-hidden="true">&#9660;</span>
+      </div>
+    </nav>
+  </header>
+
+  <main class="layout__main dispositivos-main">
+    <header class="dispositivos-header">
+      <h1 class="dispositivos-title">Gestión de Dispositivos</h1>
+      <p class="dispositivos-desc">Administra y controla todos los equipos de cómputo registrados</p>
+    </header>
+
+    <section class="dispositivos-card">
+      <div class="dispositivos-toolbar">
+        <div class="dispositivos-search">
+          <span class="search-icon" aria-hidden="true">&#128269;</span>
+          <input type="search" id="searchInput" placeholder="Busca por serial, tipo, marca o modelo..." aria-label="Buscar dispositivos">
+        </div>
+        <div class="dispositivos-actions">
+          <button type="button" class="btn btn--primary btn--new" id="btnNuevo">
+            <span aria-hidden="true">&#43;</span> Nuevo Dispositivo
+          </button>
+          <button type="button" class="btn btn--outline" id="btnExportar">
+            <span aria-hidden="true">&#128190;</span> Exportar CSV
+          </button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="table dispositivos-table">
+          <thead>
+            <tr>
+              <th>Serial</th>
+              <th>Tipo</th>
+              <th>Marca/Modelo</th>
+              <th>Usuario</th>
+              <th>Estado</th>
+              <th>Fecha de Creación</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="dispositivosBody">
+            <!-- Datos cargados por JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="dispositivos-pagination">
+        <div class="pagination-info">
+          <label for="pageSize">Mostrar</label>
+          <select id="pageSize" aria-label="Registros por página">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15" selected>15</option>
+            <option value="25">25</option>
+          </select>
+          <span>registros</span>
+        </div>
+        <div class="pagination-range" id="paginationRange">1-15 de 0</div>
+        <div class="pagination-controls">
+          <button type="button" class="btn-pag" id="btnFirst" title="Primera página">&laquo;</button>
+          <button type="button" class="btn-pag" id="btnPrev" title="Anterior">&lsaquo;</button>
+          <div class="pagination-numbers" id="paginationNumbers"></div>
+          <button type="button" class="btn-pag" id="btnNext" title="Siguiente">&rsaquo;</button>
+          <button type="button" class="btn-pag" id="btnLast" title="Última página">&raquo;</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="layout__footer">
+    <div class="layout__footer-brand">
+      <h2>Skilled Guard</h2>
+      <p>Sistema de registro y control de equipos de cómputo para el SENA. Solución tecnológica para la gestión segura y eficiente de dispositivos personales e institucionales.</p>
+      <small>© 2025 Skilled Guard. Todos los derechos reservados.</small>
+    </div>
+    <div class="layout__footer-support">
+      <h3>Soporte</h3>
+      <p><span aria-hidden="true">&#9993;</span> soporte@skilledguard.com.co</p>
+      <p><span aria-hidden="true">&#128222;</span> +57 (1) 800 0000</p>
+      <p><span aria-hidden="true">&#128205;</span> Bogotá D.C., Colombia</p>
+    </div>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/pages/dashboard.js"></script>
+  <script src="js/pages/dispositivos.js"></script>
+</body>
+</html>
