@@ -136,6 +136,7 @@ namespace Auditorias.Controllers
 
                 // Se consulta el reporte recién creado con relaciones para devolverlo en 201 Created
                 var reporteCreado = await _context.Reportes
+                .Where(r => r.Id == objetoReporte.Id)
                 .Include(r => r.SedeEntidad)
                 .Include(r => r.TipoReporte)
                 .Select(r => new

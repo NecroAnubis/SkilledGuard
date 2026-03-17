@@ -87,6 +87,9 @@ namespace Auditorias.Controllers
             if (objetoRol == null)
                 return BadRequest("El objeto enviado es nulo");
 
+            if (objetoRol.Id == Guid.Empty)
+                objetoRol.Id = Guid.NewGuid();
+
             try
             {
                 _context.Roles.Add(objetoRol);

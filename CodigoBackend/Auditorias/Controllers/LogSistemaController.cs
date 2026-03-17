@@ -2,6 +2,7 @@
 // Propósito: Consulta de logs de nivel de sistema (errores, advertencias, info).
 using Auditorias.Data;
 using Auditorias.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +14,7 @@ namespace Auditorias.Controllers
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class LogSistemaController : ControllerBase
     {
         // Contexto de BD para acceder a la tabla LogsSistema

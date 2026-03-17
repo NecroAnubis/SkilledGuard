@@ -36,8 +36,11 @@ namespace Auditorias.Controllers
         /// </summary>
         [HttpPost("login")]
         [AllowAnonymous] // Indica que no es necesario un token de autorización para llamar a este endpoint
-        public IActionResult Login([FromBody] LoginRequest request)
+        public IActionResult Login([FromBody] LoginRequest? request)
         {
+            if (request == null || string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Contraseña))
+                return BadRequest("Se requieren email y contraseña.");
+
             // Busca el usuario por email e incluye su Rol para añadirlo al token
             var usuario = _context.Usuarios
                 .Include(u => u.Rol)

@@ -3,6 +3,7 @@
 using System.Data;
 using Auditorias.Data;
 using Auditorias.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +15,7 @@ namespace Auditorias.Controllers
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class DispositivoController : ControllerBase
     {
         // Contexto de Entity Framework para acceder a Dispositivos y relaciones (TipoDispositivo, Usuario)
@@ -33,7 +35,7 @@ namespace Auditorias.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<IEnumerable<object>>> GetAuditoriasAsync()
+        public async Task<ActionResult<IEnumerable<object>>> GetDispositivos()
         {
             try
             {

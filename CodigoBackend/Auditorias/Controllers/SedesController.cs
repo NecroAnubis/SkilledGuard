@@ -89,11 +89,13 @@ namespace Auditorias.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 
-        public async Task<ActionResult>SedeCrear([FromBody] Sede objetoSede)
+        public async Task<ActionResult<Sede>> SedeCrear([FromBody] Sede objetoSede)
         {
-
             if (objetoSede == null)
                 return BadRequest("El objeto enviado es nulo");
+
+            if (objetoSede.Id == Guid.Empty)
+                objetoSede.Id = Guid.NewGuid();
 
             // Validación: no permitir nombre duplicado (comparación insensible a mayúsculas)
             var sedeExistente = await _context.Sedes
@@ -122,7 +124,7 @@ namespace Auditorias.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 
-        public async Task<ActionResult>ActualizarSede(Guid id, [FromBody] Sede objetoSede)
+        public async Task<ActionResult<Sede>> ActualizarSede(Guid id, [FromBody] Sede objetoSede)
         {
 
             if (objetoSede == null || id != objetoSede.Id)
@@ -159,7 +161,7 @@ namespace Auditorias.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 
-        public async Task<ActionResult>EliminarSede(Guid id)
+        public async Task<ActionResult> EliminarSede(Guid id)
         {
 
             var sedeExistente =  await _context.Sedes.FindAsync(id);
