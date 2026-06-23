@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: skilledguard_db
+    restart: always
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "SkilledGuard123!"
+      MSSQL_PID: "Express"
+    ports:
+      - "1433:1433"
+    volumes:
+      - db_data:/var/opt/mssql
+      - ./Base_de_Datos:/scripts
+    command: >
+      bash -c "
+        /opt/mssql/bin/sqlservr &
+        echo 'Esperando SQL Server...' &&
+        for i in \$(seq 1 30); do
+          /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'SkilledGuard123!' -C -Q 'SELECT 1' > /dev/null 2>&1 &&
+          echo 'SQL Server listo. Ejecutando script...' &&
+          /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'SkilledGuard123!' -C -i /scripts/script.sql &&
+          echo 'Base de datos inicializada.' &&
+          break ||
+          echo \"Intento \$i/30...\" &&
+          sleep 1;
+        done &&
+        wait
+      "
+    networks:
+      - skilledguard_net
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools18/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "SkilledGuard123!", "-C", "-Q", "SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: .
+    container_name: skilledguard_api
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__AuditoriaConnection=Server=db,1433;Database=auditoria_sistema;User Id=sa;Password=SkilledGuard123!;TrustServerCertificate=True;
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - skilledguard_net
+
+networks:
+  skilledguard_net:
+    driver: bridge
+
+volumes:
+  db_data:

@@ -676,3 +676,4 @@ C:\Users\APRENDIZ\source\repos\SkilledGuard\CodigoBackend\Auditorias\obj\Debug\n
 C:\Users\APRENDIZ\source\repos\SkilledGuard\CodigoBackend\Auditorias\obj\Debug\net9.0\Auditorias.pdb
 C:\Users\APRENDIZ\source\repos\SkilledGuard\CodigoBackend\Auditorias\obj\Debug\net9.0\Auditorias.genruntimeconfig.cache
 C:\Users\APRENDIZ\source\repos\SkilledGuard\CodigoBackend\Auditorias\obj\Debug\net9.0\ref\Auditorias.dll
+C:\Users\APRENDIZ\source\repos\SkilledGuard\CodigoBackend\Auditorias\obj\Debug\net9.0\Auditorias.sourcelink.json

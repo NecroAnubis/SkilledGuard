@@ -12,13 +12,27 @@
  */
 async function apiLogin(email, contraseña) {
   const url = API_BASE_URL + '/api/Auth/login';
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ email, contraseña }),
-  });
+  // #region agent log
+  fetch('http://127.0.0.1:7555/ingest/44464dc4-3303-4fb9-b047-be4cbf69ea5e', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '85bfbc' }, body: JSON.stringify({ sessionId: '85bfbc', hypothesisId: 'H1-H2-H4', location: 'api.js:apiLogin', message: 'pre-fetch', data: { url, apiBase: typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : '', pageOrigin: typeof window !== 'undefined' ? window.location.origin : '', pageHref: typeof window !== 'undefined' ? window.location.href : '' }, timestamp: Date.now(), runId: 'debug' }) }).catch(function () {});
+  // #endregion
+  let res;
+  try {
+    res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, contraseña }),
+    });
+  } catch (err) {
+    // #region agent log
+    fetch('http://127.0.0.1:7555/ingest/44464dc4-3303-4fb9-b047-be4cbf69ea5e', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '85bfbc' }, body: JSON.stringify({ sessionId: '85bfbc', hypothesisId: 'H1-H2-H3-H5', location: 'api.js:apiLogin', message: 'fetch-threw', data: { name: err && err.name, message: err && err.message }, timestamp: Date.now(), runId: 'debug' }) }).catch(function () {});
+    // #endregion
+    throw err;
+  }
+  // #region agent log
+  fetch('http://127.0.0.1:7555/ingest/44464dc4-3303-4fb9-b047-be4cbf69ea5e', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '85bfbc' }, body: JSON.stringify({ sessionId: '85bfbc', hypothesisId: 'H3', location: 'api.js:apiLogin', message: 'fetch-ok', data: { status: res.status, ok: res.ok, redirected: res.redirected, responseUrl: res.url }, timestamp: Date.now(), runId: 'debug' }) }).catch(function () {});
+  // #endregion
 
   if (!res.ok) {
     const text = await res.text();

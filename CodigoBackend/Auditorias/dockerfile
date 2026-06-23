@@ -1,0 +1,45 @@
+# ── ETAPA 1: BUILD ──────────────────────────────
+# Usamos la imagen del SDK de .NET 9 que incluye
+# compilador, NuGet y todas las herramientas de build.
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+
+# Definimos /app como el directorio de trabajo
+# dentro del contenedor (como hacer cd /app).
+WORKDIR /app
+
+# Copiamos primero SOLO los archivos de proyecto
+# (.sln y .csproj) para aprovechar el cache de Docker:
+# si no cambió ninguna dependencia, no re-descarga NuGet.
+COPY *.sln ./
+COPY CódigoBackend/*.csproj ./CódigoBackend/
+
+# Restauramos paquetes NuGet
+RUN dotnet restore
+
+# Ahora sí copiamos TODO el código fuente
+COPY CódigoBackend/ ./CódigoBackend/
+
+# Compilamos y publicamos en modo Release
+# -o /app/publish → carpeta de salida
+RUN dotnet publish CódigoBackend/ \
+    -c Release \
+    -o /app/publish
+
+# ── ETAPA 2: RUNTIME ─────────────────────────────
+# Imagen mucho más ligera: solo el runtime de ASP.NET,
+# sin compilador ni SDK.
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
+
+WORKDIR /app
+
+# Copiamos únicamente los archivos publicados
+# desde la etapa anterior (no el código fuente).
+COPY --from=build /app/publish .
+
+# Puerto en el que escucha ASP.NET Core dentro del contenedor
+EXPOSE 8080
+
+# Comando que se ejecuta al iniciar el contenedor.
+# ⚠️ Cambia "SkilledGuard.dll" por el nombre real
+# de tu .csproj (ej: SkilledGuardAPI.dll)
+ENTRYPOINT ["dotnet", "Auditorias.csproj"]
