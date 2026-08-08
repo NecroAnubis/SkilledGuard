@@ -142,8 +142,7 @@
 
 ## 7. Pendientes inmediatos
 
-1. **Autorizar el Drive** (`/mcp` → claude.ai Google Drive → `yorman934@gmail.com`)
-2. **Confirmar con el instructor** que Python + FastAPI es aceptable
-3. Localizar el formato oficial en el Drive
-4. Crear la estructura de carpetas del proyecto en Drive
-5. Arrancar Sprint 1
+1. **Confirmar con el instructor** que Python + FastAPI es aceptable
+2. Conseguir el formato oficial de documentación del programa
+3. Documentar el levantamiento de información y los requerimientos
+4. Sprint 2: dispositivos, generación de QR y registro de portería
