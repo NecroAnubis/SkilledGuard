@@ -1,7 +1,9 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+from app.security import MAX_BYTES_CONTRASENA
 
 
 class _DesdeORM(BaseModel):
@@ -40,7 +42,18 @@ class UsuarioCrear(BaseModel):
     id_tipo_documento: int
     documento: str = Field(min_length=1, max_length=50)
     direccion: str | None = Field(default=None, max_length=255)
-    contrasena: str = Field(min_length=8, max_length=72)  # bcrypt trunca en 72 bytes
+    contrasena: str = Field(min_length=8)
+
+    @field_validator("contrasena")
+    @classmethod
+    def cabe_en_bcrypt(cls, valor: str) -> str:
+        """bcrypt ignora lo que pase de 72 bytes; mejor rechazarlo que recortarlo."""
+        if len(valor.encode()) > MAX_BYTES_CONTRASENA:
+            raise ValueError(
+                f"La contraseña supera {MAX_BYTES_CONTRASENA} bytes "
+                "(las tildes y la ñ ocupan dos cada una)"
+            )
+        return valor
 
 
 class UsuarioLeer(_DesdeORM):
@@ -99,6 +112,17 @@ class MovimientoRegistrar(BaseModel):
     qr: str = Field(min_length=1, max_length=255)
     tipo: Literal["Ingreso", "Salida"]
     observacion: str | None = Field(default=None, max_length=500)
+
+
+class LogLeer(BaseModel):
+    """Una entrada del rastro de auditoría, con el detalle de lo que cambió."""
+
+    id: int
+    accion: str
+    tabla: str
+    usuario: str
+    fecha: datetime
+    cambios: dict[str, dict[str, str | None]]
 
 
 class MovimientoLeer(_DesdeORM):

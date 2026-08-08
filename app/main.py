@@ -6,7 +6,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.routers import auth, catalogos, dispositivos, movimientos, usuarios
+from app.routers import auth, catalogos, dispositivos, logs, movimientos, reportes, usuarios
 
 app = FastAPI(
     title="Skilled Guard",
@@ -23,6 +23,8 @@ app.include_router(catalogos.roles)
 app.include_router(catalogos.tipos_documento)
 app.include_router(dispositivos.router)
 app.include_router(movimientos.router)
+app.include_router(reportes.router)
+app.include_router(logs.router)
 
 
 @app.get("/salud", tags=["Sistema"])
