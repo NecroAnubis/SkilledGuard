@@ -22,7 +22,10 @@ services:
     command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
     environment:
       DATABASE_URL: postgresql+psycopg://skilledguard:skilledguard@db:5432/skilledguard
-      JWT_SECRET: ${JWT_SECRET:-secreto-solo-para-desarrollo-local}
+      # Sin valor por defecto a propósito: un secreto escrito aquí queda en el
+      # repositorio, y cualquiera que lo lea puede firmar tokens de cualquier
+      # usuario. Si falta, el arranque falla — que es lo correcto.
+      JWT_SECRET: ${JWT_SECRET:?falta JWT_SECRET; copia .env.example a .env}
     ports:
       - "8000:8000"
     depends_on:

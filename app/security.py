@@ -21,6 +21,13 @@ ROL_SEGURIDAD = "Seguridad"
 ROL_USUARIO = "Usuario"
 
 
+# bcrypt solo considera los primeros 72 bytes y descarta el resto en silencio:
+# dos contraseñas distintas con el mismo prefijo autentican igual. Se valida el
+# largo en bytes (no en caracteres: "ñ" ocupa dos) para que el recorte sea
+# imposible en vez de invisible.
+MAX_BYTES_CONTRASENA = 72
+
+
 def hashear_contrasena(contrasena: str) -> str:
     return bcrypt.hashpw(contrasena.encode(), bcrypt.gensalt()).decode()
 
@@ -59,10 +66,14 @@ def usuario_actual(
     )
     try:
         payload = jwt.decode(token, settings.jwt_secret, algorithms=[settings.jwt_algorithm])
-    except jwt.PyJWTError:
+        # Un token con firma válida pero sin `sub`, o con un `sub` que no es un
+        # número, es un token inválido — no un error del servidor. Sin este
+        # control la API respondía 500 y filtraba que el token sí se descifró.
+        id_usuario = int(payload["sub"])
+    except (jwt.PyJWTError, KeyError, TypeError, ValueError):
         raise no_autorizado from None
 
-    usuario = db.get(Usuario, int(payload["sub"]))
+    usuario = db.get(Usuario, id_usuario)
     if usuario is None:
         raise no_autorizado
     return usuario

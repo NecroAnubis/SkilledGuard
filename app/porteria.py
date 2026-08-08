@@ -66,6 +66,12 @@ def registrar(
     id_vigilante: int,
     observacion: str | None = None,
 ) -> AuditoriaNegocio:
+    # Bloquea la fila del equipo hasta que termine la transacción. Sin esto, dos
+    # peticiones simultáneas del mismo equipo leen ambas "fuera" y ambas
+    # registran el ingreso: el equipo entra dos veces y la trazabilidad queda
+    # mintiendo. Pasa con dos vigilantes escaneando a la vez, o con un doble clic.
+    db.execute(select(Dispositivo.id).where(Dispositivo.id == dispositivo.id).with_for_update())
+
     validar_transicion(estado_actual(db, dispositivo.id), movimiento)
 
     tipo = db.scalar(select(TipoRegistro).where(TipoRegistro.nombre == movimiento.value))
