@@ -13,8 +13,18 @@ import sys
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.auditoria import Accion
 from app.database import SessionLocal
-from app.models import Rol, TipoDispositivo, TipoDocumento, TipoRegistro, Usuario, UsuarioRol
+from app.models import (
+    ObjetoAfectado,
+    Rol,
+    TipoAccion,
+    TipoDispositivo,
+    TipoDocumento,
+    TipoRegistro,
+    Usuario,
+    UsuarioRol,
+)
 from app.porteria import TipoMovimiento
 from app.security import ROL_ADMINISTRADOR, ROL_SEGURIDAD, ROL_USUARIO, hashear_contrasena
 
@@ -44,6 +54,19 @@ TIPOS_REGISTRO = [
 ]
 
 
+TIPOS_ACCION = [(a.value, f"Registro de {a.value.lower()} de datos") for a in Accion]
+
+# Tablas cuyas modificaciones deja rastreadas el sistema.
+OBJETOS_AFECTADOS = [
+    ("usuario", "Usuarios del sistema"),
+    ("dispositivo", "Equipos registrados"),
+    ("auditoria_negocio", "Movimientos de portería"),
+    ("rol", "Roles del sistema"),
+    ("tipo_documento", "Catálogo de tipos de documento"),
+    ("reporte", "Reportes generados"),
+]
+
+
 def _obtener_o_crear(db: Session, modelo, **campos):
     existente = db.scalar(select(modelo).filter_by(nombre=campos["nombre"]))
     if existente is not None:
@@ -63,6 +86,12 @@ def sembrar(db: Session, documento_admin: str, contrasena_admin: str) -> None:
         _obtener_o_crear(db, TipoDispositivo, nombre=nombre, descripcion=descripcion)
     for nombre, descripcion in TIPOS_REGISTRO:
         _obtener_o_crear(db, TipoRegistro, nombre=nombre, descripcion=descripcion)
+    for nombre, descripcion in TIPOS_ACCION:
+        _obtener_o_crear(db, TipoAccion, nombre=nombre, descripcion=descripcion)
+    for tabla, descripcion in OBJETOS_AFECTADOS:
+        if db.scalar(select(ObjetoAfectado).filter_by(nombre_tabla=tabla)) is None:
+            db.add(ObjetoAfectado(nombre_tabla=tabla, descripcion=descripcion))
+    db.flush()
 
     roles = {
         nombre: _obtener_o_crear(db, Rol, nombre=nombre, descripcion=descripcion)

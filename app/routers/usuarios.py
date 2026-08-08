@@ -5,10 +5,11 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from app.auditoria import Accion, detalles_de_creacion, registrar_accion
 from app.database import get_db
 from app.models import Rol, TipoDocumento, Usuario, UsuarioRol
 from app.schemas import RolAsignar, UsuarioCrear, UsuarioLeer
-from app.security import ROL_ADMINISTRADOR, exige_rol, hashear_contrasena
+from app.security import ROL_ADMINISTRADOR, exige_rol, hashear_contrasena, usuario_actual
 
 router = APIRouter(
     prefix="/usuarios",
@@ -36,7 +37,11 @@ def obtener(id_usuario: int, db: Annotated[Session, Depends(get_db)]) -> Usuario
 
 
 @router.post("", response_model=UsuarioLeer, status_code=status.HTTP_201_CREATED)
-def crear(datos: UsuarioCrear, db: Annotated[Session, Depends(get_db)]) -> Usuario:
+def crear(
+    datos: UsuarioCrear,
+    db: Annotated[Session, Depends(get_db)],
+    autor: Annotated[Usuario, Depends(usuario_actual)],
+) -> Usuario:
     if db.get(TipoDocumento, datos.id_tipo_documento) is None:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Tipo de documento inexistente")
 
@@ -52,12 +57,26 @@ def crear(datos: UsuarioCrear, db: Annotated[Session, Depends(get_db)]) -> Usuar
         raise HTTPException(
             status.HTTP_409_CONFLICT, f"Ya existe un usuario con documento {datos.documento}"
         ) from None
+
+    # La contraseña se omite del rastro: un log de auditoría no es lugar para
+    # un secreto, ni siquiera hasheado.
+    registrar_accion(
+        db,
+        autor.id,
+        Accion.CREACION,
+        "usuario",
+        detalles_de_creacion(datos.model_dump(), omitir={"contrasena"}),
+    )
+    db.commit()
     return usuario
 
 
 @router.post("/{id_usuario}/roles", status_code=status.HTTP_204_NO_CONTENT)
 def asignar_rol(
-    id_usuario: int, datos: RolAsignar, db: Annotated[Session, Depends(get_db)]
+    id_usuario: int,
+    datos: RolAsignar,
+    db: Annotated[Session, Depends(get_db)],
+    autor: Annotated[Usuario, Depends(usuario_actual)],
 ) -> None:
     if db.get(Usuario, id_usuario) is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Usuario no encontrado")
@@ -70,3 +89,12 @@ def asignar_rol(
     except IntegrityError:
         db.rollback()
         raise HTTPException(status.HTTP_409_CONFLICT, "El usuario ya tiene ese rol") from None
+
+    registrar_accion(
+        db,
+        autor.id,
+        Accion.ACTUALIZACION,
+        "usuario",
+        {"rol": (None, str(datos.id_rol))},
+    )
+    db.commit()

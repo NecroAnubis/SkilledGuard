@@ -7,12 +7,13 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from app.auditoria import Accion, detalles_de_creacion, registrar_accion
 from app.database import get_db
 from app.models import Dispositivo, TipoDispositivo, Usuario
 from app.porteria import estado_actual, ultimo_movimiento
 from app.qr import generar_png
 from app.schemas import DispositivoCrear, DispositivoEstado, DispositivoLeer
-from app.security import ROL_ADMINISTRADOR, ROL_SEGURIDAD, exige_rol
+from app.security import ROL_ADMINISTRADOR, ROL_SEGURIDAD, exige_rol, usuario_actual
 
 router = APIRouter(prefix="/dispositivos", tags=["Dispositivos"])
 
@@ -45,7 +46,11 @@ def obtener(id_dispositivo: int, db: Annotated[Session, Depends(get_db)]) -> Dis
 @router.post(
     "", response_model=DispositivoLeer, status_code=status.HTTP_201_CREATED, dependencies=_gestion
 )
-def crear(datos: DispositivoCrear, db: Annotated[Session, Depends(get_db)]) -> Dispositivo:
+def crear(
+    datos: DispositivoCrear,
+    db: Annotated[Session, Depends(get_db)],
+    autor: Annotated[Usuario, Depends(usuario_actual)],
+) -> Dispositivo:
     if db.get(TipoDispositivo, datos.id_tipo_dispositivo) is None:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Tipo de dispositivo inexistente")
     if db.get(Usuario, datos.id_usuario) is None:
@@ -60,6 +65,11 @@ def crear(datos: DispositivoCrear, db: Annotated[Session, Depends(get_db)]) -> D
         raise HTTPException(
             status.HTTP_409_CONFLICT, f"Ya existe un equipo con serial {datos.serial}"
         ) from None
+
+    registrar_accion(
+        db, autor.id, Accion.CREACION, "dispositivo", detalles_de_creacion(datos.model_dump())
+    )
+    db.commit()
     return dispositivo
 
 

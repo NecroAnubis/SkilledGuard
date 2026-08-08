@@ -1,11 +1,14 @@
 """Validación en portería: registro de ingresos y salidas, y trazabilidad."""
 
+from datetime import date
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import desc, select
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app import consultas
+from app.auditoria import Accion, registrar_accion
 from app.database import get_db
 from app.models import AuditoriaNegocio, Dispositivo, Usuario
 from app.porteria import MovimientoInvalido, TipoMovimiento, registrar
@@ -17,7 +20,7 @@ router = APIRouter(prefix="/movimientos", tags=["Portería"])
 _porteria = [Depends(exige_rol(ROL_ADMINISTRADOR, ROL_SEGURIDAD))]
 
 
-def _a_esquema(movimiento: AuditoriaNegocio) -> MovimientoLeer:
+def a_esquema(movimiento: AuditoriaNegocio) -> MovimientoLeer:
     dispositivo = movimiento.dispositivo
     return MovimientoLeer(
         id=movimiento.id,
@@ -52,7 +55,15 @@ def registrar_movimiento(
     except MovimientoInvalido as error:
         raise HTTPException(status.HTTP_409_CONFLICT, str(error)) from None
 
-    return _a_esquema(movimiento)
+    registrar_accion(
+        db,
+        vigilante.id,
+        Accion.CREACION,
+        "auditoria_negocio",
+        {"tipo": (None, datos.tipo), "serial": (None, dispositivo.serial)},
+    )
+    db.commit()
+    return a_esquema(movimiento)
 
 
 @router.get("", response_model=list[MovimientoLeer], dependencies=_porteria)
@@ -60,15 +71,13 @@ def listar(
     db: Annotated[Session, Depends(get_db)],
     id_dispositivo: int | None = None,
     id_usuario: Annotated[int | None, Query(description="Responsable del equipo")] = None,
+    tipo: Annotated[str | None, Query(description="Ingreso o Salida")] = None,
+    desde: date | None = None,
+    hasta: date | None = None,
     limite: Annotated[int, Query(ge=1, le=200)] = 50,
     desplazamiento: Annotated[int, Query(ge=0)] = 0,
 ) -> list[MovimientoLeer]:
     """Trazabilidad: historial de movimientos, del más reciente al más antiguo."""
-    consulta = select(AuditoriaNegocio).order_by(desc(AuditoriaNegocio.id))
-    if id_dispositivo is not None:
-        consulta = consulta.where(AuditoriaNegocio.id_dispositivo == id_dispositivo)
-    if id_usuario is not None:
-        consulta = consulta.join(Dispositivo).where(Dispositivo.id_usuario == id_usuario)
-
-    movimientos = db.scalars(consulta.offset(desplazamiento).limit(limite)).all()
-    return [_a_esquema(m) for m in movimientos]
+    consulta = consultas.movimientos(id_dispositivo, id_usuario, tipo, desde, hasta)
+    movimientos = db.scalars(consulta.offset(desplazamiento).limit(limite)).unique().all()
+    return [a_esquema(m) for m in movimientos]

@@ -144,9 +144,6 @@ class Dispositivo(Timestamps, Base):
     sistema: Mapped[str | None] = mapped_column(String(50))
     id_tipo_dispositivo: Mapped[int] = mapped_column(ForeignKey("tipo_dispositivo.id"))
     id_usuario: Mapped[int] = mapped_column(ForeignKey("usuario.id"))
-    # El DDL original la llamaba `fecha_url` pero es de tipo texto — el nombre no
-    # corresponde al contenido. Pendiente de aclarar su propósito (¿foto del equipo?).
-    fecha_url: Mapped[str | None] = mapped_column(String(255))
     # Identificador que se codifica en el QR pegado al equipo. Es un token
     # aleatorio y no el serial: el serial está impreso en el chasis a la vista
     # de cualquiera, y además así se puede reemplazar el código sin tocar el
@@ -195,6 +192,9 @@ class LogSistema(Timestamps, Base):
     id_objeto_afectado: Mapped[int] = mapped_column(ForeignKey("objeto_afectado.id"))
     iv_firma: Mapped[str | None] = mapped_column(String(255))
 
+    accion: Mapped[TipoAccion] = relationship()
+    usuario: Mapped[Usuario] = relationship()
+    objeto_afectado: Mapped[ObjetoAfectado] = relationship()
     detalles: Mapped[list["LogDetalle"]] = relationship(back_populates="log")
 
 

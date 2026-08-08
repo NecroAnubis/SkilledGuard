@@ -101,6 +101,17 @@ class MovimientoRegistrar(BaseModel):
     observacion: str | None = Field(default=None, max_length=500)
 
 
+class LogLeer(BaseModel):
+    """Una entrada del rastro de auditoría, con el detalle de lo que cambió."""
+
+    id: int
+    accion: str
+    tabla: str
+    usuario: str
+    fecha: datetime
+    cambios: dict[str, dict[str, str | None]]
+
+
 class MovimientoLeer(_DesdeORM):
     id: int
     id_dispositivo: int
