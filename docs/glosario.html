@@ -1,0 +1,438 @@
+<title>Glosario — Skilled Guard</title>
+<style>
+  :root {
+    --ground: #f4f6f5;
+    --panel: #ffffff;
+    --ink: #161c1f;
+    --ink-soft: #4a565a;
+    --ink-faint: #7d8a8e;
+    --rule: #dde3e1;
+    --accent: #12695a;
+    --accent-soft: #e3efec;
+    --signal: #8a5a12;
+    --signal-soft: #f6eddc;
+
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #101416;
+      --panel: #161c1f;
+      --ink: #e6ecea;
+      --ink-soft: #a2b0b2;
+      --ink-faint: #6f7d80;
+      --rule: #26302f;
+      --accent: #52b8a2;
+      --accent-soft: #172b28;
+      --signal: #d0a05a;
+      --signal-soft: #2a2318;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #101416;
+    --panel: #161c1f;
+    --ink: #e6ecea;
+    --ink-soft: #a2b0b2;
+    --ink-faint: #6f7d80;
+    --rule: #26302f;
+    --accent: #52b8a2;
+    --accent-soft: #172b28;
+    --signal: #d0a05a;
+    --signal-soft: #2a2318;
+  }
+
+  :root[data-theme="light"] {
+    --ground: #f4f6f5;
+    --panel: #ffffff;
+    --ink: #161c1f;
+    --ink-soft: #4a565a;
+    --ink-faint: #7d8a8e;
+    --rule: #dde3e1;
+    --accent: #12695a;
+    --accent-soft: #e3efec;
+    --signal: #8a5a12;
+    --signal-soft: #f6eddc;
+  }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.65;
+    padding: 0 1.5rem 5rem;
+  }
+
+  .envoltura { max-width: 60rem; margin: 0 auto; }
+
+  /* ---- Encabezado ---- */
+
+  header {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 3.5rem 0 2rem;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .marca {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  h1 {
+    font-size: clamp(2.6rem, 7vw, 4.2rem);
+    line-height: 1;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  .subtitulo {
+    color: var(--ink-soft);
+    max-width: 34rem;
+    font-size: 1.02rem;
+  }
+
+  /* ---- Buscador ---- */
+
+  .buscador { position: relative; margin-top: 0.5rem; }
+
+  #filtro {
+    width: 100%;
+    font-family: var(--mono);
+    font-size: 0.92rem;
+    color: var(--ink);
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 0.85rem 1rem 0.85rem 2.4rem;
+  }
+
+  #filtro::placeholder { color: var(--ink-faint); }
+  #filtro:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .buscador::before {
+    content: "⌕";
+    position: absolute;
+    left: 0.9rem;
+    top: 50%;
+    transform: translateY(-52%);
+    font-size: 1.15rem;
+    color: var(--ink-faint);
+  }
+
+  .sin-resultados {
+    display: none;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    color: var(--ink-faint);
+    padding: 3rem 0;
+    text-align: center;
+  }
+
+  /* ---- Entrada destacada ---- */
+
+  .destacada {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-top: 3px solid var(--signal);
+    padding: 2rem;
+    margin: 3rem 0 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+
+  .destacada .etiqueta {
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--signal);
+  }
+
+  .destacada h2 {
+    font-family: var(--mono);
+    font-size: 1.7rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .destacada p { max-width: 62ch; }
+
+  .comparacion {
+    overflow-x: auto;
+    border: 1px solid var(--rule);
+  }
+
+  table { border-collapse: collapse; width: 100%; font-size: 0.95rem; }
+
+  th, td {
+    padding: 0.7rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  thead th {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 500;
+    background: var(--accent-soft);
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+
+  .cifra {
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 1.05rem;
+    font-weight: 600;
+    text-align: right;
+  }
+
+  .malo { color: var(--signal); }
+  .bueno { color: var(--accent); }
+
+  .nota {
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    border-left: 2px solid var(--rule);
+    padding-left: 1rem;
+    max-width: 62ch;
+  }
+
+  /* ---- Secciones ---- */
+
+  section { margin-top: 3.5rem; }
+
+  section > h2 {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--rule);
+    font-weight: 600;
+  }
+
+  dl { display: flex; flex-direction: column; }
+
+  .entrada {
+    display: grid;
+    grid-template-columns: 15rem 1fr;
+    gap: 0 2rem;
+    padding: 1.15rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  dt {
+    font-family: var(--mono);
+    font-size: 0.88rem;
+    font-weight: 600;
+    line-height: 1.5;
+    padding-top: 0.15rem;
+  }
+
+  dd { color: var(--ink-soft); max-width: 62ch; }
+  dd em { color: var(--ink); font-style: italic; }
+
+  code {
+    font-family: var(--mono);
+    font-size: 0.85em;
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 0.1em 0.35em;
+    border-radius: 2px;
+  }
+
+  /* ---- Roles ---- */
+
+  .roles { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1.5rem; }
+
+  .rol {
+    display: grid;
+    grid-template-columns: 11rem 1fr;
+    gap: 1.5rem;
+    align-items: baseline;
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    padding: 1rem 1.25rem;
+  }
+
+  .rol strong {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .rol span { color: var(--ink-soft); font-size: 0.98rem; }
+
+  footer {
+    margin-top: 4rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+  }
+
+  @media (max-width: 42rem) {
+    .entrada, .rol { grid-template-columns: 1fr; gap: 0.4rem; }
+    .destacada { padding: 1.5rem 1.25rem; }
+    body { padding: 0 1.1rem 4rem; }
+  }
+</style>
+
+<div class="envoltura">
+
+  <header>
+    <div class="marca">Skilled Guard · Proyecto de grado ADSO</div>
+    <h1>Glosario</h1>
+    <p class="subtitulo">Términos técnicos y del negocio usados en la documentación y el código del sistema de control de ingreso de equipos.</p>
+    <div class="buscador">
+      <input id="filtro" type="search" placeholder="Buscar un término…" autocomplete="off" aria-label="Buscar un término">
+    </div>
+  </header>
+
+  <article class="destacada" data-termino="n+1 problema consultas orm rendimiento avalancha">
+    <div class="etiqueta">Concepto clave</div>
+    <h2>Problema N+1</h2>
+    <p>Un patrón de consulta ineficiente: para traer una lista de N elementos se ejecuta <em>una</em> consulta inicial, y luego <em>una consulta adicional por cada elemento</em> para completar sus datos relacionados. De ahí el nombre: 1 + N consultas.</p>
+    <p><strong>Ejemplo real de este proyecto.</strong> El listado de movimientos de portería trae 50 registros. Al mostrar cada uno se necesita el equipo, el responsable del equipo, el vigilante y el tipo de movimiento — cuatro datos que viven en otras tablas.</p>
+
+    <div class="comparacion">
+      <table>
+        <thead>
+          <tr><th>Enfoque</th><th style="text-align:right">Consultas para 50 movimientos</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Ingenuo (N+1)</td><td class="cifra malo">201</td></tr>
+          <tr><td>Con carga anticipada</td><td class="cifra bueno">1</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="nota">La aplicación <em>parece</em> funcionar: los datos salen correctos. Por eso el N+1 es traicionero — no falla, solo se vuelve lento. Con 10 registros de prueba nadie lo nota; con 10.000 movimientos reales la pantalla tarda medio minuto.</p>
+
+    <p><strong>Cómo se resolvió aquí.</strong> Con <code>joinedload</code> de SQLAlchemy, en <code>app/consultas.py</code>, que le indica al ORM que traiga las tablas relacionadas en la misma consulta mediante un JOIN. La prueba <code>test_la_consulta_no_dispara_una_avalancha_de_queries</code> cuenta las consultas ejecutadas y falla si vuelven a ser más de una.</p>
+  </article>
+
+  <section>
+    <h2>Términos técnicos</h2>
+    <dl>
+      <div class="entrada" data-termino="api rest http peticiones"><dt>API REST</dt><dd>Interfaz que permite a otros programas usar el sistema mediante peticiones HTTP (<code>GET</code>, <code>POST</code>…), sin pasar por una pantalla.</dd></div>
+      <div class="entrada" data-termino="alembic migracion esquema version"><dt>Alembic</dt><dd>Herramienta que versiona los cambios del esquema de la base de datos. Cada cambio queda como un archivo con instrucciones para aplicarlo (<code>upgrade</code>) y para revertirlo (<code>downgrade</code>).</dd></div>
+      <div class="entrada" data-termino="bcrypt contrasena hash salt"><dt>bcrypt</dt><dd>Algoritmo para almacenar contraseñas. Aplica un cálculo deliberadamente lento y agrega un valor aleatorio (<em>salt</em>) a cada una, de modo que dos usuarios con la misma contraseña producen resultados distintos y probar millones de combinaciones resulta costoso.</dd></div>
+      <div class="entrada" data-termino="ci integracion continua github actions pruebas"><dt>CI · Integración continua</dt><dd>Ejecución automática de pruebas y revisiones cada vez que se sube código. Aquí corre en GitHub Actions.</dd></div>
+      <div class="entrada" data-termino="docker contenedor imagen"><dt>Docker</dt><dd>Empaqueta la aplicación con todo lo que necesita para funcionar, de modo que se ejecuta igual en cualquier computador.</dd></div>
+      <div class="entrada" data-termino="docker compose orquestacion servicios"><dt>docker-compose</dt><dd>Coordina varios contenedores a la vez. En este proyecto levanta la base de datos y la API con un solo comando.</dd></div>
+      <div class="entrada" data-termino="endpoint ruta direccion"><dt>Endpoint</dt><dd>Una dirección concreta de la API que hace algo específico. Ejemplo: <code>POST /movimientos</code> registra un ingreso o una salida.</dd></div>
+      <div class="entrada" data-termino="fastapi framework python swagger"><dt>FastAPI</dt><dd>Framework de Python para construir APIs. Genera la documentación interactiva a partir del código.</dd></div>
+      <div class="entrada" data-termino="hash resumen irreversible"><dt>Hash</dt><dd>Resultado de transformar un texto en una cadena de longitud fija mediante un proceso que no puede revertirse. Permite verificar una contraseña sin almacenarla.</dd></div>
+      <div class="entrada" data-termino="jwt json web token sesion credencial"><dt>JWT</dt><dd>Credencial firmada que el sistema entrega al iniciar sesión. El usuario la envía en cada petición siguiente para demostrar quién es, sin repetir la contraseña.</dd></div>
+      <div class="entrada" data-termino="migracion esquema cambio base datos"><dt>Migración</dt><dd>Un cambio versionado del esquema de la base de datos: crear una tabla, agregar una columna.</dd></div>
+      <div class="entrada" data-termino="orm mapeo objeto relacional sqlalchemy"><dt>ORM</dt><dd>Mapeo objeto-relacional: capa que representa las tablas de la base de datos como clases de Python. Aquí es SQLAlchemy.</dd></div>
+      <div class="entrada" data-termino="paginacion limite desplazamiento bloques"><dt>Paginación</dt><dd>Entregar los resultados por bloques (<code>limite</code>, <code>desplazamiento</code>) en lugar de todos a la vez.</dd></div>
+      <div class="entrada" data-termino="pbkdf2 contrasena derivacion csharp"><dt>PBKDF2</dt><dd>Otro algoritmo de derivación de contraseñas, usado en la versión anterior del proyecto en C#.</dd></div>
+      <div class="entrada" data-termino="pytest pruebas automatizadas testing"><dt>pytest</dt><dd>Herramienta con la que se escriben y ejecutan las pruebas automatizadas.</dd></div>
+      <div class="entrada" data-termino="qr codigo quick response escaneo"><dt>QR · Quick Response</dt><dd>Código de barras bidimensional. Aquí se imprime y se pega en cada equipo para identificarlo en portería.</dd></div>
+      <div class="entrada" data-termino="seed datos semilla iniciales administrador"><dt>Seed · Datos semilla</dt><dd>Datos mínimos que el sistema necesita para arrancar: roles, tipos de documento y el primer administrador.</dd></div>
+      <div class="entrada" data-termino="sqlalchemy orm python"><dt>SQLAlchemy</dt><dd>El ORM que usa el proyecto.</dd></div>
+      <div class="entrada" data-termino="swagger openapi documentacion interactiva docs"><dt>Swagger · OpenAPI</dt><dd>Documentación interactiva de la API, generada automáticamente. Disponible en <code>/docs</code>.</dd></div>
+      <div class="entrada" data-termino="token identificador unico"><dt>Token</dt><dd>Cadena que identifica algo de forma única. En este proyecto hay dos: el JWT de sesión y el código aleatorio que lleva el QR de cada equipo.</dd></div>
+    </dl>
+  </section>
+
+  <section>
+    <h2>Términos del negocio</h2>
+    <dl>
+      <div class="entrada" data-termino="auditoria negocio movimientos porteria"><dt>Auditoría de negocio</dt><dd>El registro de movimientos de equipos por portería. Es el reemplazo digital de la minuta.</dd></div>
+      <div class="entrada" data-termino="log sistema rastro cambios datos"><dt>Log del sistema</dt><dd>El registro de cambios sobre los <em>datos</em>: quién creó un usuario, quién modificó un equipo. Distinto de la auditoría de negocio.</dd></div>
+      <div class="entrada" data-termino="minuta cuaderno papel registro manual"><dt>Minuta</dt><dd>El cuaderno en papel donde hoy se anota manualmente la entrada y salida de equipos. Es lo que este proyecto reemplaza.</dd></div>
+      <div class="entrada" data-termino="movimiento ingreso salida"><dt>Movimiento</dt><dd>Un ingreso o una salida de un equipo.</dd></div>
+      <div class="entrada" data-termino="porteria punto control fisico validacion"><dt>Portería</dt><dd>El punto de control físico donde se validan los equipos al entrar y salir.</dd></div>
+      <div class="entrada" data-termino="trazabilidad historial reconstruir"><dt>Trazabilidad</dt><dd>Poder reconstruir el historial completo de un equipo: cuándo entró, cuándo salió y quién lo registró cada vez.</dd></div>
+    </dl>
+  </section>
+
+  <section data-termino="roles administrador seguridad usuario permisos">
+    <h2>Roles del sistema</h2>
+    <div class="roles">
+      <div class="rol"><strong>Administrador</strong><span>Todo: usuarios, roles, equipos, reportes y consulta del rastro de auditoría.</span></div>
+      <div class="rol"><strong>Seguridad</strong><span>Registrar ingresos y salidas, consultar equipos y generar reportes.</span></div>
+      <div class="rol"><strong>Usuario</strong><span>Consultar sus propios equipos.</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Metodología</h2>
+    <dl>
+      <div class="entrada" data-termino="scrum marco trabajo sprints agil"><dt>Scrum</dt><dd>Marco de trabajo que divide el proyecto en ciclos cortos (<em>sprints</em>) con un entregable funcional al final de cada uno.</dd></div>
+      <div class="entrada" data-termino="sprint ciclo dos semanas"><dt>Sprint</dt><dd>Ciclo de trabajo. En este proyecto dura dos semanas.</dd></div>
+      <div class="entrada" data-termino="product backlog lista priorizada pendientes"><dt>Product Backlog</dt><dd>Lista priorizada de todo lo que falta por construir.</dd></div>
+      <div class="entrada" data-termino="definition of done terminado condiciones"><dt>Definition of Done</dt><dd>Las condiciones que debe cumplir una tarea para considerarse terminada. Aquí: entra por Pull Request, con pruebas, CI en verde, documentada en Swagger y con su migración versionada.</dd></div>
+      <div class="entrada" data-termino="pull request pr revision cambio"><dt>Pull Request · PR</dt><dd>Propuesta de cambio que se revisa antes de integrarse a la rama principal.</dd></div>
+    </dl>
+  </section>
+
+  <p class="sin-resultados" id="vacio">Ningún término coincide con la búsqueda.</p>
+
+  <footer>
+    <span>Johan S. Restrepo</span>
+    <span>Tecnólogo en Análisis y Desarrollo de Software · SENA</span>
+    <span>github.com/NecroAnubis/SkilledGuard</span>
+  </footer>
+
+</div>
+
+<script>
+  const filtro = document.getElementById("filtro");
+  const vacio = document.getElementById("vacio");
+  const entradas = [...document.querySelectorAll("[data-termino]")];
+  const secciones = [...document.querySelectorAll("section")];
+
+  const normalizar = (texto) =>
+    texto.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+
+  filtro.addEventListener("input", () => {
+    const busqueda = normalizar(filtro.value.trim());
+    let visibles = 0;
+
+    for (const entrada of entradas) {
+      const contenido = normalizar(
+        entrada.dataset.termino + " " + entrada.textContent
+      );
+      const coincide = busqueda === "" || contenido.includes(busqueda);
+      entrada.style.display = coincide ? "" : "none";
+      if (coincide) visibles++;
+    }
+
+    // Una sección cuyas entradas quedaron todas ocultas no debe dejar
+    // su encabezado suelto en la página.
+    for (const seccion of secciones) {
+      const propias = [...seccion.querySelectorAll("[data-termino]")];
+      const alguna = propias.some((e) => e.style.display !== "none");
+      seccion.style.display = propias.length === 0 || alguna ? "" : "none";
+    }
+
+    vacio.style.display = visibles === 0 ? "block" : "none";
+  });
+</script>
