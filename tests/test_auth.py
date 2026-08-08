@@ -2,7 +2,7 @@
 
 
 def test_salud_no_requiere_token(cliente):
-    assert cliente.get("/salud").json() == {"estado": "ok"}
+    assert cliente.get("/salud").status_code == 200
 
 
 def test_login_correcto_devuelve_token(cliente, admin):

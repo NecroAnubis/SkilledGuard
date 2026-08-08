@@ -38,7 +38,7 @@ class TipoDocumento(Timestamps, Base):
     __tablename__ = "tipo_documento"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    nombre: Mapped[str] = mapped_column(String(100))
+    nombre: Mapped[str] = mapped_column(String(100), unique=True)
     acronimo: Mapped[str | None] = mapped_column(String(10))
     descripcion: Mapped[str | None] = mapped_column(String(255))
 
@@ -55,7 +55,7 @@ class TipoDispositivo(Timestamps, Base):
     __tablename__ = "tipo_dispositivo"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    nombre: Mapped[str] = mapped_column(String(100))
+    nombre: Mapped[str] = mapped_column(String(100), unique=True)
     descripcion: Mapped[str | None] = mapped_column(String(255))
 
 
@@ -63,7 +63,7 @@ class TipoAccion(Timestamps, Base):
     __tablename__ = "tipo_accion"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    nombre: Mapped[str] = mapped_column(String(100))
+    nombre: Mapped[str] = mapped_column(String(100), unique=True)
     descripcion: Mapped[str | None] = mapped_column(String(255))
 
 
@@ -71,7 +71,7 @@ class ObjetoAfectado(Timestamps, Base):
     __tablename__ = "objeto_afectado"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    nombre_tabla: Mapped[str] = mapped_column(String(100))
+    nombre_tabla: Mapped[str] = mapped_column(String(100), unique=True)
     descripcion: Mapped[str | None] = mapped_column(String(255))
 
 
@@ -79,7 +79,7 @@ class TipoRegistro(Timestamps, Base):
     __tablename__ = "tipo_registro"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    nombre: Mapped[str] = mapped_column(String(100))
+    nombre: Mapped[str] = mapped_column(String(100), unique=True)
     descripcion: Mapped[str | None] = mapped_column(String(255))
 
 
@@ -87,7 +87,7 @@ class TipoReporte(Timestamps, Base):
     __tablename__ = "tipo_reporte"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    nombre: Mapped[str] = mapped_column(String(100))
+    nombre: Mapped[str] = mapped_column(String(100), unique=True)
     descripcion: Mapped[str | None] = mapped_column(String(255))
 
 

@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -20,8 +20,9 @@ router = APIRouter(
 @router.get("", response_model=list[UsuarioLeer])
 def listar(
     db: Annotated[Session, Depends(get_db)],
-    limite: int = 50,
-    desplazamiento: int = 0,
+    # Con tope: sin él, un solo cliente puede pedir la tabla completa en una llamada.
+    limite: Annotated[int, Query(ge=1, le=200)] = 50,
+    desplazamiento: Annotated[int, Query(ge=0)] = 0,
 ) -> list[Usuario]:
     return list(db.scalars(select(Usuario).offset(desplazamiento).limit(limite)).all())
 
