@@ -1,0 +1,214 @@
+"""Modelo de datos de Skilled Guard.
+
+Traducción a SQLAlchemy del DDL original (`Base_de_Datos/`), con tres correcciones:
+  1. Los PK eran `INT uniqueidentifier` — dos tipos a la vez, el script no ejecutaba.
+     Se resuelve como entero autoincremental, que es lo que el DML ya asumía.
+  2. `contrasena` guardaba texto plano; ahora es `contrasena_hash` (bcrypt).
+  3. Se agregan UNIQUE en `Usuario.documento` y `Dispositivo.serial`: son
+     identificadores del mundo real y duplicarlos rompe la trazabilidad.
+"""
+
+from datetime import datetime
+
+from sqlalchemy import DateTime, ForeignKey, String, UniqueConstraint, func
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+
+
+class Base(DeclarativeBase):
+    pass
+
+
+class Timestamps:
+    """Las 14 tablas del DDL llevan estas dos columnas."""
+
+    fecha_creado: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    fecha_actualizado: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), onupdate=func.now()
+    )
+
+
+# --------------------------------------------------------------------------
+# Catálogos
+# --------------------------------------------------------------------------
+
+
+class TipoDocumento(Timestamps, Base):
+    __tablename__ = "tipo_documento"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    nombre: Mapped[str] = mapped_column(String(100))
+    acronimo: Mapped[str | None] = mapped_column(String(10))
+    descripcion: Mapped[str | None] = mapped_column(String(255))
+
+
+class Rol(Timestamps, Base):
+    __tablename__ = "rol"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    nombre: Mapped[str] = mapped_column(String(100), unique=True)
+    descripcion: Mapped[str | None] = mapped_column(String(255))
+
+
+class TipoDispositivo(Timestamps, Base):
+    __tablename__ = "tipo_dispositivo"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    nombre: Mapped[str] = mapped_column(String(100))
+    descripcion: Mapped[str | None] = mapped_column(String(255))
+
+
+class TipoAccion(Timestamps, Base):
+    __tablename__ = "tipo_accion"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    nombre: Mapped[str] = mapped_column(String(100))
+    descripcion: Mapped[str | None] = mapped_column(String(255))
+
+
+class ObjetoAfectado(Timestamps, Base):
+    __tablename__ = "objeto_afectado"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    nombre_tabla: Mapped[str] = mapped_column(String(100))
+    descripcion: Mapped[str | None] = mapped_column(String(255))
+
+
+class TipoRegistro(Timestamps, Base):
+    __tablename__ = "tipo_registro"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    nombre: Mapped[str] = mapped_column(String(100))
+    descripcion: Mapped[str | None] = mapped_column(String(255))
+
+
+class TipoReporte(Timestamps, Base):
+    __tablename__ = "tipo_reporte"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    nombre: Mapped[str] = mapped_column(String(100))
+    descripcion: Mapped[str | None] = mapped_column(String(255))
+
+
+# --------------------------------------------------------------------------
+# Usuarios y roles
+# --------------------------------------------------------------------------
+
+
+class Usuario(Timestamps, Base):
+    __tablename__ = "usuario"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    nombres: Mapped[str] = mapped_column(String(100))
+    apellidos: Mapped[str] = mapped_column(String(100))
+    id_tipo_documento: Mapped[int] = mapped_column(ForeignKey("tipo_documento.id"))
+    documento: Mapped[str] = mapped_column(String(50), unique=True)
+    direccion: Mapped[str | None] = mapped_column(String(255))
+    contrasena_hash: Mapped[str] = mapped_column(String(255))
+
+    tipo_documento: Mapped[TipoDocumento] = relationship()
+    roles: Mapped[list["UsuarioRol"]] = relationship(back_populates="usuario")
+
+    @property
+    def nombre_completo(self) -> str:
+        return f"{self.nombres} {self.apellidos}"
+
+
+class UsuarioRol(Timestamps, Base):
+    __tablename__ = "usuario_rol"
+    # Un usuario no puede tener el mismo rol dos veces.
+    __table_args__ = (UniqueConstraint("id_usuario", "id_rol"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    id_usuario: Mapped[int] = mapped_column(ForeignKey("usuario.id"))
+    id_rol: Mapped[int] = mapped_column(ForeignKey("rol.id"))
+
+    usuario: Mapped[Usuario] = relationship(back_populates="roles")
+    rol: Mapped[Rol] = relationship()
+
+
+# --------------------------------------------------------------------------
+# Dispositivos
+# --------------------------------------------------------------------------
+
+
+class Dispositivo(Timestamps, Base):
+    __tablename__ = "dispositivo"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    serial: Mapped[str] = mapped_column(String(50), unique=True)
+    marca: Mapped[str] = mapped_column(String(100))
+    modelo: Mapped[str] = mapped_column(String(100))
+    sistema: Mapped[str | None] = mapped_column(String(50))
+    id_tipo_dispositivo: Mapped[int] = mapped_column(ForeignKey("tipo_dispositivo.id"))
+    id_usuario: Mapped[int] = mapped_column(ForeignKey("usuario.id"))
+    # El DDL original la llamaba `fecha_url` pero es de tipo texto — el nombre no
+    # corresponde al contenido. Pendiente de aclarar su propósito (¿foto del equipo?).
+    fecha_url: Mapped[str | None] = mapped_column(String(255))
+    qr: Mapped[str | None] = mapped_column(String(255))
+
+    tipo_dispositivo: Mapped[TipoDispositivo] = relationship()
+    usuario: Mapped[Usuario] = relationship()
+
+
+# --------------------------------------------------------------------------
+# Auditoría
+# --------------------------------------------------------------------------
+
+
+class AuditoriaNegocio(Timestamps, Base):
+    __tablename__ = "auditoria_negocio"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    id_tipo_registro: Mapped[int] = mapped_column(ForeignKey("tipo_registro.id"))
+    registrado_por: Mapped[int] = mapped_column(ForeignKey("usuario.id"))
+    ejemplo_data: Mapped[str | None] = mapped_column(String(500))
+
+
+class LogSistema(Timestamps, Base):
+    __tablename__ = "log_sistema"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    id_accion: Mapped[int] = mapped_column(ForeignKey("tipo_accion.id"))
+    id_usuario: Mapped[int] = mapped_column(ForeignKey("usuario.id"))
+    id_objeto_afectado: Mapped[int] = mapped_column(ForeignKey("objeto_afectado.id"))
+    iv_firma: Mapped[str | None] = mapped_column(String(255))
+
+    detalles: Mapped[list["LogDetalle"]] = relationship(back_populates="log")
+
+
+class LogDetalle(Timestamps, Base):
+    __tablename__ = "log_detalle"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    id_log: Mapped[int] = mapped_column(ForeignKey("log_sistema.id"))
+    campo_afectado: Mapped[str] = mapped_column(String(100))
+    valor_anterior: Mapped[str | None] = mapped_column(String(255))
+    valor_nuevo: Mapped[str | None] = mapped_column(String(255))
+
+    log: Mapped[LogSistema] = relationship(back_populates="detalles")
+
+
+# --------------------------------------------------------------------------
+# Reportes
+# --------------------------------------------------------------------------
+
+
+class Reporte(Timestamps, Base):
+    __tablename__ = "reporte"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    generado_por: Mapped[int] = mapped_column(ForeignKey("usuario.id"))
+    filtros_aplicados: Mapped[str | None] = mapped_column(String(255))
+    url_archivo: Mapped[str | None] = mapped_column(String(255))
+    id_tipo_reporte: Mapped[int] = mapped_column(ForeignKey("tipo_reporte.id"))
+
+
+class ConsultaReporte(Timestamps, Base):
+    __tablename__ = "consulta_reporte"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    entidad_consultada: Mapped[str] = mapped_column(String(100))
+    filtro_aplicado: Mapped[str | None] = mapped_column(String(255))
+    id_reporte: Mapped[int] = mapped_column(ForeignKey("reporte.id"))

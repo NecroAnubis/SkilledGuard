@@ -1,0 +1,85 @@
+"""Hash de contraseñas (bcrypt) y autenticación por JWT con control de roles."""
+
+from datetime import UTC, datetime, timedelta
+from typing import Annotated
+
+import bcrypt
+import jwt
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+
+from app.config import settings
+from app.database import get_db
+from app.models import Rol, Usuario, UsuarioRol
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+
+ROL_ADMINISTRADOR = "Administrador"
+ROL_SEGURIDAD = "Seguridad"
+ROL_USUARIO = "Usuario"
+
+
+def hashear_contrasena(contrasena: str) -> str:
+    return bcrypt.hashpw(contrasena.encode(), bcrypt.gensalt()).decode()
+
+
+def verificar_contrasena(contrasena: str, hash_guardado: str) -> bool:
+    return bcrypt.checkpw(contrasena.encode(), hash_guardado.encode())
+
+
+def crear_token(usuario: Usuario, roles: list[str]) -> str:
+    expira = datetime.now(UTC) + timedelta(minutes=settings.jwt_expiracion_minutos)
+    payload = {
+        "sub": str(usuario.id),
+        "documento": usuario.documento,
+        "roles": roles,
+        "exp": expira,
+    }
+    return jwt.encode(payload, settings.jwt_secret, algorithm=settings.jwt_algorithm)
+
+
+def roles_de(db: Session, id_usuario: int) -> list[str]:
+    return list(
+        db.scalars(
+            select(Rol.nombre).join(UsuarioRol).where(UsuarioRol.id_usuario == id_usuario)
+        ).all()
+    )
+
+
+def usuario_actual(
+    token: Annotated[str, Depends(oauth2_scheme)],
+    db: Annotated[Session, Depends(get_db)],
+) -> Usuario:
+    no_autorizado = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Credenciales inválidas",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, settings.jwt_secret, algorithms=[settings.jwt_algorithm])
+    except jwt.PyJWTError:
+        raise no_autorizado from None
+
+    usuario = db.get(Usuario, int(payload["sub"]))
+    if usuario is None:
+        raise no_autorizado
+    return usuario
+
+
+def exige_rol(*permitidos: str):
+    """Dependencia que restringe un endpoint a los roles indicados."""
+
+    def verificar(
+        usuario: Annotated[Usuario, Depends(usuario_actual)],
+        db: Annotated[Session, Depends(get_db)],
+    ) -> Usuario:
+        if not set(permitidos) & set(roles_de(db, usuario.id)):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Requiere uno de estos roles: {', '.join(permitidos)}",
+            )
+        return usuario
+
+    return verificar
