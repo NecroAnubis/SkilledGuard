@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: skilledguard
+      POSTGRES_PASSWORD: skilledguard
+      POSTGRES_DB: skilledguard
+    ports:
+      - "5432:5432"
+    volumes:
+      - datos_postgres:/var/lib/postgresql/data
+    healthcheck:
+      # La API arranca solo cuando Postgres acepta conexiones, no cuando el
+      # contenedor existe: sin esto las migraciones fallan por carrera de arranque.
+      test: ["CMD-SHELL", "pg_isready -U skilledguard"]
+      interval: 5s
+      retries: 10
+
+  api:
+    build: .
+    # Migra y luego levanta: el esquema siempre queda al día con el código.
+    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    environment:
+      DATABASE_URL: postgresql+psycopg://skilledguard:skilledguard@db:5432/skilledguard
+      JWT_SECRET: ${JWT_SECRET:-secreto-solo-para-desarrollo-local}
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/salud').status==200 else 1)\""]
+      interval: 15s
+      start_period: 30s
+      retries: 3
+
+volumes:
+  datos_postgres:
