@@ -14,7 +14,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.database import SessionLocal
-from app.models import Rol, TipoDispositivo, TipoDocumento, Usuario, UsuarioRol
+from app.models import Rol, TipoDispositivo, TipoDocumento, TipoRegistro, Usuario, UsuarioRol
+from app.porteria import TipoMovimiento
 from app.security import ROL_ADMINISTRADOR, ROL_SEGURIDAD, ROL_USUARIO, hashear_contrasena
 
 TIPOS_DOCUMENTO = [
@@ -35,6 +36,13 @@ TIPOS_DISPOSITIVO = [
     ("Tablet", "Dispositivo tipo tableta"),
 ]
 
+# Los nombres deben coincidir con TipoMovimiento: la portería busca el tipo de
+# registro por nombre para saber si el movimiento es una entrada o una salida.
+TIPOS_REGISTRO = [
+    (TipoMovimiento.INGRESO.value, "Entrada de un equipo a las instalaciones"),
+    (TipoMovimiento.SALIDA.value, "Salida de un equipo de las instalaciones"),
+]
+
 
 def _obtener_o_crear(db: Session, modelo, **campos):
     existente = db.scalar(select(modelo).filter_by(nombre=campos["nombre"]))
@@ -53,6 +61,8 @@ def sembrar(db: Session, documento_admin: str, contrasena_admin: str) -> None:
         )
     for nombre, descripcion in TIPOS_DISPOSITIVO:
         _obtener_o_crear(db, TipoDispositivo, nombre=nombre, descripcion=descripcion)
+    for nombre, descripcion in TIPOS_REGISTRO:
+        _obtener_o_crear(db, TipoRegistro, nombre=nombre, descripcion=descripcion)
 
     roles = {
         nombre: _obtener_o_crear(db, Rol, nombre=nombre, descripcion=descripcion)
