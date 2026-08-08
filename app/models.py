@@ -9,6 +9,7 @@ Traducción a SQLAlchemy del DDL original (`Base_de_Datos/`), con tres correccio
 """
 
 from datetime import datetime
+from uuid import uuid4
 
 from sqlalchemy import DateTime, ForeignKey, String, UniqueConstraint, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
@@ -146,10 +147,15 @@ class Dispositivo(Timestamps, Base):
     # El DDL original la llamaba `fecha_url` pero es de tipo texto — el nombre no
     # corresponde al contenido. Pendiente de aclarar su propósito (¿foto del equipo?).
     fecha_url: Mapped[str | None] = mapped_column(String(255))
-    qr: Mapped[str | None] = mapped_column(String(255))
+    # Identificador que se codifica en el QR pegado al equipo. Es un token
+    # aleatorio y no el serial: el serial está impreso en el chasis a la vista
+    # de cualquiera, y además así se puede reemplazar el código sin tocar el
+    # inventario si una calcomanía se daña o se filtra.
+    qr: Mapped[str] = mapped_column(String(255), unique=True, default=lambda: uuid4().hex)
 
     tipo_dispositivo: Mapped[TipoDispositivo] = relationship()
     usuario: Mapped[Usuario] = relationship()
+    movimientos: Mapped[list["AuditoriaNegocio"]] = relationship(back_populates="dispositivo")
 
 
 # --------------------------------------------------------------------------
@@ -158,12 +164,26 @@ class Dispositivo(Timestamps, Base):
 
 
 class AuditoriaNegocio(Timestamps, Base):
+    """Movimientos de equipos: cada ingreso y cada salida por portería.
+
+    Es el registro que reemplaza la minuta en papel. Conserva el nombre del
+    modelo original, pero corrige dos cosas que lo hacían inservible para su
+    propósito: no tenía forma de saber *qué equipo* se movía (faltaba la
+    llave foránea a `dispositivo`), y la columna de detalle se llamaba
+    `ejemplo_data`.
+    """
+
     __tablename__ = "auditoria_negocio"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    id_dispositivo: Mapped[int] = mapped_column(ForeignKey("dispositivo.id"), index=True)
     id_tipo_registro: Mapped[int] = mapped_column(ForeignKey("tipo_registro.id"))
     registrado_por: Mapped[int] = mapped_column(ForeignKey("usuario.id"))
-    ejemplo_data: Mapped[str | None] = mapped_column(String(500))
+    observacion: Mapped[str | None] = mapped_column(String(500))
+
+    dispositivo: Mapped[Dispositivo] = relationship(back_populates="movimientos")
+    tipo_registro: Mapped[TipoRegistro] = relationship()
+    vigilante: Mapped[Usuario] = relationship()
 
 
 class LogSistema(Timestamps, Base):

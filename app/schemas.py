@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -56,6 +57,60 @@ class UsuarioLeer(_DesdeORM):
 
 class RolAsignar(BaseModel):
     id_rol: int
+
+
+# --- Dispositivos ----------------------------------------------------------
+
+
+class DispositivoCrear(BaseModel):
+    serial: str = Field(min_length=1, max_length=50)
+    marca: str = Field(min_length=1, max_length=100)
+    modelo: str = Field(min_length=1, max_length=100)
+    sistema: str | None = Field(default=None, max_length=50)
+    id_tipo_dispositivo: int
+    id_usuario: int
+
+
+class DispositivoLeer(_DesdeORM):
+    id: int
+    serial: str
+    marca: str
+    modelo: str
+    sistema: str | None
+    id_tipo_dispositivo: int
+    id_usuario: int
+    qr: str
+    fecha_creado: datetime
+
+
+class DispositivoEstado(BaseModel):
+    id_dispositivo: int
+    serial: str
+    estado: str
+    ultimo_movimiento: datetime | None
+
+
+# --- Portería --------------------------------------------------------------
+
+
+class MovimientoRegistrar(BaseModel):
+    """El vigilante escanea el QR del equipo y declara si entra o sale."""
+
+    qr: str = Field(min_length=1, max_length=255)
+    tipo: Literal["Ingreso", "Salida"]
+    observacion: str | None = Field(default=None, max_length=500)
+
+
+class MovimientoLeer(_DesdeORM):
+    id: int
+    id_dispositivo: int
+    tipo: str
+    serial: str
+    equipo: str
+    responsable: str
+    registrado_por: str
+    observacion: str | None
+    fecha: datetime
 
 
 # --- Autenticación ---------------------------------------------------------

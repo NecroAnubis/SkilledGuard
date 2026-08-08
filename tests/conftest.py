@@ -14,7 +14,7 @@ os.environ.setdefault(
 
 from app.database import get_db  # noqa: E402
 from app.main import app  # noqa: E402
-from app.models import Base, Rol, TipoDocumento, Usuario, UsuarioRol  # noqa: E402
+from app.models import Base, Dispositivo, Rol, TipoDocumento, Usuario, UsuarioRol  # noqa: E402
 from app.security import ROL_ADMINISTRADOR, hashear_contrasena  # noqa: E402
 
 motor = create_engine(os.environ["DATABASE_URL"])
@@ -71,3 +71,45 @@ def token_admin(cliente, admin) -> str:
 @pytest.fixture
 def encabezados_admin(token_admin) -> dict[str, str]:
     return {"Authorization": f"Bearer {token_admin}"}
+
+
+@pytest.fixture
+def catalogos_porteria(db):
+    """Tipos de registro Ingreso/Salida, que la portería busca por nombre."""
+    from app.models import TipoDispositivo, TipoRegistro
+    from app.porteria import TipoMovimiento
+
+    tipo_equipo = TipoDispositivo(nombre="Computador", descripcion="Portátil o escritorio")
+    db.add_all(
+        [
+            tipo_equipo,
+            TipoRegistro(nombre=TipoMovimiento.INGRESO.value, descripcion="Entrada"),
+            TipoRegistro(nombre=TipoMovimiento.SALIDA.value, descripcion="Salida"),
+        ]
+    )
+    db.commit()
+    return tipo_equipo
+
+
+def _crear_dispositivo(db, tipo_equipo, admin, serial: str) -> Dispositivo:
+    dispositivo = Dispositivo(
+        serial=serial,
+        marca="HP",
+        modelo="Pavilion",
+        sistema="Windows 11",
+        id_tipo_dispositivo=tipo_equipo.id,
+        id_usuario=admin.id,
+    )
+    db.add(dispositivo)
+    db.commit()
+    return dispositivo
+
+
+@pytest.fixture
+def dispositivo(db, catalogos_porteria, admin) -> Dispositivo:
+    return _crear_dispositivo(db, catalogos_porteria, admin, "PC-12345")
+
+
+@pytest.fixture
+def otro_dispositivo(db, catalogos_porteria, admin) -> Dispositivo:
+    return _crear_dispositivo(db, catalogos_porteria, admin, "PC-67890")
