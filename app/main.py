@@ -1,6 +1,8 @@
+from pathlib import Path
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
@@ -8,19 +10,22 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.routers import auth, catalogos, dispositivos, logs, movimientos, reportes, usuarios
 
+ESTATICOS = Path(__file__).parent / "static"
+
 app = FastAPI(
     title="Skilled Guard",
     description=(
         "Sistema de automatización para el control de ingreso de equipos tecnológicos. "
         "Proyecto de grado — Tecnólogo en Análisis y Desarrollo de Software, SENA."
     ),
-    version="0.1.0",
+    version="0.2.0",
 )
 
 app.include_router(auth.router)
 app.include_router(usuarios.router)
 app.include_router(catalogos.roles)
 app.include_router(catalogos.tipos_documento)
+app.include_router(catalogos.tipos_dispositivo)
 app.include_router(dispositivos.router)
 app.include_router(movimientos.router)
 app.include_router(reportes.router)
@@ -42,3 +47,8 @@ def salud(db: Annotated[Session, Depends(get_db)]) -> dict[str, str]:
             status.HTTP_503_SERVICE_UNAVAILABLE, "Sin conexión a la base de datos"
         ) from None
     return {"estado": "ok", "base_de_datos": "ok"}
+
+
+# Se monta al final: una ruta montada en "/" captura todo lo que no coincida
+# con un endpoint anterior, así que declararla antes dejaría la API inalcanzable.
+app.mount("/", StaticFiles(directory=ESTATICOS, html=True), name="interfaz")

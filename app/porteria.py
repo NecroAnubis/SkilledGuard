@@ -6,7 +6,7 @@ y se prueban solas, sin levantar la API.
 
 from enum import StrEnum
 
-from sqlalchemy import desc, select
+from sqlalchemy import desc, func, select
 from sqlalchemy.orm import Session
 
 from app.models import AuditoriaNegocio, Dispositivo, TipoRegistro
@@ -24,6 +24,34 @@ class EstadoDispositivo(StrEnum):
 
 class MovimientoInvalido(Exception):
     """El movimiento contradice el estado actual del equipo."""
+
+
+def estados_de_todos(db: Session) -> dict[int, EstadoDispositivo]:
+    """Estado de cada equipo que registra movimientos, en una sola consulta.
+
+    Consultar equipo por equipo convierte un listado de 200 equipos en 200
+    consultas. Se toma el id más alto por dispositivo —los ids son crecientes,
+    así que el mayor es el último movimiento— y se une para leer su tipo.
+    """
+    ultimos = (
+        select(
+            AuditoriaNegocio.id_dispositivo,
+            func.max(AuditoriaNegocio.id).label("id_ultimo"),
+        )
+        .group_by(AuditoriaNegocio.id_dispositivo)
+        .subquery()
+    )
+    filas = db.execute(
+        select(ultimos.c.id_dispositivo, TipoRegistro.nombre)
+        .join(AuditoriaNegocio, AuditoriaNegocio.id == ultimos.c.id_ultimo)
+        .join(TipoRegistro, TipoRegistro.id == AuditoriaNegocio.id_tipo_registro)
+    )
+    return {
+        id_dispositivo: (
+            EstadoDispositivo.FUERA if tipo == TipoMovimiento.SALIDA else EstadoDispositivo.DENTRO
+        )
+        for id_dispositivo, tipo in filas
+    }
 
 
 def ultimo_movimiento(db: Session, id_dispositivo: int) -> AuditoriaNegocio | None:

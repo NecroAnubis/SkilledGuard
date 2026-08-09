@@ -63,6 +63,51 @@ def test_equipo_inexistente_da_404(cliente, encabezados_admin):
     assert cliente.get("/dispositivos/9999", headers=encabezados_admin).status_code == 404
 
 
+def test_el_listado_incluye_el_estado_de_cada_equipo(
+    cliente, dispositivo, otro_dispositivo, encabezados_admin
+):
+    """El listado trae el estado ya resuelto: sin esto la interfaz lo pediría
+    equipo por equipo, convirtiendo una pantalla en una consulta por fila."""
+    cliente.post(
+        "/movimientos", headers=encabezados_admin, json={"qr": dispositivo.qr, "tipo": "Ingreso"}
+    )
+
+    equipos = cliente.get("/dispositivos", headers=encabezados_admin).json()
+    por_serial = {e["serial"]: e["estado"] for e in equipos}
+
+    assert por_serial[dispositivo.serial] == "dentro"
+    assert por_serial[otro_dispositivo.serial] == "fuera"
+
+
+def test_el_listado_de_equipos_cuesta_pocas_consultas(db, dispositivo, otro_dispositivo, admin):
+    """Regresión de N+1: el estado de todos debe resolverse de una vez."""
+    from sqlalchemy import event
+
+    from app.porteria import TipoMovimiento, estados_de_todos, registrar
+
+    registrar(db, dispositivo, TipoMovimiento.INGRESO, admin.id)
+
+    ejecutadas: list[str] = []
+    db.expire_all()
+
+    def contar(conn, cursor, sentencia, *args):
+        ejecutadas.append(sentencia)
+
+    event.listen(db.get_bind(), "before_cursor_execute", contar)
+    try:
+        estados = estados_de_todos(db)
+    finally:
+        event.remove(db.get_bind(), "before_cursor_execute", contar)
+
+    assert estados[dispositivo.id] == "dentro"
+    assert len(ejecutadas) == 1, f"se esperaba 1 consulta, se ejecutaron {len(ejecutadas)}"
+
+
+def test_existe_el_catalogo_de_tipos_de_dispositivo(cliente, catalogos_porteria, encabezados_admin):
+    tipos = cliente.get("/tipos-dispositivo", headers=encabezados_admin).json()
+    assert "Computador" in [t["nombre"] for t in tipos]
+
+
 # --- Portería --------------------------------------------------------------
 
 
