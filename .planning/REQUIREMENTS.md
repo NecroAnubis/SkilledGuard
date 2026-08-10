@@ -38,6 +38,9 @@ sustenta lo que existe. Ver `.planning/PROJECT.md` y `.planning/research/SUMMARY
       limitación está documentada y contemplada en el guion
 - [ ] **DEMO-04**: Existe un guion de sustentación ensayado de principio a fin,
       con la secuencia de calentamiento previa incluida
+- [ ] **DEMO-05**: Existe un plan de respaldo documentado y probado para el caso
+      de que falle la red del aula — el único riesgo del día que el keep-alive
+      no cubre
 
 ### Documentación (DOC)
 
@@ -67,11 +70,6 @@ sustenta lo que existe. Ver `.planning/PROJECT.md` y `.planning/research/SUMMARY
 
 ## v2 Requirements (aplazados)
 
-- **Plan B sin red para la sustentación** — entorno local sembrado como
-  respaldo si falla el internet del aula. Deseleccionado en el alcance de v1.
-  Queda anotado como exposición conocida: la demo corre contra un servicio
-  gratuito que duerme, sobre la red de un aula que no controlas, sin respaldo
-  ensayado. `DEPLOY-06` reduce el riesgo del servicio dormido, no el de la red.
 - **Obtener la rúbrica oficial del instructor** — deseleccionado en v1. Sin
   ella, la estructura de `docs/` sigue siendo una apuesta razonable pero no
   verificada; la investigación confirmó que el formato lo define cada centro e
@@ -103,4 +101,22 @@ sustenta lo que existe. Ver `.planning/PROJECT.md` y `.planning/research/SUMMARY
 
 | REQ-ID | Fase |
 |--------|------|
-| (se completa al crear el roadmap) | |
+| DEPLOY-01 | Phase 3 |
+| DEPLOY-02 | Phase 2 |
+| DEPLOY-03 | Phase 1 |
+| DEPLOY-04 | Phase 1 |
+| DEPLOY-05 | Phase 1 |
+| DEPLOY-06 | Phase 4 |
+| DEPLOY-07 | Phase 4 |
+| DEMO-01 | Phase 5 |
+| DEMO-02 | Phase 4 |
+| DEMO-03 | Phase 4 |
+| DEMO-04 | Phase 6 |
+| DEMO-05 | Phase 6 |
+| DOC-01 | Phase 5 |
+| DOC-02 | Phase 5 |
+| DOC-03 | Phase 5 |
+| REPO-01 | Phase 3 |
+| REPO-02 | Phase 3 |
+| CODE-01 | Phase 2 |
+| CODE-02 | Phase 1 |
