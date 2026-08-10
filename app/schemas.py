@@ -3,6 +3,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from app.porteria import EstadoDispositivo
 from app.security import MAX_BYTES_CONTRASENA
 
 
@@ -93,6 +94,7 @@ class DispositivoLeer(_DesdeORM):
     id_tipo_dispositivo: int
     id_usuario: int
     qr: str
+    estado: str = EstadoDispositivo.FUERA.value
     fecha_creado: datetime
 
 

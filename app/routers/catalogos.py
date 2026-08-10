@@ -13,7 +13,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models import Rol, TipoDocumento
+from app.models import Rol, TipoDispositivo, TipoDocumento
 from app.schemas import (
     CatalogoCrear,
     CatalogoLeer,
@@ -24,6 +24,7 @@ from app.security import ROL_ADMINISTRADOR, exige_rol
 
 roles = APIRouter(prefix="/roles", tags=["Roles"])
 tipos_documento = APIRouter(prefix="/tipos-documento", tags=["Tipos de documento"])
+tipos_dispositivo = APIRouter(prefix="/tipos-dispositivo", tags=["Tipos de dispositivo"])
 
 _solo_admin = [Depends(exige_rol(ROL_ADMINISTRADOR))]
 
@@ -68,3 +69,17 @@ def crear_tipo_documento(
     datos: TipoDocumentoCrear, db: Annotated[Session, Depends(get_db)]
 ) -> TipoDocumento:
     return _guardar(db, TipoDocumento(**datos.model_dump()), datos.nombre)
+
+
+@tipos_dispositivo.get("", response_model=list[CatalogoLeer])
+def listar_tipos_dispositivo(db: Annotated[Session, Depends(get_db)]) -> list[TipoDispositivo]:
+    return list(db.scalars(select(TipoDispositivo)).all())
+
+
+@tipos_dispositivo.post(
+    "", response_model=CatalogoLeer, status_code=status.HTTP_201_CREATED, dependencies=_solo_admin
+)
+def crear_tipo_dispositivo(
+    datos: CatalogoCrear, db: Annotated[Session, Depends(get_db)]
+) -> TipoDispositivo:
+    return _guardar(db, TipoDispositivo(**datos.model_dump()), datos.nombre)

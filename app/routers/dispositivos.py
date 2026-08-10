@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from app.auditoria import Accion, detalles_de_creacion, registrar_accion
 from app.database import get_db
 from app.models import Dispositivo, TipoDispositivo, Usuario
-from app.porteria import estado_actual, ultimo_movimiento
+from app.porteria import EstadoDispositivo, estado_actual, estados_de_todos, ultimo_movimiento
 from app.qr import generar_png
 from app.schemas import DispositivoCrear, DispositivoEstado, DispositivoLeer
 from app.security import ROL_ADMINISTRADOR, ROL_SEGURIDAD, exige_rol, usuario_actual
@@ -34,8 +34,19 @@ def listar(
     db: Annotated[Session, Depends(get_db)],
     limite: Annotated[int, Query(ge=1, le=200)] = 50,
     desplazamiento: Annotated[int, Query(ge=0)] = 0,
-) -> list[Dispositivo]:
-    return list(db.scalars(select(Dispositivo).offset(desplazamiento).limit(limite)).all())
+) -> list[DispositivoLeer]:
+    equipos = db.scalars(select(Dispositivo).offset(desplazamiento).limit(limite)).all()
+
+    # El estado de todos se resuelve de una sola vez: pedirlo equipo por equipo
+    # convertiría este listado en una consulta por fila.
+    estados = estados_de_todos(db)
+
+    return [
+        DispositivoLeer.model_validate(equipo).model_copy(
+            update={"estado": estados.get(equipo.id, EstadoDispositivo.FUERA).value}
+        )
+        for equipo in equipos
+    ]
 
 
 @router.get("/{id_dispositivo}", response_model=DispositivoLeer, dependencies=_consulta)

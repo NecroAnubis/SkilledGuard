@@ -1,0 +1,433 @@
+/* Skilled Guard — interfaz web
+   La paleta continúa la dirección visual del diseño original del proyecto. */
+
+:root {
+  --fondo-inicio: #f5f8fe;
+  --fondo-fin: #e4ebf3;
+  --panel: #ffffff;
+  --tinta: #1e293b;
+  --tinta-suave: #5d7192;
+  --borde: #d5deea;
+  --azul: #2563eb;
+  --azul-oscuro: #1d4ed8;
+
+  /* Colores semánticos: estado de la operación, no identidad de marca. */
+  --exito: #0f7b52;
+  --exito-fondo: #dff5eb;
+  --alerta: #b45309;
+  --alerta-fondo: #fef3d7;
+  --error: #b42318;
+  --error-fondo: #ffe2e2;
+
+  --sombra: 0 4px 15px rgba(0, 0, 0, 0.12);
+  --radio: 12px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(to bottom, var(--fondo-inicio), var(--fondo-fin));
+  background-attachment: fixed;
+  color: var(--tinta);
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
+}
+
+.oculto {
+  display: none !important;
+}
+
+/* ---------- Ingreso al sistema ---------- */
+
+#pantalla-login {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+}
+
+.tarjeta-login {
+  background: var(--panel);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 25rem;
+}
+
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.marca small {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: var(--tinta-suave);
+}
+
+/* ---------- Estructura de la aplicación ---------- */
+
+header {
+  background: var(--panel);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  padding: 0.9rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+nav {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+nav button {
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font: inherit;
+  color: var(--tinta-suave);
+  cursor: pointer;
+}
+
+nav button:hover {
+  background: var(--fondo-fin);
+}
+
+nav button[aria-current="page"] {
+  background: var(--azul);
+  color: #fff;
+}
+
+.sesion {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  color: var(--tinta-suave);
+}
+
+main {
+  max-width: 68rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+h1 {
+  font-size: 1.6rem;
+  margin: 0 0 0.35rem;
+}
+
+.subtitulo {
+  color: var(--tinta-suave);
+  margin: 0 0 1.75rem;
+}
+
+.tarjeta {
+  background: var(--panel);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.tarjeta h2 {
+  margin: 0 0 1rem;
+  font-size: 1.05rem;
+}
+
+.rejilla-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: 1.25rem;
+  align-items: start;
+}
+
+/* ---------- Formularios ---------- */
+
+label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  font: inherit;
+  color: var(--tinta);
+  background: #fff;
+}
+
+input:focus,
+select:focus,
+button:focus-visible {
+  outline: 2px solid var(--azul);
+  outline-offset: 1px;
+}
+
+.campo {
+  margin-bottom: 1rem;
+}
+
+.fila {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 1rem;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+.boton {
+  border: none;
+  border-radius: 8px;
+  padding: 0.65rem 1.25rem;
+  background: var(--azul);
+  color: #fff;
+  font-weight: 600;
+}
+
+.boton:hover:not(:disabled) {
+  background: var(--azul-oscuro);
+}
+
+.boton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.boton.secundario {
+  background: var(--fondo-fin);
+  color: var(--tinta);
+}
+
+.boton.ancho {
+  width: 100%;
+}
+
+.boton.grande {
+  padding: 1rem;
+  font-size: 1.05rem;
+}
+
+.boton.ingreso {
+  background: var(--exito);
+}
+
+.boton.salida {
+  background: var(--alerta);
+}
+
+.acciones {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* ---------- Mensajes ---------- */
+
+.mensaje {
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.93rem;
+}
+
+.mensaje.exito {
+  background: var(--exito-fondo);
+  color: var(--exito);
+}
+
+.mensaje.error {
+  background: var(--error-fondo);
+  color: var(--error);
+}
+
+.mensaje.aviso {
+  background: var(--alerta-fondo);
+  color: var(--alerta);
+}
+
+/* ---------- Portería ---------- */
+
+.visor {
+  position: relative;
+  background: #0f172a;
+  border-radius: var(--radio);
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  display: grid;
+  place-items: center;
+}
+
+.visor video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.visor .marco {
+  position: absolute;
+  inset: 18%;
+  border: 3px solid rgba(255, 255, 255, 0.85);
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+.visor .aviso-camara {
+  color: #cbd5e1;
+  text-align: center;
+  padding: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.equipo-detectado {
+  border: 2px solid var(--azul);
+  border-radius: var(--radio);
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.equipo-detectado dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.35rem 1rem;
+  margin: 0.75rem 0 1.25rem;
+  font-size: 0.93rem;
+}
+
+.equipo-detectado dt {
+  color: var(--tinta-suave);
+}
+
+.equipo-detectado dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+/* El estado del equipo debe leerse de un vistazo, no leyendo texto. */
+.pastilla {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 0.2rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.pastilla.dentro {
+  background: var(--exito-fondo);
+  color: var(--exito);
+}
+
+.pastilla.fuera {
+  background: var(--fondo-fin);
+  color: var(--tinta-suave);
+}
+
+.pastilla.ingreso {
+  background: var(--exito-fondo);
+  color: var(--exito);
+}
+
+.pastilla.salida {
+  background: var(--alerta-fondo);
+  color: var(--alerta);
+}
+
+/* ---------- Tablas ---------- */
+
+.contenedor-tabla {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid var(--borde);
+  white-space: nowrap;
+}
+
+th {
+  color: var(--tinta-suave);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+tbody tr:hover {
+  background: var(--fondo-inicio);
+}
+
+td.numero {
+  font-variant-numeric: tabular-nums;
+}
+
+.vacio {
+  text-align: center;
+  color: var(--tinta-suave);
+  padding: 2.5rem 1rem;
+}
+
+/* ---------- Código QR ---------- */
+
+.qr-caja {
+  text-align: center;
+}
+
+.qr-caja img {
+  width: 12rem;
+  height: 12rem;
+  image-rendering: pixelated;
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.qr-caja p {
+  font-size: 0.8rem;
+  color: var(--tinta-suave);
+  word-break: break-all;
+}
+
+@media print {
+  body > *:not(#zona-impresion) {
+    display: none !important;
+  }
+}
+
+@media (max-width: 40rem) {
+  main {
+    padding: 1.25rem 1rem 3rem;
+  }
+  .tarjeta {
+    padding: 1.1rem;
+  }
+}

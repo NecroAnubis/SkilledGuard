@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Skilled Guard</title>
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+<!-- ================= Pantalla 1: ingreso al sistema ================= -->
+<section id="pantalla-login">
+  <form class="tarjeta-login" id="form-login">
+    <div class="marca">
+      🛡️ Skilled Guard
+    </div>
+    <small style="color:var(--tinta-suave); display:block; margin-bottom:1.75rem">
+      Control de ingreso de equipos tecnológicos
+    </small>
+
+    <div id="error-login" class="mensaje error oculto"></div>
+
+    <div class="campo">
+      <label for="documento">Número de documento</label>
+      <input id="documento" name="documento" autocomplete="username" required autofocus>
+    </div>
+
+    <div class="campo">
+      <label for="contrasena">Contraseña</label>
+      <input id="contrasena" name="contrasena" type="password" autocomplete="current-password" required>
+    </div>
+
+    <button class="boton ancho" type="submit" id="boton-entrar">Ingresar</button>
+  </form>
+</section>
+
+
+<!-- ================= Aplicación ================= -->
+<div id="aplicacion" class="oculto">
+
+  <header>
+    <div class="marca" style="font-size:1.15rem">🛡️ Skilled Guard</div>
+    <nav>
+      <button data-vista="porteria" aria-current="page">Portería</button>
+      <button data-vista="equipos">Equipos</button>
+      <button data-vista="historial">Historial</button>
+    </nav>
+    <div class="sesion">
+      <span id="usuario-sesion"></span>
+      <button class="boton secundario" id="boton-salir">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ---------- Pantalla 2: portería ---------- -->
+    <section id="vista-porteria">
+      <h1>Portería</h1>
+      <p class="subtitulo">Apunte la cámara al código QR pegado en el equipo.</p>
+
+      <div id="mensaje-porteria" class="mensaje oculto"></div>
+
+      <div class="rejilla-2">
+        <div class="tarjeta">
+          <h2>Escáner</h2>
+          <div class="visor" id="visor">
+            <p class="aviso-camara" id="aviso-camara">
+              La cámara está apagada.<br>Presione «Activar cámara» para comenzar.
+            </p>
+            <video id="video" playsinline class="oculto"></video>
+            <div class="marco oculto" id="marco"></div>
+          </div>
+          <div class="acciones" style="margin-top:1rem">
+            <button class="boton" id="boton-camara">Activar cámara</button>
+          </div>
+
+          <div class="campo" style="margin-top:1.25rem">
+            <label for="qr-manual">O escriba el código manualmente</label>
+            <div class="acciones">
+              <input id="qr-manual" placeholder="Código del equipo" style="flex:1; min-width:12rem">
+              <button class="boton secundario" id="boton-buscar-qr">Buscar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="tarjeta">
+          <h2>Equipo detectado</h2>
+          <div id="sin-equipo" class="vacio">Ningún equipo escaneado todavía.</div>
+
+          <div id="equipo-detectado" class="oculto">
+            <div class="equipo-detectado">
+              <span class="pastilla" id="estado-equipo"></span>
+              <dl>
+                <dt>Serial</dt><dd id="det-serial"></dd>
+                <dt>Equipo</dt><dd id="det-equipo"></dd>
+                <dt>Responsable</dt><dd id="det-responsable"></dd>
+                <dt>Último movimiento</dt><dd id="det-ultimo"></dd>
+              </dl>
+
+              <div class="campo">
+                <label for="observacion">Observación (opcional)</label>
+                <input id="observacion" placeholder="Por ejemplo: entra a clase de la tarde">
+              </div>
+
+              <div class="acciones">
+                <button class="boton grande ingreso" id="boton-ingreso" style="flex:1">Registrar ingreso</button>
+                <button class="boton grande salida" id="boton-salida" style="flex:1">Registrar salida</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ---------- Pantalla 3: equipos ---------- -->
+    <section id="vista-equipos" class="oculto">
+      <h1>Equipos</h1>
+      <p class="subtitulo">Registre equipos y descargue su código QR para imprimirlo.</p>
+
+      <div id="mensaje-equipos" class="mensaje oculto"></div>
+
+      <div class="tarjeta" id="tarjeta-registro">
+        <h2>Registrar un equipo</h2>
+        <form id="form-equipo">
+          <div class="fila">
+            <div class="campo">
+              <label for="eq-serial">Serial</label>
+              <input id="eq-serial" required>
+            </div>
+            <div class="campo">
+              <label for="eq-marca">Marca</label>
+              <input id="eq-marca" required>
+            </div>
+            <div class="campo">
+              <label for="eq-modelo">Modelo</label>
+              <input id="eq-modelo" required>
+            </div>
+          </div>
+          <div class="fila">
+            <div class="campo">
+              <label for="eq-sistema">Sistema operativo</label>
+              <input id="eq-sistema" placeholder="Opcional">
+            </div>
+            <div class="campo">
+              <label for="eq-tipo">Tipo</label>
+              <select id="eq-tipo" required></select>
+            </div>
+            <div class="campo">
+              <label for="eq-usuario">Responsable</label>
+              <select id="eq-usuario" required></select>
+            </div>
+          </div>
+          <button class="boton" type="submit">Registrar equipo</button>
+        </form>
+      </div>
+
+      <div class="tarjeta">
+        <h2>Equipos registrados</h2>
+        <div class="contenedor-tabla">
+          <table>
+            <thead>
+              <tr>
+                <th>Serial</th><th>Equipo</th><th>Sistema</th><th>Estado</th><th>Código QR</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-equipos"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ---------- Pantalla 4: historial ---------- -->
+    <section id="vista-historial" class="oculto">
+      <h1>Historial de movimientos</h1>
+      <p class="subtitulo">Consulte la trazabilidad y descargue reportes.</p>
+
+      <div id="mensaje-historial" class="mensaje oculto"></div>
+
+      <div class="tarjeta">
+        <h2>Filtros</h2>
+        <div class="fila">
+          <div class="campo">
+            <label for="f-tipo">Tipo</label>
+            <select id="f-tipo">
+              <option value="">Todos</option>
+              <option value="Ingreso">Ingreso</option>
+              <option value="Salida">Salida</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label for="f-desde">Desde</label>
+            <input id="f-desde" type="date">
+          </div>
+          <div class="campo">
+            <label for="f-hasta">Hasta</label>
+            <input id="f-hasta" type="date">
+          </div>
+        </div>
+        <div class="acciones">
+          <button class="boton" id="boton-filtrar">Aplicar filtros</button>
+          <button class="boton secundario" id="boton-excel">Descargar Excel</button>
+          <button class="boton secundario" id="boton-pdf">Descargar PDF</button>
+        </div>
+      </div>
+
+      <div class="tarjeta">
+        <div class="contenedor-tabla">
+          <table>
+            <thead>
+              <tr>
+                <th>Fecha</th><th>Tipo</th><th>Serial</th><th>Equipo</th>
+                <th>Responsable</th><th>Registrado por</th><th>Observación</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-historial"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Zona usada solo al imprimir un código QR -->
+<div id="zona-impresion" class="oculto"></div>
+
+<script src="jsQR.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
