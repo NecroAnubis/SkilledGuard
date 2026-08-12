@@ -135,6 +135,9 @@ def test_dos_ingresos_simultaneos_solo_registran_uno(db, dispositivo, admin):
             barrera.wait()  # los dos hilos arrancan a la vez
             try:
                 registrar(sesion, equipo, TipoMovimiento.INGRESO, admin.id)
+                # `registrar` ya no confirma: el bloqueo de la fila se sostiene
+                # hasta este commit, que es lo que obliga al otro hilo a esperar.
+                sesion.commit()
                 exitos.append(True)
             except MovimientoInvalido:
                 exitos.append(False)
