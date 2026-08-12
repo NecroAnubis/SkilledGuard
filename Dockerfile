@@ -13,8 +13,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Usuario sin privilegios: si alguien compromete la app, no es root del contenedor.
-RUN useradd --create-home appuser && chown -R appuser /app
+# El bit de ejecución del entrypoint se fija aquí y no se confía al checkout: en
+# Windows el permiso no sobrevive al clon y el contenedor no arrancaría.
+RUN chmod +x entrypoint.sh && useradd --create-home appuser && chown -R appuser /app
 USER appuser
 
+# Documenta el puerto de desarrollo. La plataforma de despliegue inyecta PORT y
+# el entrypoint la respeta, así que este valor es informativo, no vinculante.
 EXPOSE 8000
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["./entrypoint.sh"]
