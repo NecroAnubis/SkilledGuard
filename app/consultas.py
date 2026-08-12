@@ -6,11 +6,25 @@ dos, el Excel y la pantalla dejarían de coincidir.
 """
 
 from datetime import date, datetime, time
+from zoneinfo import ZoneInfo
 
 from sqlalchemy import Select, desc, select
 from sqlalchemy.orm import joinedload
 
 from app.models import AuditoriaNegocio, Dispositivo, TipoRegistro
+
+# Las fechas se guardan en UTC, pero quien filtra piensa en la hora de la
+# portería. Sin fijar la zona, los límites del día se interpretaban como UTC y
+# todo lo registrado después de las 19:00 hora local caía en el día siguiente:
+# el turno de la tarde desaparecía del filtro "hoy". El servidor puede correr en
+# cualquier zona —en la plataforma de despliegue corre en UTC—, así que la zona
+# del negocio se declara aquí y no se deduce del entorno.
+ZONA_LOCAL = ZoneInfo("America/Bogota")
+
+
+def _limite(dia: date, momento: time) -> datetime:
+    """Instante exacto en que empieza o termina un día en la portería."""
+    return datetime.combine(dia, momento, tzinfo=ZONA_LOCAL)
 
 
 def movimientos(
@@ -35,14 +49,10 @@ def movimientos(
     if tipo is not None:
         consulta = consulta.join(TipoRegistro).where(TipoRegistro.nombre == tipo)
     if desde is not None:
-        consulta = consulta.where(
-            AuditoriaNegocio.fecha_creado >= datetime.combine(desde, time.min)
-        )
+        consulta = consulta.where(AuditoriaNegocio.fecha_creado >= _limite(desde, time.min))
     if hasta is not None:
         # `hasta` es inclusivo: el usuario que filtra "hasta el 8" espera que
         # aparezcan los movimientos del día 8, no los anteriores a su medianoche.
-        consulta = consulta.where(
-            AuditoriaNegocio.fecha_creado <= datetime.combine(hasta, time.max)
-        )
+        consulta = consulta.where(AuditoriaNegocio.fecha_creado <= _limite(hasta, time.max))
 
     return consulta.order_by(desc(AuditoriaNegocio.id))

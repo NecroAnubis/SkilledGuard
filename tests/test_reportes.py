@@ -1,11 +1,14 @@
 """Pruebas de los reportes descargables y del rendimiento de la consulta."""
 
+from datetime import datetime
 from io import BytesIO
 
 from openpyxl import load_workbook
-from sqlalchemy import event
+from sqlalchemy import event, update
 
+from app.consultas import ZONA_LOCAL
 from app.consultas import movimientos as consulta_movimientos
+from app.models import AuditoriaNegocio
 
 
 def _mover(cliente, encabezados, qr, tipo):
@@ -64,6 +67,32 @@ def test_el_filtro_de_fecha_es_inclusivo(cliente, dispositivo, encabezados_admin
 
     movimientos = cliente.get(
         f"/movimientos?desde={hoy}&hasta={hoy}", headers=encabezados_admin
+    ).json()
+    assert len(movimientos) == 1
+
+
+def test_el_filtro_incluye_el_turno_de_la_noche(cliente, db, dispositivo, encabezados_admin):
+    """Un movimiento de las 11 de la noche pertenece a ese día, no al siguiente.
+
+    Regresión: los límites del filtro se construían sin zona horaria y Postgres
+    los interpretaba como UTC. En Colombia (UTC-5) eso mandaba todo lo
+    registrado después de las 19:00 al día siguiente, así que el turno de la
+    tarde desaparecía del filtro de su propio día.
+
+    La fecha se fija a mano en vez de usar `date.today()`: si dependiera del
+    reloj, la prueba solo fallaría al correrla de noche — que es justamente cómo
+    este defecto sobrevivió a un CI en verde, porque los runners van en UTC.
+    """
+    _mover(cliente, encabezados_admin, dispositivo.qr, "Ingreso")
+    db.execute(
+        update(AuditoriaNegocio).values(
+            fecha_creado=datetime(2026, 8, 11, 23, 30, tzinfo=ZONA_LOCAL)
+        )
+    )
+    db.commit()
+
+    movimientos = cliente.get(
+        "/movimientos?desde=2026-08-11&hasta=2026-08-11", headers=encabezados_admin
     ).json()
     assert len(movimientos) == 1
 
