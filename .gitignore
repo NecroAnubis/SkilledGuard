@@ -8,3 +8,7 @@ venv/
 *.egg-info/
 .coverage
 htmlcov/
+
+# Material de planeación local — no es entregable del repo
+.planning/
+.claude/
