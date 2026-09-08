@@ -27,6 +27,9 @@ services:
       # repositorio, y cualquiera que lo lea puede firmar tokens de cualquier
       # usuario. Si falta, el arranque falla — que es lo correcto.
       JWT_SECRET: ${JWT_SECRET:?falta JWT_SECRET; copia .env.example a .env}
+      # Opcionales: si faltan, el entrypoint simplemente no siembra el admin.
+      ADMIN_DOCUMENTO: ${ADMIN_DOCUMENTO:-}
+      ADMIN_CONTRASENA: ${ADMIN_CONTRASENA:-}
     # Solo en loopback. El entrypoint arranca uvicorn confiando en las cabeceras
     # X-Forwarded-* de cualquier origen, lo que es correcto detrás del proxy de
     # la plataforma pero no si el puerto queda abierto a la red: ahí cualquiera
