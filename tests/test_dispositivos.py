@@ -12,7 +12,7 @@ def test_crear_dispositivo_genera_su_codigo_qr(
             "marca": "Lenovo",
             "modelo": "ThinkPad",
             "id_tipo_dispositivo": catalogos_porteria.id,
-            "id_usuario": admin.id,
+            "responsable": "Laura Vargas",
         },
     )
     assert respuesta.status_code == 201, respuesta.text
@@ -39,7 +39,7 @@ def test_serial_duplicado_da_409(
             "marca": "Otra",
             "modelo": "Otro",
             "id_tipo_dispositivo": catalogos_porteria.id,
-            "id_usuario": admin.id,
+            "responsable": "Laura Vargas",
         },
     )
     assert respuesta.status_code == 409

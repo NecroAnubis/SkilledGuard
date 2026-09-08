@@ -28,7 +28,7 @@ def a_esquema(movimiento: AuditoriaNegocio) -> MovimientoLeer:
         tipo=movimiento.tipo_registro.nombre,
         serial=dispositivo.serial,
         equipo=f"{dispositivo.marca} {dispositivo.modelo}",
-        responsable=dispositivo.usuario.nombre_completo,
+        responsable=dispositivo.responsable,
         registrado_por=movimiento.vigilante.nombre_completo,
         observacion=movimiento.observacion,
         fecha=movimiento.fecha_creado,
@@ -70,7 +70,7 @@ def registrar_movimiento(
 def listar(
     db: Annotated[Session, Depends(get_db)],
     id_dispositivo: int | None = None,
-    id_usuario: Annotated[int | None, Query(description="Responsable del equipo")] = None,
+    responsable: Annotated[str | None, Query(description="Responsable del equipo")] = None,
     tipo: Annotated[str | None, Query(description="Ingreso o Salida")] = None,
     desde: date | None = None,
     hasta: date | None = None,
@@ -78,6 +78,6 @@ def listar(
     desplazamiento: Annotated[int, Query(ge=0)] = 0,
 ) -> list[MovimientoLeer]:
     """Trazabilidad: historial de movimientos, del más reciente al más antiguo."""
-    consulta = consultas.movimientos(id_dispositivo, id_usuario, tipo, desde, hasta)
+    consulta = consultas.movimientos(id_dispositivo, responsable, tipo, desde, hasta)
     movimientos = db.scalars(consulta.offset(desplazamiento).limit(limite)).unique().all()
     return [a_esquema(m) for m in movimientos]

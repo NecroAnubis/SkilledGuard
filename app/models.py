@@ -167,7 +167,11 @@ class Dispositivo(Timestamps, Base):
     modelo: Mapped[str] = mapped_column(String(100))
     sistema: Mapped[str | None] = mapped_column(String(50))
     id_tipo_dispositivo: Mapped[int] = mapped_column(ForeignKey("tipo_dispositivo.id"))
-    id_usuario: Mapped[int] = mapped_column(ForeignKey("usuario.id"))
+    # Nombre de quien trae el equipo, tal como lo anota el registrador. No es
+    # una llave foránea a propósito: estudiantes y visitantes no tienen cuenta
+    # en el sistema — cuentas solo tienen quienes lo operan, y la trazabilidad
+    # de quién registró qué ya la da el vigilante en cada movimiento.
+    responsable: Mapped[str] = mapped_column(String(150))
     # Identificador que se codifica en el QR pegado al equipo. Es un token
     # aleatorio y no el serial: el serial está impreso en el chasis a la vista
     # de cualquiera, y además así se puede reemplazar el código sin tocar el
@@ -175,7 +179,6 @@ class Dispositivo(Timestamps, Base):
     qr: Mapped[str] = mapped_column(String(255), unique=True, default=lambda: uuid4().hex)
 
     tipo_dispositivo: Mapped[TipoDispositivo] = relationship()
-    usuario: Mapped[Usuario] = relationship()
     movimientos: Mapped[list["AuditoriaNegocio"]] = relationship(back_populates="dispositivo")
 
 

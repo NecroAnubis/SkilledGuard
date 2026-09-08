@@ -33,8 +33,8 @@ def _descarga(contenido: bytes, tipo: str, extension: str) -> Response:
     )
 
 
-def _consultar(db: Session, id_dispositivo, id_usuario, tipo, desde, hasta):
-    consulta = consultas.movimientos(id_dispositivo, id_usuario, tipo, desde, hasta)
+def _consultar(db: Session, id_dispositivo, responsable, tipo, desde, hasta):
+    consulta = consultas.movimientos(id_dispositivo, responsable, tipo, desde, hasta)
     return list(db.scalars(consulta.limit(MAXIMO_FILAS)).unique().all())
 
 
@@ -48,12 +48,12 @@ def movimientos_excel(
     db: Annotated[Session, Depends(get_db)],
     usuario: Annotated[Usuario, Depends(usuario_actual)],
     id_dispositivo: int | None = None,
-    id_usuario: int | None = None,
+    responsable: str | None = None,
     tipo: Annotated[str | None, Query(description="Ingreso o Salida")] = None,
     desde: date | None = None,
     hasta: date | None = None,
 ) -> Response:
-    movimientos = _consultar(db, id_dispositivo, id_usuario, tipo, desde, hasta)
+    movimientos = _consultar(db, id_dispositivo, responsable, tipo, desde, hasta)
     registrar_accion(db, usuario.id, Accion.CONSULTA, "reporte", {"formato": (None, "xlsx")})
     db.commit()
     return _descarga(generar_excel(movimientos), EXCEL, "xlsx")
@@ -69,12 +69,12 @@ def movimientos_pdf(
     db: Annotated[Session, Depends(get_db)],
     usuario: Annotated[Usuario, Depends(usuario_actual)],
     id_dispositivo: int | None = None,
-    id_usuario: int | None = None,
+    responsable: str | None = None,
     tipo: Annotated[str | None, Query(description="Ingreso o Salida")] = None,
     desde: date | None = None,
     hasta: date | None = None,
 ) -> Response:
-    movimientos = _consultar(db, id_dispositivo, id_usuario, tipo, desde, hasta)
+    movimientos = _consultar(db, id_dispositivo, responsable, tipo, desde, hasta)
     registrar_accion(db, usuario.id, Accion.CONSULTA, "reporte", {"formato": (None, "pdf")})
     db.commit()
     return _descarga(generar_pdf(movimientos), "application/pdf", "pdf")
