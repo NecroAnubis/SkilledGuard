@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Skilled Guard</title>
-  <link rel="stylesheet" href="estilo.css">
+  <link rel="stylesheet" href="estilo.css?v=2">
 </head>
 <body>
 
@@ -39,19 +39,75 @@
 <div id="aplicacion" class="oculto">
 
   <header>
-    <div class="marca" style="font-size:1.15rem">🛡️ Skilled Guard</div>
+    <div class="marca" style="font-size:1.35rem">Skilled Guard</div>
     <nav>
-      <button data-vista="porteria" aria-current="page">Portería</button>
-      <button data-vista="equipos">Equipos</button>
-      <button data-vista="historial">Historial</button>
+      <button data-vista="inicio" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Inicio</button>
+      <button data-vista="porteria"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg> Portería</button>
+      <button data-vista="equipos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg> Equipos</button>
+      <button data-vista="historial"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg> Historial</button>
     </nav>
     <div class="sesion">
+      <span class="avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
       <span id="usuario-sesion"></span>
       <button class="boton secundario" id="boton-salir">Cerrar sesión</button>
     </div>
   </header>
 
   <main>
+
+    <!-- ---------- Pantalla de inicio ---------- -->
+    <section id="vista-inicio">
+      <div class="saludo">
+        <h1 id="saludo-nombre">¡Hola!</h1>
+        <div class="linea-saludo">
+          <div class="grupo">
+            <span class="pastilla-rol"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1 1 0 0 1 1.52 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg> <span id="saludo-rol">—</span></span>
+          </div>
+          <span class="fecha-hoy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg> <span id="fecha-hoy"></span></span>
+        </div>
+      </div>
+
+      <div class="estadisticas">
+        <div class="estadistica">
+          <div><p>Equipos registrados</p><p class="cifra" id="stat-equipos">—</p></div>
+          <span class="chip-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg></span>
+        </div>
+        <div class="estadistica">
+          <div><p>Dentro ahora</p><p class="cifra" id="stat-dentro">—</p></div>
+          <span class="chip-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1 1 0 0 1 1.52 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg></span>
+        </div>
+        <div class="estadistica">
+          <div><p>Movimientos hoy</p><p class="cifra" id="stat-hoy">—</p></div>
+          <span class="chip-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></span>
+        </div>
+      </div>
+
+      <h3 class="titulo-seccion">Acciones disponibles</h3>
+      <p class="subtitulo">Funciones habilitadas para tu rol</p>
+      <div class="acciones-inicio">
+        <button class="accion" data-vista="porteria">
+          <span class="chip-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg></span>
+          <span><strong>Verificar por QR</strong><span>Escanear el código del equipo en portería</span></span>
+        </button>
+        <button class="accion" data-vista="equipos">
+          <span class="chip-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg></span>
+          <span><strong>Registrar equipo</strong><span>Agregar nuevos equipos y ver su código QR</span></span>
+        </button>
+        <button class="accion" data-vista="historial">
+          <span class="chip-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span>
+          <span><strong>Ver historial</strong><span>Trazabilidad de ingresos y salidas</span></span>
+        </button>
+        <button class="accion" data-vista="historial">
+          <span class="chip-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></span>
+          <span><strong>Reportes completos</strong><span>Descargar los movimientos en Excel o PDF</span></span>
+        </button>
+      </div>
+
+      <div class="tarjeta">
+        <h2>Actividad reciente</h2>
+        <ul class="actividad" id="lista-actividad"><li class="vacio">Sin movimientos todavía.</li></ul>
+      </div>
+    </section>
 
     <!-- ---------- Pantalla 2: portería ---------- -->
     <section id="vista-porteria">
@@ -235,7 +291,7 @@
 <!-- Zona usada solo al imprimir un código QR -->
 <div id="zona-impresion" class="oculto"></div>
 
-<script src="jsQR.js"></script>
-<script src="app.js"></script>
+<script src="jsQR.js?v=2"></script>
+<script src="app.js?v=2"></script>
 </body>
 </html>

@@ -1,5 +1,9 @@
 /* Skilled Guard — interfaz web
-   La paleta continúa la dirección visual del diseño original del proyecto. */
+   La paleta y la tipografía replican el diseño original del proyecto
+   (header pizarra #1E293B, títulos en Karma, tarjetas blancas con sombra
+   suave e íconos azules sobre chips #e4ebf3). */
+
+@import url("https://fonts.googleapis.com/css2?family=Karma:wght@600;700&display=swap");
 
 :root {
   --fondo-inicio: #f5f8fe;
@@ -63,6 +67,7 @@ body {
   display: flex;
   align-items: center;
   gap: 0.6rem;
+  font-family: "Karma", Georgia, serif;
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 0.25rem;
@@ -78,9 +83,11 @@ body {
 /* ---------- Estructura de la aplicación ---------- */
 
 header {
-  background: var(--panel);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  padding: 0.9rem 1.5rem;
+  background: var(--tinta);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 0.65rem 1.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -88,29 +95,42 @@ header {
   flex-wrap: wrap;
 }
 
+header .marca {
+  color: #fff;
+  margin: 0;
+}
+
 nav {
   display: flex;
-  gap: 0.4rem;
+  gap: 0.6rem;
   flex-wrap: wrap;
 }
 
 nav button {
   background: transparent;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 0.5rem 1rem;
   font: inherit;
-  color: var(--tinta-suave);
+  font-weight: 600;
+  color: #fff;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+nav button svg {
+  width: 1.1rem;
+  height: 1.1rem;
 }
 
 nav button:hover {
-  background: var(--fondo-fin);
+  background: #334155;
 }
 
 nav button[aria-current="page"] {
   background: var(--azul);
-  color: #fff;
 }
 
 .sesion {
@@ -118,7 +138,29 @@ nav button[aria-current="page"] {
   align-items: center;
   gap: 0.75rem;
   font-size: 0.9rem;
-  color: var(--tinta-suave);
+  color: #e2e8f0;
+}
+
+.sesion .boton.secundario {
+  background: #334155;
+  color: #fff;
+}
+
+.avatar {
+  background: var(--azul);
+  color: #fff;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.avatar svg {
+  width: 1.1rem;
+  height: 1.1rem;
 }
 
 main {
@@ -128,7 +170,9 @@ main {
 }
 
 h1 {
-  font-size: 1.6rem;
+  font-family: "Karma", Georgia, serif;
+  font-weight: 700;
+  font-size: 1.9rem;
   margin: 0 0 0.35rem;
 }
 
@@ -430,4 +474,171 @@ td.numero {
   .tarjeta {
     padding: 1.1rem;
   }
+}
+
+/* ---------- Inicio (tablero) ---------- */
+
+.saludo h1 {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.linea-saludo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.linea-saludo .grupo {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.pastilla-rol {
+  background: var(--error-fondo);
+  color: var(--tinta);
+  border-radius: 8px;
+  padding: 0.35rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.93rem;
+}
+
+.pastilla-rol svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.fecha-hoy {
+  color: var(--tinta-suave);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.fecha-hoy svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.estadisticas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.estadistica {
+  background: var(--panel);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.cifra {
+  font-family: "Karma", Georgia, serif;
+  font-weight: 700;
+  font-size: 2rem;
+  line-height: 1.1;
+}
+
+.chip-icono {
+  background: var(--fondo-fin);
+  border-radius: 16px;
+  width: 46px;
+  height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--azul);
+}
+
+.chip-icono svg {
+  width: 1.7rem;
+  height: 1.7rem;
+}
+
+.titulo-seccion {
+  font-family: "Karma", Georgia, serif;
+  font-weight: 700;
+  font-size: 1.35rem;
+  margin: 0 0 0.25rem;
+}
+
+.acciones-inicio {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
+  gap: 1.5rem;
+  margin: 1.25rem 0 2.5rem;
+}
+
+.accion {
+  background: var(--panel);
+  border: none;
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 1.5rem;
+  text-align: left;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  transition: box-shadow 0.15s ease;
+}
+
+.accion:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.16);
+}
+
+.accion strong {
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.accion span {
+  color: var(--tinta-suave);
+  font-size: 0.93rem;
+}
+
+.actividad {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.actividad li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--borde);
+}
+
+.actividad li:last-child {
+  border-bottom: none;
+}
+
+.actividad .cuando {
+  color: var(--tinta-suave);
+  font-size: 0.88rem;
+  white-space: nowrap;
+}
+
+.estadistica p {
+  margin: 0;
+}
+
+.estadistica p:first-child {
+  margin-bottom: 0.35rem;
 }
