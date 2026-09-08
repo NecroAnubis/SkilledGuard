@@ -29,7 +29,7 @@ def _limite(dia: date, momento: time) -> datetime:
 
 def movimientos(
     id_dispositivo: int | None = None,
-    id_usuario: int | None = None,
+    responsable: str | None = None,
     tipo: str | None = None,
     desde: date | None = None,
     hasta: date | None = None,
@@ -37,15 +37,15 @@ def movimientos(
     consulta = select(AuditoriaNegocio).options(
         # Sin esto cada fila dispara cuatro consultas más al leer el equipo, su
         # responsable, el vigilante y el tipo: 50 movimientos = 201 consultas.
-        joinedload(AuditoriaNegocio.dispositivo).joinedload(Dispositivo.usuario),
+        joinedload(AuditoriaNegocio.dispositivo),
         joinedload(AuditoriaNegocio.tipo_registro),
         joinedload(AuditoriaNegocio.vigilante),
     )
 
     if id_dispositivo is not None:
         consulta = consulta.where(AuditoriaNegocio.id_dispositivo == id_dispositivo)
-    if id_usuario is not None:
-        consulta = consulta.join(Dispositivo).where(Dispositivo.id_usuario == id_usuario)
+    if responsable is not None:
+        consulta = consulta.join(Dispositivo).where(Dispositivo.responsable.ilike(f"%{responsable}%"))
     if tipo is not None:
         consulta = consulta.join(TipoRegistro).where(TipoRegistro.nombre == tipo)
     if desde is not None:

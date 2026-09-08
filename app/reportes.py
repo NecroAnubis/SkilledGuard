@@ -25,7 +25,7 @@ def _filas(movimientos: list[AuditoriaNegocio]) -> list[list[str]]:
             m.tipo_registro.nombre,
             m.dispositivo.serial,
             f"{m.dispositivo.marca} {m.dispositivo.modelo}",
-            m.dispositivo.usuario.nombre_completo,
+            m.dispositivo.responsable,
             m.vigilante.nombre_completo,
             m.observacion or "",
         ]

@@ -109,6 +109,7 @@ $("boton-salir").addEventListener("click", () => cerrarSesion());
 
 async function iniciarAplicacion() {
   const yo = await json("/auth/yo");
+  SESION.roles = yo.roles;
   $("usuario-sesion").textContent = `${yo.nombre_completo} · ${yo.roles.join(", ") || "sin rol"}`;
   $("pantalla-login").classList.add("oculto");
   $("aplicacion").classList.remove("oculto");
@@ -237,16 +238,7 @@ async function pintarEquipo(equipo) {
   $("boton-ingreso").disabled = equipo.estado === "dentro";
   $("boton-salida").disabled = equipo.estado === "fuera";
 
-  $("det-responsable").textContent = "—";
-  try {
-    const usuarios = await json("/usuarios?limite=200");
-    const responsable = usuarios.find((u) => u.id === equipo.id_usuario);
-    if (responsable) {
-      $("det-responsable").textContent = `${responsable.nombres} ${responsable.apellidos}`;
-    }
-  } catch {
-    // El rol Seguridad no puede listar usuarios; el resto de la ficha sirve igual.
-  }
+  $("det-responsable").textContent = equipo.responsable;
 
   $("sin-equipo").classList.add("oculto");
   $("equipo-detectado").classList.remove("oculto");
@@ -296,21 +288,19 @@ async function registrarMovimiento(tipo) {
 async function cargarEquipos() {
   ocultarMensaje("mensaje-equipos");
   try {
-    const [equipos, tipos, usuarios] = await Promise.all([
+    const [equipos, tipos] = await Promise.all([
       json("/dispositivos?limite=200"),
       json("/tipos-dispositivo"),
-      json("/usuarios?limite=200").catch(() => []),
     ]);
 
     rellenarSelector("eq-tipo", tipos, (t) => t.nombre);
-    rellenarSelector("eq-usuario", usuarios, (u) => `${u.nombres} ${u.apellidos} — ${u.documento}`);
-    // Sin permiso para listar usuarios no se puede registrar un equipo.
-    $("tarjeta-registro").classList.toggle("oculto", usuarios.length === 0);
+    // Solo el administrador puede registrar equipos; el servidor lo exige igual.
+    $("tarjeta-registro").classList.toggle("oculto", !SESION.roles?.includes("Administrador"));
 
     const cuerpo = $("tabla-equipos");
     cuerpo.innerHTML = "";
     if (equipos.length === 0) {
-      cuerpo.innerHTML = '<tr><td colspan="5" class="vacio">No hay equipos registrados.</td></tr>';
+      cuerpo.innerHTML = '<tr><td colspan="6" class="vacio">No hay equipos registrados.</td></tr>';
       return;
     }
 
@@ -319,6 +309,7 @@ async function cargarEquipos() {
       fila.innerHTML = `
         <td>${equipo.serial}</td>
         <td>${equipo.marca} ${equipo.modelo}</td>
+        <td>${equipo.responsable}</td>
         <td>${equipo.sistema ?? "—"}</td>
         <td><span class="pastilla ${equipo.estado}">${equipo.estado}</span></td>
         <td></td>`;
@@ -357,7 +348,7 @@ $("form-equipo").addEventListener("submit", async (evento) => {
         modelo: $("eq-modelo").value.trim(),
         sistema: $("eq-sistema").value.trim() || null,
         id_tipo_dispositivo: Number($("eq-tipo").value),
-        id_usuario: Number($("eq-usuario").value),
+        responsable: $("eq-responsable").value.trim(),
       }),
     });
     mostrarMensaje("mensaje-equipos", `Equipo ${equipo.serial} registrado. Ya tiene su código QR.`);

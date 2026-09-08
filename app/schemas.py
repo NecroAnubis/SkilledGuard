@@ -82,7 +82,7 @@ class DispositivoCrear(BaseModel):
     modelo: str = Field(min_length=1, max_length=100)
     sistema: str | None = Field(default=None, max_length=50)
     id_tipo_dispositivo: int
-    id_usuario: int
+    responsable: str = Field(min_length=1, max_length=150)
 
 
 class DispositivoLeer(_DesdeORM):
@@ -92,7 +92,7 @@ class DispositivoLeer(_DesdeORM):
     modelo: str
     sistema: str | None
     id_tipo_dispositivo: int
-    id_usuario: int
+    responsable: str
     qr: str
     estado: str = EstadoDispositivo.FUERA.value
     fecha_creado: datetime

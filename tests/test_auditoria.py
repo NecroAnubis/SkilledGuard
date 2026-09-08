@@ -19,7 +19,7 @@ def test_crear_un_equipo_deja_rastro(cliente, db, catalogos_porteria, admin, enc
             "marca": "Dell",
             "modelo": "Latitude",
             "id_tipo_dispositivo": catalogos_porteria.id,
-            "id_usuario": admin.id,
+            "responsable": "Laura Vargas",
         },
     )
     logs = cliente.get("/logs", headers=encabezados_admin).json()

@@ -118,7 +118,7 @@ def test_la_consulta_no_dispara_una_avalancha_de_queries(db, dispositivo, otro_d
         for m in resultados:
             _ = (
                 m.dispositivo.serial,
-                m.dispositivo.usuario.nombre_completo,
+                m.dispositivo.responsable,
                 m.tipo_registro.nombre,
                 m.vigilante.nombre_completo,
             )

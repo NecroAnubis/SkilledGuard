@@ -64,8 +64,6 @@ def crear(
 ) -> Dispositivo:
     if db.get(TipoDispositivo, datos.id_tipo_dispositivo) is None:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Tipo de dispositivo inexistente")
-    if db.get(Usuario, datos.id_usuario) is None:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Usuario responsable inexistente")
 
     dispositivo = Dispositivo(**datos.model_dump())
     db.add(dispositivo)

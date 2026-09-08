@@ -140,15 +140,24 @@
           <div class="fila">
             <div class="campo">
               <label for="eq-sistema">Sistema operativo</label>
-              <input id="eq-sistema" placeholder="Opcional">
+              <select id="eq-sistema">
+                <option value="">— Sin especificar —</option>
+                <option>Windows</option>
+                <option>macOS</option>
+                <option>Linux</option>
+                <option>ChromeOS</option>
+                <option>Android</option>
+                <option>iOS</option>
+                <option>Otro</option>
+              </select>
             </div>
             <div class="campo">
               <label for="eq-tipo">Tipo</label>
               <select id="eq-tipo" required></select>
             </div>
             <div class="campo">
-              <label for="eq-usuario">Responsable</label>
-              <select id="eq-usuario" required></select>
+              <label for="eq-responsable">Responsable</label>
+              <input id="eq-responsable" placeholder="Nombre de quien trae el equipo" required maxlength="150">
             </div>
           </div>
           <button class="boton" type="submit">Registrar equipo</button>
@@ -161,7 +170,7 @@
           <table>
             <thead>
               <tr>
-                <th>Serial</th><th>Equipo</th><th>Sistema</th><th>Estado</th><th>Código QR</th>
+                <th>Serial</th><th>Equipo</th><th>Responsable</th><th>Sistema</th><th>Estado</th><th>Código QR</th>
               </tr>
             </thead>
             <tbody id="tabla-equipos"></tbody>
