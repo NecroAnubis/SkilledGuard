@@ -1,0 +1,23 @@
+# Mantiene el servicio despierto y la base activa.
+#
+# La capa gratuita de Render suspende el contenedor tras 15 minutos sin
+# tráfico (el siguiente visitante paga ~1 minuto de arranque en frío) y
+# Supabase pausa el proyecto tras 7 días de inactividad. Un mismo ping
+# neutraliza ambos límites: /salud consulta la base, así que cada visita
+# cuenta como actividad en los dos servicios.
+name: Ping de disponibilidad
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Visitar /salud
+        run: |
+          codigo=$(curl -s -o /dev/null -w '%{http_code}' --max-time 90 https://skilledguard.onrender.com/salud)
+          echo "Respuesta: $codigo"
+          test "$codigo" = "200"
