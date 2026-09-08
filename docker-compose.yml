@@ -18,16 +18,21 @@ services:
 
   api:
     build: .
-    # Migra y luego levanta: el esquema siempre queda al día con el código.
-    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    # Sin `command`: se usa el entrypoint de la imagen, el mismo que corre en la
+    # plataforma de despliegue. Duplicar aquí el comando de arranque es cómo se
+    # llega a que local y producción arranquen distinto sin que nadie lo note.
     environment:
       DATABASE_URL: postgresql+psycopg://skilledguard:skilledguard@db:5432/skilledguard
       # Sin valor por defecto a propósito: un secreto escrito aquí queda en el
       # repositorio, y cualquiera que lo lea puede firmar tokens de cualquier
       # usuario. Si falta, el arranque falla — que es lo correcto.
       JWT_SECRET: ${JWT_SECRET:?falta JWT_SECRET; copia .env.example a .env}
+    # Solo en loopback. El entrypoint arranca uvicorn confiando en las cabeceras
+    # X-Forwarded-* de cualquier origen, lo que es correcto detrás del proxy de
+    # la plataforma pero no si el puerto queda abierto a la red: ahí cualquiera
+    # podría falsificar su IP de origen en la bitácora de accesos.
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     depends_on:
       db:
         condition: service_healthy
