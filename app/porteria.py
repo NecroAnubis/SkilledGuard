@@ -113,5 +113,10 @@ def registrar(
         observacion=observacion,
     )
     db.add(registro)
-    db.commit()
+    # Se hace flush y no commit: quien llama decide cuándo cierra la transacción.
+    # Confirmar aquí dejaba el movimiento guardado antes de escribir su rastro de
+    # auditoría, así que un fallo posterior producía un equipo que entró sin que
+    # nadie registrara quién lo dejó entrar — justo lo que este sistema existe
+    # para impedir. El flush asigna el id sin soltar el bloqueo de la fila.
+    db.flush()
     return registro

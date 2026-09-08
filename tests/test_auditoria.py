@@ -1,8 +1,9 @@
 """Pruebas del rastro de auditoría del sistema."""
 
+import pytest
 from sqlalchemy import func, select
 
-from app.models import LogDetalle, LogSistema, TipoDocumento
+from app.models import AuditoriaNegocio, LogDetalle, LogSistema, TipoDocumento
 
 
 def _contar_logs(db) -> int:
@@ -74,6 +75,37 @@ def test_una_operacion_fallida_no_deja_rastro(cliente, db, dispositivo, encabeza
 
     assert rechazado.status_code == 409
     assert _contar_logs(db) == antes
+
+
+def test_si_falla_el_rastro_tampoco_queda_el_movimiento(
+    cliente, db, dispositivo, encabezados_admin, monkeypatch
+):
+    """El movimiento y su rastro se guardan juntos o no se guarda ninguno.
+
+    Regresión: `registrar` confirmaba la transacción por su cuenta, así que el
+    movimiento quedaba guardado antes de escribir la auditoría. Un fallo en ese
+    punto dejaba un equipo que entró sin constancia de quién lo dejó entrar —
+    exactamente el agujero que este sistema existe para cerrar.
+    """
+
+    def explotar(*args, **kwargs):
+        raise RuntimeError("fallo al escribir la auditoría")
+
+    monkeypatch.setattr("app.routers.movimientos.registrar_accion", explotar)
+
+    with pytest.raises(RuntimeError):
+        cliente.post(
+            "/movimientos",
+            headers=encabezados_admin,
+            json={"qr": dispositivo.qr, "tipo": "Ingreso"},
+        )
+
+    # En producción `get_db` cierra la sesión y revierte lo pendiente; aquí la
+    # sesión se comparte con la prueba, así que se revierte a mano para observar
+    # lo que quedó realmente confirmado en la base.
+    db.rollback()
+
+    assert db.scalar(select(func.count()).select_from(AuditoriaNegocio)) == 0
 
 
 def test_el_rastro_solo_lo_ve_el_administrador(cliente, db, admin, encabezados_admin):
