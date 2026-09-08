@@ -116,6 +116,30 @@ class Usuario(Timestamps, Base):
         return f"{self.nombres} {self.apellidos}"
 
 
+class IntentoLogin(Base):
+    """Registro de cada intento de inicio de sesión, exitoso o fallido.
+
+    Sostiene el bloqueo temporal por intentos fallidos, y de paso deja
+    evidencia de un ataque de fuerza bruta: sin este registro, alguien puede
+    probar contraseñas durante días sin que quede rastro de haberlo hecho.
+
+    No usa el mixin Timestamps porque un intento no se actualiza nunca: ocurre
+    una vez y queda.
+    """
+
+    __tablename__ = "intento_login"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    # Se guarda el documento tal como lo escribieron, no una llave foránea: los
+    # intentos contra un documento inexistente también deben contarse.
+    documento: Mapped[str] = mapped_column(String(50), index=True)
+    exitoso: Mapped[bool]
+    origen: Mapped[str | None] = mapped_column(String(45))  # cabe una IPv6
+    fecha_creado: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), index=True
+    )
+
+
 class UsuarioRol(Timestamps, Base):
     __tablename__ = "usuario_rol"
     # Un usuario no puede tener el mismo rol dos veces.
