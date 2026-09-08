@@ -28,7 +28,9 @@ let animacion = null;
 async function api(ruta, opciones = {}) {
   const cabeceras = { ...(opciones.headers || {}) };
   if (SESION.token) cabeceras.Authorization = `Bearer ${SESION.token}`;
-  if (opciones.body && !cabeceras["Content-Type"]) {
+  // URLSearchParams ya declara application/x-www-form-urlencoded por sí solo;
+  // forzarle JSON hacía que el login llegara sin campos y fallara con 422.
+  if (opciones.body && !(opciones.body instanceof URLSearchParams) && !cabeceras["Content-Type"]) {
     cabeceras["Content-Type"] = "application/json";
   }
 
