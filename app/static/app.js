@@ -110,10 +110,15 @@ $("boton-salir").addEventListener("click", () => cerrarSesion());
 async function iniciarAplicacion() {
   const yo = await json("/auth/yo");
   SESION.roles = yo.roles;
-  $("usuario-sesion").textContent = `${yo.nombre_completo} · ${yo.roles.join(", ") || "sin rol"}`;
+  $("usuario-sesion").textContent = yo.nombre_completo;
+  $("saludo-nombre").textContent = `¡Hola, ${yo.nombre_completo.split(" ")[0]}!`;
+  $("saludo-rol").textContent = yo.roles.join(", ") || "Sin rol";
+  $("fecha-hoy").textContent = new Date().toLocaleDateString("es-CO", {
+    weekday: "long", day: "numeric", month: "long", year: "numeric",
+  });
   $("pantalla-login").classList.add("oculto");
   $("aplicacion").classList.remove("oculto");
-  cambiarVista("porteria");
+  cambiarVista("inicio");
 }
 
 // ----------------------------------------------------------------- navegación
@@ -123,13 +128,65 @@ function cambiarVista(vista) {
     boton.toggleAttribute("aria-current", boton.dataset.vista === vista);
     if (boton.dataset.vista === vista) boton.setAttribute("aria-current", "page");
   }
-  for (const nombre of ["porteria", "equipos", "historial"]) {
+  for (const nombre of ["inicio", "porteria", "equipos", "historial"]) {
     $(`vista-${nombre}`).classList.toggle("oculto", nombre !== vista);
   }
   // La cámara solo debe estar encendida mientras se está en portería.
   if (vista !== "porteria") detenerCamara();
+  if (vista === "inicio") cargarInicio();
   if (vista === "equipos") cargarEquipos();
   if (vista === "historial") cargarHistorial();
+}
+
+// Las tarjetas de acción del inicio son atajos de navegación.
+for (const accion of document.querySelectorAll(".accion")) {
+  accion.addEventListener("click", () => cambiarVista(accion.dataset.vista));
+}
+
+// ------------------------------------------------------------------- inicio
+
+function hace(iso) {
+  const minutos = Math.round((Date.now() - new Date(iso)) / 60000);
+  if (minutos < 1) return "Hace un momento";
+  if (minutos < 60) return `Hace ${minutos} min`;
+  const horas = Math.round(minutos / 60);
+  if (horas < 24) return `Hace ${horas} h`;
+  return fecha(iso);
+}
+
+async function cargarInicio() {
+  try {
+    // La fecha local, no UTC: a las 8 pm en Colombia "hoy" todavía es hoy.
+    const hoy = new Date().toLocaleDateString("en-CA");
+    const [equipos, deHoy, recientes] = await Promise.all([
+      json("/dispositivos?limite=200"),
+      json(`/movimientos?desde=${hoy}&hasta=${hoy}&limite=200`),
+      json("/movimientos?limite=5"),
+    ]);
+
+    $("stat-equipos").textContent = equipos.length;
+    $("stat-dentro").textContent = equipos.filter((e) => e.estado === "dentro").length;
+    $("stat-hoy").textContent = deHoy.length;
+
+    const lista = $("lista-actividad");
+    lista.innerHTML = "";
+    if (recientes.length === 0) {
+      lista.innerHTML = '<li class="vacio">Sin movimientos todavía.</li>';
+      return;
+    }
+    for (const m of recientes) {
+      const fila = document.createElement("li");
+      const detalle = document.createElement("span");
+      detalle.innerHTML = `<strong>${m.tipo}</strong> · ${m.equipo} — ${m.responsable}`;
+      const cuando = document.createElement("span");
+      cuando.className = "cuando";
+      cuando.textContent = hace(m.fecha);
+      fila.append(detalle, cuando);
+      lista.appendChild(fila);
+    }
+  } catch {
+    // El tablero es informativo: si una cifra falla, la navegación sigue viva.
+  }
 }
 
 for (const boton of document.querySelectorAll("nav button")) {
