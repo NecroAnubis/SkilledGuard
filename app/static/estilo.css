@@ -756,3 +756,23 @@ body.kiosco #caja-cotejo {
 body.kiosco #boton-ingreso {
   flex: 1;
 }
+
+/* ---------- Usuarios ---------- */
+
+.pastilla.rol {
+  background: var(--azul-tenue, #e4ecfd);
+  color: var(--azul);
+  margin-right: 0.3rem;
+}
+
+.agregar-rol {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.agregar-rol select {
+  width: auto;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.88rem;
+}

@@ -114,6 +114,7 @@ async function iniciarAplicacion() {
   // Ocultar el resto es comodidad; los permisos reales los exige el servidor.
   SESION.kiosco = yo.roles.includes("Kiosco") && !yo.roles.includes("Administrador") && !yo.roles.includes("Seguridad");
   document.body.classList.toggle("kiosco", SESION.kiosco);
+  $("nav-usuarios").classList.toggle("oculto", !yo.roles.includes("Administrador"));
   if (SESION.kiosco) {
     document.querySelector("#vista-porteria h1").textContent = "Registre su ingreso";
     document.querySelector("#vista-porteria .subtitulo").textContent =
@@ -140,7 +141,7 @@ function cambiarVista(vista, registrar = true) {
     boton.toggleAttribute("aria-current", boton.dataset.vista === vista);
     if (boton.dataset.vista === vista) boton.setAttribute("aria-current", "page");
   }
-  for (const nombre of ["inicio", "porteria", "equipos", "historial"]) {
+  for (const nombre of ["inicio", "porteria", "equipos", "historial", "usuarios"]) {
     $(`vista-${nombre}`).classList.toggle("oculto", nombre !== vista);
   }
   // Cada vista es una entrada del historial: el botón atrás del navegador (y
@@ -153,6 +154,7 @@ function cambiarVista(vista, registrar = true) {
   if (vista !== "porteria") detenerCamara();
   if (vista === "inicio") cargarInicio();
   if (vista === "equipos") cargarEquipos();
+  if (vista === "usuarios") cargarUsuarios();
   if (vista === "historial") cargarHistorial();
 }
 
@@ -556,6 +558,102 @@ async function descargarReporte(extension) {
 }
 
 // -------------------------------------------------------------------- arranque
+
+// ------------------------------------------------------------------ usuarios
+
+let ROLES = [];
+
+async function cargarUsuarios() {
+  ocultarMensaje("mensaje-usuarios");
+  try {
+    const [usuarios, tiposDoc, roles] = await Promise.all([
+      json("/usuarios?limite=200"),
+      json("/tipos-documento"),
+      json("/roles"),
+    ]);
+    ROLES = roles;
+    rellenarSelector("us-tipo-doc", tiposDoc, (t) => t.nombre);
+    rellenarSelector("us-rol", roles, (r) => r.nombre);
+
+    const cuerpo = $("tabla-usuarios");
+    cuerpo.innerHTML = "";
+    for (const u of usuarios) {
+      const fila = document.createElement("tr");
+      const pastillas = u.roles.length
+        ? u.roles.map((r) => `<span class="pastilla rol">${r}</span>`).join("")
+        : '<span class="pastilla fuera">Sin rol</span>';
+      fila.innerHTML = `
+        <td>${u.nombres} ${u.apellidos}</td>
+        <td>${u.documento}</td>
+        <td>${pastillas}</td>
+        <td></td>`;
+
+      // Solo se ofrecen los roles que el usuario aún no tiene.
+      const faltantes = roles.filter((r) => !u.roles.includes(r.nombre));
+      if (faltantes.length) {
+        const zona = document.createElement("div");
+        zona.className = "agregar-rol";
+        const selector = document.createElement("select");
+        for (const r of faltantes) {
+          const opcion = document.createElement("option");
+          opcion.value = r.id;
+          opcion.textContent = r.nombre;
+          selector.appendChild(opcion);
+        }
+        const boton = document.createElement("button");
+        boton.className = "boton secundario";
+        boton.textContent = "Agregar";
+        boton.addEventListener("click", () => asignarRol(u, Number(selector.value)));
+        zona.append(selector, boton);
+        fila.lastElementChild.appendChild(zona);
+      }
+      cuerpo.appendChild(fila);
+    }
+  } catch (error) {
+    mostrarMensaje("mensaje-usuarios", error.message, "error");
+  }
+}
+
+async function asignarRol(usuario, idRol) {
+  ocultarMensaje("mensaje-usuarios");
+  try {
+    await api(`/usuarios/${usuario.id}/roles`, {
+      method: "POST",
+      body: JSON.stringify({ id_rol: idRol }),
+    });
+    const rol = ROLES.find((r) => r.id === idRol);
+    mostrarMensaje("mensaje-usuarios", `Rol ${rol?.nombre ?? ""} asignado a ${usuario.nombres}.`);
+    cargarUsuarios();
+  } catch (error) {
+    mostrarMensaje("mensaje-usuarios", error.message, "error");
+  }
+}
+
+$("form-usuario").addEventListener("submit", async (evento) => {
+  evento.preventDefault();
+  ocultarMensaje("mensaje-usuarios");
+  try {
+    const usuario = await json("/usuarios", {
+      method: "POST",
+      body: JSON.stringify({
+        nombres: $("us-nombres").value.trim(),
+        apellidos: $("us-apellidos").value.trim(),
+        id_tipo_documento: Number($("us-tipo-doc").value),
+        documento: $("us-documento").value.trim(),
+        contrasena: $("us-contrasena").value,
+      }),
+    });
+    await api(`/usuarios/${usuario.id}/roles`, {
+      method: "POST",
+      body: JSON.stringify({ id_rol: Number($("us-rol").value) }),
+    });
+    mostrarMensaje("mensaje-usuarios", `Usuario ${usuario.documento} registrado con su rol.`);
+    $("form-usuario").reset();
+    cargarUsuarios();
+  } catch (error) {
+    mostrarMensaje("mensaje-usuarios", error.message, "error");
+  }
+});
 
 if (SESION.token) {
   iniciarAplicacion().catch(() => cerrarSesion());

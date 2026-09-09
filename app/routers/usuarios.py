@@ -24,8 +24,24 @@ def listar(
     # Con tope: sin él, un solo cliente puede pedir la tabla completa en una llamada.
     limite: Annotated[int, Query(ge=1, le=200)] = 50,
     desplazamiento: Annotated[int, Query(ge=0)] = 0,
-) -> list[Usuario]:
-    return list(db.scalars(select(Usuario).offset(desplazamiento).limit(limite)).all())
+) -> list[UsuarioLeer]:
+    usuarios = list(db.scalars(select(Usuario).offset(desplazamiento).limit(limite)).all())
+
+    # Los roles de todos en una sola consulta: pedirlos usuario por usuario
+    # convertiría este listado en una consulta por fila.
+    filas = db.execute(
+        select(UsuarioRol.id_usuario, Rol.nombre)
+        .join(Rol, Rol.id == UsuarioRol.id_rol)
+        .where(UsuarioRol.id_usuario.in_([u.id for u in usuarios]))
+    ).all() if usuarios else []
+    por_usuario: dict[int, list[str]] = {}
+    for id_usuario, nombre in filas:
+        por_usuario.setdefault(id_usuario, []).append(nombre)
+
+    return [
+        UsuarioLeer.model_validate(u).model_copy(update={"roles": por_usuario.get(u.id, [])})
+        for u in usuarios
+    ]
 
 
 @router.get("/{id_usuario}", response_model=UsuarioLeer)
