@@ -19,6 +19,9 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 ROL_ADMINISTRADOR = "Administrador"
 ROL_SEGURIDAD = "Seguridad"
 ROL_USUARIO = "Usuario"
+# Sesión de la tablet de autoservicio en la entrada: el dueño del equipo
+# registra su propio ingreso. Solo ingresos — la salida exige a un vigilante.
+ROL_KIOSCO = "Kiosco"
 
 
 # bcrypt solo considera los primeros 72 bytes y descarta el resto en silencio:

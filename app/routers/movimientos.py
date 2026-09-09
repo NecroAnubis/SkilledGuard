@@ -13,11 +13,21 @@ from app.database import get_db
 from app.models import AuditoriaNegocio, Dispositivo, Usuario
 from app.porteria import MovimientoInvalido, TipoMovimiento, registrar
 from app.schemas import MovimientoLeer, MovimientoRegistrar
-from app.security import ROL_ADMINISTRADOR, ROL_SEGURIDAD, exige_rol, usuario_actual
+from app.security import (
+    ROL_ADMINISTRADOR,
+    ROL_KIOSCO,
+    ROL_SEGURIDAD,
+    exige_rol,
+    roles_de,
+    usuario_actual,
+)
 
 router = APIRouter(prefix="/movimientos", tags=["Portería"])
 
 _porteria = [Depends(exige_rol(ROL_ADMINISTRADOR, ROL_SEGURIDAD))]
+# El kiosco de autoservicio puede CREAR movimientos (la validación de que solo
+# sean ingresos vive en el handler), pero no consultar el historial.
+_registro = [Depends(exige_rol(ROL_ADMINISTRADOR, ROL_SEGURIDAD, ROL_KIOSCO))]
 
 
 def a_esquema(movimiento: AuditoriaNegocio) -> MovimientoLeer:
@@ -36,7 +46,7 @@ def a_esquema(movimiento: AuditoriaNegocio) -> MovimientoLeer:
 
 
 @router.post(
-    "", response_model=MovimientoLeer, status_code=status.HTTP_201_CREATED, dependencies=_porteria
+    "", response_model=MovimientoLeer, status_code=status.HTTP_201_CREATED, dependencies=_registro
 )
 def registrar_movimiento(
     datos: MovimientoRegistrar,
@@ -47,6 +57,16 @@ def registrar_movimiento(
     dispositivo = db.scalar(select(Dispositivo).where(Dispositivo.qr == datos.qr))
     if dispositivo is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "El código QR no corresponde a un equipo")
+
+    # El kiosco es autoservicio del dueño: puede registrar su ingreso, nunca
+    # una salida — la salida exige el cotejo físico de un vigilante. La regla
+    # vive en el servidor porque ocultar el botón en la tablet no es seguridad.
+    roles = set(roles_de(db, vigilante.id))
+    if datos.tipo != TipoMovimiento.INGRESO.value and roles == {ROL_KIOSCO}:
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN,
+            "El autoservicio solo registra ingresos; la salida la registra el personal de seguridad",
+        )
 
     try:
         movimiento = registrar(

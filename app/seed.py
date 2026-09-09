@@ -26,7 +26,13 @@ from app.models import (
     UsuarioRol,
 )
 from app.porteria import TipoMovimiento
-from app.security import ROL_ADMINISTRADOR, ROL_SEGURIDAD, ROL_USUARIO, hashear_contrasena
+from app.security import (
+    ROL_ADMINISTRADOR,
+    ROL_KIOSCO,
+    ROL_SEGURIDAD,
+    ROL_USUARIO,
+    hashear_contrasena,
+)
 
 TIPOS_DOCUMENTO = [
     ("Cédula de ciudadanía", "CC", "Documento nacional"),
@@ -38,6 +44,7 @@ ROLES = [
     (ROL_ADMINISTRADOR, "Gestión total del sistema"),
     (ROL_SEGURIDAD, "Validación de ingreso y salida en portería"),
     (ROL_USUARIO, "Registro y consulta de sus propios equipos"),
+    (ROL_KIOSCO, "Autoservicio de ingreso en portería; no puede registrar salidas"),
 ]
 
 TIPOS_DISPOSITIVO = [
