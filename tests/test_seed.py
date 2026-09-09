@@ -14,7 +14,7 @@ def test_seed_crea_los_datos_base(db):
     sembrar(db, "1000000000", "clave-del-admin-1")
 
     assert _contar(db, TipoDocumento) == 3
-    assert _contar(db, Rol) == 3
+    assert _contar(db, Rol) == 4
     admin = db.scalar(select(Usuario).where(Usuario.documento == "1000000000"))
     assert admin is not None
     assert admin.contrasena_hash.startswith("$2b$")
@@ -25,7 +25,7 @@ def test_seed_es_idempotente(db):
     sembrar(db, "1000000000", "clave-del-admin-1")
 
     assert _contar(db, TipoDocumento) == 3
-    assert _contar(db, Rol) == 3
+    assert _contar(db, Rol) == 4
     assert _contar(db, Usuario) == 1
 
 
