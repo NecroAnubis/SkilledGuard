@@ -15,7 +15,16 @@ from openpyxl.styles import Alignment, Font, PatternFill
 
 from app.models import AuditoriaNegocio
 
-ENCABEZADOS = ["Fecha", "Tipo", "Serial", "Equipo", "Responsable", "Registrado por", "Observación"]
+ENCABEZADOS = [
+    "Fecha",
+    "Tipo",
+    "Serial",
+    "Equipo",
+    "Responsable",
+    "Registrado por",
+    "Portería",
+    "Observación",
+]
 
 
 def _filas(movimientos: list[AuditoriaNegocio]) -> list[list[str]]:
@@ -27,6 +36,7 @@ def _filas(movimientos: list[AuditoriaNegocio]) -> list[list[str]]:
             f"{m.dispositivo.marca} {m.dispositivo.modelo}",
             m.dispositivo.responsable,
             m.vigilante.nombre_completo,
+            m.porteria.nombre if m.porteria else "-",
             m.observacion or "",
         ]
         for m in movimientos
@@ -86,7 +96,7 @@ class _ReportePDF(FPDF):
 
 
 # Anchos en mm; suman 277, el ancho útil de una hoja carta apaisada.
-_ANCHOS = [30, 20, 30, 50, 50, 50, 47]
+_ANCHOS = [28, 18, 28, 46, 46, 46, 30, 35]
 
 
 def generar_pdf(movimientos: list[AuditoriaNegocio]) -> bytes:
@@ -108,7 +118,8 @@ def generar_pdf(movimientos: list[AuditoriaNegocio]) -> bytes:
             # El texto se recorta al ancho de la celda: sin esto una observación
             # larga desborda y descuadra toda la tabla.
             maximo = int(ancho / 1.8)
-            texto = valor if len(valor) <= maximo else valor[: maximo - 1] + "…"
+            # Solo caracteres latin-1: las fuentes base del PDF no conocen "…" ni "—".
+            texto = valor if len(valor) <= maximo else valor[: maximo - 3] + "..."
             pdf.cell(ancho, 6, texto, border=1)
         pdf.ln()
 

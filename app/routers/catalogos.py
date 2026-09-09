@@ -13,7 +13,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models import Rol, TipoDispositivo, TipoDocumento
+from app.models import Porteria, Rol, TipoDispositivo, TipoDocumento
 from app.schemas import (
     CatalogoCrear,
     CatalogoLeer,
@@ -23,6 +23,7 @@ from app.schemas import (
 from app.security import ROL_ADMINISTRADOR, exige_rol
 
 roles = APIRouter(prefix="/roles", tags=["Roles"])
+porterias = APIRouter(prefix="/porterias", tags=["Porterías"])
 tipos_documento = APIRouter(prefix="/tipos-documento", tags=["Tipos de documento"])
 tipos_dispositivo = APIRouter(prefix="/tipos-dispositivo", tags=["Tipos de dispositivo"])
 
@@ -40,6 +41,18 @@ def _guardar(db: Session, registro, nombre: str):
             status.HTTP_409_CONFLICT, f"Ya existe un registro con nombre '{nombre}'"
         ) from None
     return registro
+
+
+@porterias.get("", response_model=list[CatalogoLeer])
+def listar_porterias(db: Annotated[Session, Depends(get_db)]) -> list[Porteria]:
+    return list(db.scalars(select(Porteria)).all())
+
+
+@porterias.post(
+    "", response_model=CatalogoLeer, status_code=status.HTTP_201_CREATED, dependencies=_solo_admin
+)
+def crear_porteria(datos: CatalogoCrear, db: Annotated[Session, Depends(get_db)]) -> Porteria:
+    return _guardar(db, Porteria(**datos.model_dump()), datos.nombre)
 
 
 @roles.get("", response_model=list[CatalogoLeer])
