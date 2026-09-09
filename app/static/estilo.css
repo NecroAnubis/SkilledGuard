@@ -501,16 +501,22 @@ td.numero {
 }
 
 .volver {
-  background: transparent;
-  border: none;
+  background: var(--panel);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
   color: var(--azul);
   font: inherit;
   font-weight: 600;
-  padding: 0.4rem 0;
-  margin-bottom: 0.75rem;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+}
+
+.volver:hover {
+  border-color: var(--azul);
 }
 
 .marca .logo,
