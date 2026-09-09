@@ -4,7 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Skilled Guard</title>
-  <link rel="stylesheet" href="estilo.css?v=2">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="estilo.css?v=4">
 </head>
 <body>
 
@@ -12,7 +13,7 @@
 <section id="pantalla-login">
   <form class="tarjeta-login" id="form-login">
     <div class="marca">
-      🛡️ Skilled Guard
+      <svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path fill="#2563eb" d="M11.3 1.05a1.7 1.7 0 0 1 1.4 0C14.5 2.9 17 4 19 4a1 1 0 0 1 1 1v8c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67 0C7.5 20.5 4 18 4 13V5a1 1 0 0 1 1-1c2 0 4.5-1.1 6.3-2.95z"/><path fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="m8.8 12.2 2.2 2.2 4.4-4.4"/></svg> Skilled Guard
     </div>
     <small style="color:var(--tinta-suave); display:block; margin-bottom:1.75rem">
       Control de ingreso de equipos tecnológicos
@@ -39,7 +40,7 @@
 <div id="aplicacion" class="oculto">
 
   <header>
-    <div class="marca" style="font-size:1.35rem">Skilled Guard</div>
+    <div class="marca" style="font-size:1.35rem"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path fill="#2563eb" d="M11.3 1.05a1.7 1.7 0 0 1 1.4 0C14.5 2.9 17 4 19 4a1 1 0 0 1 1 1v8c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67 0C7.5 20.5 4 18 4 13V5a1 1 0 0 1 1-1c2 0 4.5-1.1 6.3-2.95z"/><path fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="m8.8 12.2 2.2 2.2 4.4-4.4"/></svg> Skilled Guard</div>
     <nav>
       <button data-vista="inicio" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Inicio</button>
       <button data-vista="porteria"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg> Portería</button>
@@ -54,6 +55,8 @@
   </header>
 
   <main>
+
+    <button id="boton-volver" class="volver oculto">&#8592; Volver</button>
 
     <!-- ---------- Pantalla de inicio ---------- -->
     <section id="vista-inicio">
@@ -291,7 +294,7 @@
 <!-- Zona usada solo al imprimir un código QR -->
 <div id="zona-impresion" class="oculto"></div>
 
-<script src="jsQR.js?v=2"></script>
-<script src="app.js?v=2"></script>
+<script src="jsQR.js?v=3"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>

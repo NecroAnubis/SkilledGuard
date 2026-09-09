@@ -71,6 +71,9 @@ body {
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 0.25rem;
+  /* Karma trae aire bajo la línea base: sin esto el texto queda alto
+     respecto al logo y el centrado del flex no se nota. */
+  line-height: 1;
 }
 
 .marca small {
@@ -442,28 +445,100 @@ td.numero {
 
 /* ---------- Código QR ---------- */
 
-.qr-caja {
-  text-align: center;
+/* En pantalla es un modal a pantalla completa; al imprimir, solo su contenido. */
+#zona-impresion:not(.oculto) {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(15, 23, 42, 0.65);
+  display: grid;
+  place-items: center;
+  padding: 1rem;
 }
 
-.qr-caja img {
-  width: 12rem;
-  height: 12rem;
+.qr-tarjeta {
+  background: var(--panel);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 1.75rem;
+  text-align: center;
+  width: 100%;
+  max-width: 24rem;
+  max-height: 95vh;
+  overflow-y: auto;
+}
+
+.qr-tarjeta h2 {
+  margin: 0 0 0.25rem;
+}
+
+.qr-tarjeta img {
+  width: min(76vw, 16rem);
+  height: auto;
+  aspect-ratio: 1;
   image-rendering: pixelated;
   border: 1px solid var(--borde);
   border-radius: 8px;
   background: #fff;
 }
 
-.qr-caja p {
+.qr-tarjeta .codigo {
   font-size: 0.8rem;
   color: var(--tinta-suave);
   word-break: break-all;
 }
 
+.qr-acciones {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+}
+
+.qr-acciones .boton {
+  /* En el teléfono cada botón es un objetivo táctil generoso. */
+  padding: 0.85rem;
+  text-decoration: none;
+}
+
+.volver {
+  background: transparent;
+  border: none;
+  color: var(--azul);
+  font: inherit;
+  font-weight: 600;
+  padding: 0.4rem 0;
+  margin-bottom: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.marca .logo,
+header .logo {
+  width: 1.6rem;
+  height: 1.6rem;
+  flex-shrink: 0;
+  /* La caja de Karma no es simétrica: el ojo pide bajar el texto un pelo,
+     así que el logo sube ese mismo pelo. */
+  margin-top: -0.15rem;
+}
+
 @media print {
   body > *:not(#zona-impresion) {
     display: none !important;
+  }
+  /* Impreso no es un modal: sin fondo oscuro, sin sombras, sin botones. */
+  #zona-impresion:not(.oculto) {
+    position: static;
+    background: none;
+    padding: 0;
+  }
+  .qr-tarjeta {
+    box-shadow: none;
+    max-width: none;
+  }
+  .qr-acciones {
+    display: none;
   }
 }
 
