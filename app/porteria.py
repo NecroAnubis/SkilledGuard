@@ -93,6 +93,7 @@ def registrar(
     movimiento: TipoMovimiento,
     id_vigilante: int,
     observacion: str | None = None,
+    id_porteria: int | None = None,
 ) -> AuditoriaNegocio:
     # Bloquea la fila del equipo hasta que termine la transacción. Sin esto, dos
     # peticiones simultáneas del mismo equipo leen ambas "fuera" y ambas
@@ -107,6 +108,7 @@ def registrar(
         raise MovimientoInvalido(f"El catálogo no tiene el tipo de registro '{movimiento.value}'")
 
     registro = AuditoriaNegocio(
+        id_porteria=id_porteria,
         id_dispositivo=dispositivo.id,
         id_tipo_registro=tipo.id,
         registrado_por=id_vigilante,

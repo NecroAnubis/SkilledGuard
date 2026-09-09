@@ -24,6 +24,7 @@ app = FastAPI(
 app.include_router(auth.router)
 app.include_router(usuarios.router)
 app.include_router(catalogos.roles)
+app.include_router(catalogos.porterias)
 app.include_router(catalogos.tipos_documento)
 app.include_router(catalogos.tipos_dispositivo)
 app.include_router(dispositivos.router)

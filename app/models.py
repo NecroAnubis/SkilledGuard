@@ -187,6 +187,17 @@ class Dispositivo(Timestamps, Base):
 # --------------------------------------------------------------------------
 
 
+class Porteria(Timestamps, Base):
+    """Las entradas físicas de la sede. Cada movimiento registra por cuál pasó:
+    una sede puede tener varias, asignadas por horario o programa educativo."""
+
+    __tablename__ = "porteria"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    nombre: Mapped[str] = mapped_column(String(100), unique=True)
+    descripcion: Mapped[str | None] = mapped_column(String(255))
+
+
 class AuditoriaNegocio(Timestamps, Base):
     """Movimientos de equipos: cada ingreso y cada salida por portería.
 
@@ -203,11 +214,14 @@ class AuditoriaNegocio(Timestamps, Base):
     id_dispositivo: Mapped[int] = mapped_column(ForeignKey("dispositivo.id"), index=True)
     id_tipo_registro: Mapped[int] = mapped_column(ForeignKey("tipo_registro.id"))
     registrado_por: Mapped[int] = mapped_column(ForeignKey("usuario.id"))
+    # Nullable: los movimientos anteriores a esta columna no declararon portería.
+    id_porteria: Mapped[int | None] = mapped_column(ForeignKey("porteria.id"))
     observacion: Mapped[str | None] = mapped_column(String(500))
 
     dispositivo: Mapped[Dispositivo] = relationship(back_populates="movimientos")
     tipo_registro: Mapped[TipoRegistro] = relationship()
     vigilante: Mapped[Usuario] = relationship()
+    porteria: Mapped[Porteria | None] = relationship()
 
 
 class LogSistema(Timestamps, Base):

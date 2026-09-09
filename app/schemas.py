@@ -125,6 +125,7 @@ class MovimientoRegistrar(BaseModel):
 
     qr: str = Field(min_length=1, max_length=255)
     tipo: Literal["Ingreso", "Salida"]
+    id_porteria: int | None = None
     observacion: str | None = Field(default=None, max_length=500)
 
 
@@ -147,6 +148,7 @@ class MovimientoLeer(_DesdeORM):
     equipo: str
     responsable: str
     registrado_por: str
+    porteria: str | None
     observacion: str | None
     fecha: datetime
 
