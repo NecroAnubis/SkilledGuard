@@ -28,7 +28,7 @@ from app.models import (
 from app.porteria import TipoMovimiento
 from app.security import (
     ROL_ADMINISTRADOR,
-    ROL_KIOSCO,
+    ROL_ENTRADA,
     ROL_SEGURIDAD,
     ROL_USUARIO,
     hashear_contrasena,
@@ -44,7 +44,7 @@ ROLES = [
     (ROL_ADMINISTRADOR, "Gestión total del sistema"),
     (ROL_SEGURIDAD, "Validación de ingreso y salida en portería"),
     (ROL_USUARIO, "Registro y consulta de sus propios equipos"),
-    (ROL_KIOSCO, "Autoservicio de ingreso en portería; no puede registrar salidas"),
+    (ROL_ENTRADA, "Autoservicio de ingreso en la entrada; no puede registrar salidas"),
 ]
 
 TIPOS_DISPOSITIVO = [

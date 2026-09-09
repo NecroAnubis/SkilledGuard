@@ -112,7 +112,7 @@ async function iniciarAplicacion() {
   SESION.roles = yo.roles;
   // La tablet de autoservicio vive en una sola pantalla: escanear e ingresar.
   // Ocultar el resto es comodidad; los permisos reales los exige el servidor.
-  SESION.kiosco = yo.roles.includes("Kiosco") && !yo.roles.includes("Administrador") && !yo.roles.includes("Seguridad");
+  SESION.kiosco = yo.roles.includes("Entrada") && !yo.roles.includes("Administrador") && !yo.roles.includes("Seguridad");
   document.body.classList.toggle("kiosco", SESION.kiosco);
   $("nav-usuarios").classList.toggle("oculto", !yo.roles.includes("Administrador"));
   if (SESION.kiosco) {

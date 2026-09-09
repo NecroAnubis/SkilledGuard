@@ -1,4 +1,4 @@
-"""Pruebas del rol Kiosco: autoservicio de ingreso en portería.
+"""Pruebas del rol Entrada: autoservicio de ingreso.
 
 El kiosco puede registrar ingresos (el dueño escanea su propio equipo) pero
 nunca salidas ni consultas del historial: la salida exige el cotejo físico de
@@ -9,13 +9,13 @@ tablet no es seguridad.
 import pytest
 
 from app.models import Rol, Usuario, UsuarioRol
-from app.security import ROL_KIOSCO, hashear_contrasena
+from app.security import ROL_ENTRADA, hashear_contrasena
 
 
 @pytest.fixture
 def encabezados_kiosco(cliente, db, admin) -> dict[str, str]:
-    """Sesión de la tablet de autoservicio, con el rol Kiosco y nada más."""
-    rol = Rol(nombre=ROL_KIOSCO, descripcion="Autoservicio de ingreso")
+    """Sesión de la tablet de autoservicio, con el rol Entrada y nada más."""
+    rol = Rol(nombre=ROL_ENTRADA, descripcion="Autoservicio de ingreso")
     db.add(rol)
     db.flush()
     kiosco = Usuario(
