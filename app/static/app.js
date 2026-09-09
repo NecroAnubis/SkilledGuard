@@ -118,12 +118,13 @@ async function iniciarAplicacion() {
   });
   $("pantalla-login").classList.add("oculto");
   $("aplicacion").classList.remove("oculto");
-  cambiarVista("inicio");
+  cambiarVista("inicio", false);
+  history.replaceState({ vista: "inicio" }, "", "#inicio");
 }
 
 // ----------------------------------------------------------------- navegación
 
-function cambiarVista(vista) {
+function cambiarVista(vista, registrar = true) {
   for (const boton of document.querySelectorAll("nav button")) {
     boton.toggleAttribute("aria-current", boton.dataset.vista === vista);
     if (boton.dataset.vista === vista) boton.setAttribute("aria-current", "page");
@@ -131,12 +132,25 @@ function cambiarVista(vista) {
   for (const nombre of ["inicio", "porteria", "equipos", "historial"]) {
     $(`vista-${nombre}`).classList.toggle("oculto", nombre !== vista);
   }
+  // Cada vista es una entrada del historial: el botón atrás del navegador (y
+  // del teléfono) navega entre vistas en vez de sacar al usuario de la app.
+  $("boton-volver").classList.toggle("oculto", vista === "inicio");
+  if (registrar && location.hash !== `#${vista}`) {
+    history.pushState({ vista }, "", `#${vista}`);
+  }
   // La cámara solo debe estar encendida mientras se está en portería.
   if (vista !== "porteria") detenerCamara();
   if (vista === "inicio") cargarInicio();
   if (vista === "equipos") cargarEquipos();
   if (vista === "historial") cargarHistorial();
 }
+
+window.addEventListener("popstate", (evento) => {
+  if (!SESION.token) return;
+  cambiarVista(evento.state?.vista || "inicio", false);
+});
+
+$("boton-volver").addEventListener("click", () => history.back());
 
 // Las tarjetas de acción del inicio son atajos de navegación.
 for (const accion of document.querySelectorAll(".accion")) {
@@ -423,18 +437,37 @@ async function mostrarQr(equipo) {
   const url = URL.createObjectURL(await respuesta.blob());
 
   const zona = $("zona-impresion");
-  zona.className = "qr-caja";
   zona.innerHTML = `
-    <h2>${equipo.marca} ${equipo.modelo}</h2>
-    <p><strong>Serial: ${equipo.serial}</strong></p>
-    <img src="${url}" alt="Código QR del equipo ${equipo.serial}">
-    <p>${equipo.qr}</p>`;
-  const imprimir = document.createElement("button");
-  imprimir.className = "boton";
-  imprimir.textContent = "Imprimir";
-  imprimir.addEventListener("click", () => window.print());
-  zona.appendChild(imprimir);
-  zona.scrollIntoView({ behavior: "smooth" });
+    <div class="qr-tarjeta" role="dialog" aria-modal="true" aria-label="Código QR del equipo ${equipo.serial}">
+      <h2>${equipo.marca} ${equipo.modelo}</h2>
+      <p><strong>Serial: ${equipo.serial}</strong></p>
+      <img src="${url}" alt="Código QR del equipo ${equipo.serial}">
+      <p class="codigo">${equipo.qr}</p>
+      <div class="qr-acciones">
+        <button class="boton" id="qr-imprimir">Imprimir</button>
+        <a class="boton secundario" id="qr-descargar" href="${url}" download="qr-${equipo.serial}.png">Descargar imagen</a>
+        <button class="boton secundario" id="qr-cerrar">Cerrar</button>
+      </div>
+    </div>`;
+  zona.classList.remove("oculto");
+
+  const alPresionarTecla = (evento) => {
+    if (evento.key === "Escape") cerrar();
+  };
+  function cerrar() {
+    zona.classList.add("oculto");
+    zona.innerHTML = "";
+    URL.revokeObjectURL(url);
+    document.removeEventListener("keydown", alPresionarTecla);
+  }
+  document.addEventListener("keydown", alPresionarTecla);
+  // Asignación (no addEventListener): abrir otro QR no acumula manejadores.
+  zona.onclick = (evento) => {
+    if (evento.target === zona) cerrar();
+  };
+  $("qr-imprimir").addEventListener("click", () => window.print());
+  $("qr-cerrar").addEventListener("click", cerrar);
+  $("qr-cerrar").focus();
 }
 
 // ------------------------------------------------------------------ historial
