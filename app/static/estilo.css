@@ -723,3 +723,36 @@ header .logo {
 .estadistica p:first-child {
   margin-bottom: 0.35rem;
 }
+
+/* ---------- Cotejo físico y modo kiosco ---------- */
+
+.cotejo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.93rem;
+  font-weight: 400;
+  background: var(--alerta-fondo);
+  border-radius: 8px;
+  padding: 0.7rem 0.9rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+}
+
+.cotejo input {
+  width: 1.15rem;
+  height: 1.15rem;
+  accent-color: var(--alerta);
+}
+
+/* La tablet de autoservicio: una sola pantalla, sin navegación. */
+body.kiosco nav,
+body.kiosco #boton-volver,
+body.kiosco #boton-salida,
+body.kiosco #caja-cotejo {
+  display: none !important;
+}
+
+body.kiosco #boton-ingreso {
+  flex: 1;
+}

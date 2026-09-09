@@ -110,6 +110,15 @@ $("boton-salir").addEventListener("click", () => cerrarSesion());
 async function iniciarAplicacion() {
   const yo = await json("/auth/yo");
   SESION.roles = yo.roles;
+  // La tablet de autoservicio vive en una sola pantalla: escanear e ingresar.
+  // Ocultar el resto es comodidad; los permisos reales los exige el servidor.
+  SESION.kiosco = yo.roles.includes("Kiosco") && !yo.roles.includes("Administrador") && !yo.roles.includes("Seguridad");
+  document.body.classList.toggle("kiosco", SESION.kiosco);
+  if (SESION.kiosco) {
+    document.querySelector("#vista-porteria h1").textContent = "Registre su ingreso";
+    document.querySelector("#vista-porteria .subtitulo").textContent =
+      "Escanee el código QR pegado en su equipo. La salida la registra el personal de seguridad.";
+  }
   $("usuario-sesion").textContent = yo.nombre_completo;
   $("saludo-nombre").textContent = `¡Hola, ${yo.nombre_completo.split(" ")[0]}!`;
   $("saludo-rol").textContent = yo.roles.join(", ") || "Sin rol";
@@ -118,13 +127,15 @@ async function iniciarAplicacion() {
   });
   $("pantalla-login").classList.add("oculto");
   $("aplicacion").classList.remove("oculto");
-  cambiarVista("inicio", false);
-  history.replaceState({ vista: "inicio" }, "", "#inicio");
+  const inicial = SESION.kiosco ? "porteria" : "inicio";
+  cambiarVista(inicial, false);
+  history.replaceState({ vista: inicial }, "", `#${inicial}`);
 }
 
 // ----------------------------------------------------------------- navegación
 
 function cambiarVista(vista, registrar = true) {
+  if (SESION.kiosco) vista = "porteria";
   for (const boton of document.querySelectorAll("nav button")) {
     boton.toggleAttribute("aria-current", boton.dataset.vista === vista);
     if (boton.dataset.vista === vista) boton.setAttribute("aria-current", "page");
@@ -307,7 +318,8 @@ async function pintarEquipo(equipo) {
   // Deshabilitar el movimiento imposible evita el rechazo antes de pedirlo.
   // El servidor lo valida igual: esto es comodidad, no seguridad.
   $("boton-ingreso").disabled = equipo.estado === "dentro";
-  $("boton-salida").disabled = equipo.estado === "fuera";
+  $("chk-cotejo").checked = false;
+  actualizarBotonSalida();
 
   $("det-responsable").textContent = equipo.responsable;
 
@@ -322,6 +334,13 @@ for (const [boton, tipo] of [
   $(boton).addEventListener("click", () => registrarMovimiento(tipo));
 }
 
+// La salida exige que el vigilante confirme el cotejo físico del equipo.
+function actualizarBotonSalida() {
+  const puede = equipoActual && equipoActual.estado === "dentro" && $("chk-cotejo").checked;
+  $("boton-salida").disabled = !puede;
+}
+$("chk-cotejo").addEventListener("change", actualizarBotonSalida);
+
 async function registrarMovimiento(tipo) {
   if (!equipoActual) return;
   $("boton-ingreso").disabled = true;
@@ -333,7 +352,10 @@ async function registrarMovimiento(tipo) {
       body: JSON.stringify({
         qr: equipoActual.qr,
         tipo,
-        observacion: $("observacion").value.trim() || null,
+        observacion:
+          tipo === "Salida"
+            ? ["Serial cotejado físicamente", $("observacion").value.trim()].filter(Boolean).join(" — ")
+            : $("observacion").value.trim() || null,
       }),
     });
     mostrarMensaje(
