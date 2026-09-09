@@ -15,7 +15,7 @@ from app.qr import generar_png
 from app.schemas import DispositivoCrear, DispositivoEstado, DispositivoLeer
 from app.security import (
     ROL_ADMINISTRADOR,
-    ROL_KIOSCO,
+    ROL_ENTRADA,
     ROL_SEGURIDAD,
     exige_rol,
     usuario_actual,
@@ -24,7 +24,7 @@ from app.security import (
 router = APIRouter(prefix="/dispositivos", tags=["Dispositivos"])
 
 # Seguridad necesita consultar equipos en portería, pero no crearlos.
-_consulta = [Depends(exige_rol(ROL_ADMINISTRADOR, ROL_SEGURIDAD, ROL_KIOSCO))]
+_consulta = [Depends(exige_rol(ROL_ADMINISTRADOR, ROL_SEGURIDAD, ROL_ENTRADA))]
 _gestion = [Depends(exige_rol(ROL_ADMINISTRADOR))]
 
 
