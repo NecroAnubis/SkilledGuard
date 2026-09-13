@@ -4,7 +4,7 @@ Sin este control, alguien puede probar contraseñas indefinidamente: bcrypt hace
 lenta cada verificación, pero no impide reintentar millones de veces.
 
 **Se cuenta por documento, no por dirección IP.** En una portería todos los
-vigilantes usan la misma red, así que bloquear por IP dejaría fuera a todo el
+guardas de seguridad usan la misma red, así que bloquear por IP dejaría fuera a todo el
 turno por culpa de un solo error de tecleo de una persona.
 
 El contador vive en la base y no en memoria del proceso: así sobrevive a un

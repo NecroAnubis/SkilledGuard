@@ -357,7 +357,11 @@ async function pintarEquipo(equipo) {
   $("chk-cotejo").checked = false;
   actualizarBotonSalida();
 
-  $("det-responsable").textContent = equipo.responsable;
+  // El nombre ubica, el documento identifica: el guarda de seguridad coteja contra el
+  // carné, y dos homónimos no se distinguen solo por el nombre.
+  $("det-responsable").textContent = equipo.documento_responsable
+    ? `${equipo.responsable} · ${equipo.documento_responsable}`
+    : equipo.responsable;
 
   $("sin-equipo").classList.add("oculto");
   $("equipo-detectado").classList.remove("oculto");
@@ -370,7 +374,7 @@ for (const [boton, tipo] of [
   $(boton).addEventListener("click", () => registrarMovimiento(tipo));
 }
 
-// La salida exige que el vigilante confirme el cotejo físico del equipo.
+// La salida exige que el guarda de seguridad confirme el cotejo físico del equipo.
 function actualizarBotonSalida() {
   const puede = equipoActual && equipoActual.estado === "dentro" && $("chk-cotejo").checked;
   $("boton-salida").disabled = !puede;
@@ -439,7 +443,7 @@ async function cargarEquipos() {
       fila.innerHTML = `
         <td>${equipo.serial}</td>
         <td>${equipo.marca} ${equipo.modelo}</td>
-        <td>${equipo.responsable}</td>
+        <td>${equipo.documento_responsable ?? "—"}</td>
         <td>${equipo.sistema ?? "—"}</td>
         <td><span class="pastilla ${equipo.estado}">${equipo.estado}</span></td>
         <td></td>`;
@@ -479,6 +483,7 @@ $("form-equipo").addEventListener("submit", async (evento) => {
         sistema: $("eq-sistema").value.trim() || null,
         id_tipo_dispositivo: Number($("eq-tipo").value),
         responsable: $("eq-responsable").value.trim(),
+        documento_responsable: $("eq-doc-responsable").value.trim(),
       }),
     });
     mostrarMensaje("mensaje-equipos", `Equipo ${equipo.serial} registrado. Ya tiene su código QR.`);

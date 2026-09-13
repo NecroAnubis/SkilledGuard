@@ -39,7 +39,8 @@ def a_esquema(movimiento: AuditoriaNegocio) -> MovimientoLeer:
         serial=dispositivo.serial,
         equipo=f"{dispositivo.marca} {dispositivo.modelo}",
         responsable=dispositivo.responsable,
-        registrado_por=movimiento.vigilante.nombre_completo,
+        documento_responsable=dispositivo.documento_responsable,
+        registrado_por=movimiento.guarda.nombre_completo,
         porteria=movimiento.porteria.nombre if movimiento.porteria else None,
         observacion=movimiento.observacion,
         fecha=movimiento.fecha_creado,
@@ -52,7 +53,7 @@ def a_esquema(movimiento: AuditoriaNegocio) -> MovimientoLeer:
 def registrar_movimiento(
     datos: MovimientoRegistrar,
     db: Annotated[Session, Depends(get_db)],
-    vigilante: Annotated[Usuario, Depends(usuario_actual)],
+    guarda: Annotated[Usuario, Depends(usuario_actual)],
 ) -> MovimientoLeer:
     """Registra el ingreso o la salida de un equipo a partir de su código QR."""
     dispositivo = db.scalar(select(Dispositivo).where(Dispositivo.qr == datos.qr))
@@ -60,9 +61,9 @@ def registrar_movimiento(
         raise HTTPException(status.HTTP_404_NOT_FOUND, "El código QR no corresponde a un equipo")
 
     # El kiosco es autoservicio del dueño: puede registrar su ingreso, nunca
-    # una salida — la salida exige el cotejo físico de un vigilante. La regla
+    # una salida — la salida exige el cotejo físico de un guarda de seguridad. La regla
     # vive en el servidor porque ocultar el botón en la tablet no es seguridad.
-    roles = set(roles_de(db, vigilante.id))
+    roles = set(roles_de(db, guarda.id))
     if datos.tipo != TipoMovimiento.INGRESO.value and roles == {ROL_ENTRADA}:
         raise HTTPException(
             status.HTTP_403_FORBIDDEN,
@@ -77,7 +78,7 @@ def registrar_movimiento(
             db,
             dispositivo,
             TipoMovimiento(datos.tipo),
-            vigilante.id,
+            guarda.id,
             datos.observacion,
             datos.id_porteria,
         )
@@ -86,7 +87,7 @@ def registrar_movimiento(
 
     registrar_accion(
         db,
-        vigilante.id,
+        guarda.id,
         Accion.CREACION,
         "auditoria_negocio",
         {"tipo": (None, datos.tipo), "serial": (None, dispositivo.serial)},

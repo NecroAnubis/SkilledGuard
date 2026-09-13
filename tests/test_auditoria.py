@@ -20,6 +20,7 @@ def test_crear_un_equipo_deja_rastro(cliente, db, catalogos_porteria, admin, enc
             "modelo": "Latitude",
             "id_tipo_dispositivo": catalogos_porteria.id,
             "responsable": "Laura Vargas",
+            "documento_responsable": "1098765432",
         },
     )
     logs = cliente.get("/logs", headers=encabezados_admin).json()
@@ -114,15 +115,15 @@ def test_el_rastro_solo_lo_ve_el_administrador(cliente, db, admin, encabezados_a
         "/usuarios",
         headers=encabezados_admin,
         json={
-            "nombres": "Vigilante",
+            "nombres": "Guarda",
             "apellidos": "Turno",
             "id_tipo_documento": tipo.id,
             "documento": "5550002",
-            "contrasena": "clave-vigilante-77",
+            "contrasena": "clave-guarda-77",
         },
     )
     token = cliente.post(
-        "/auth/login", data={"username": "5550002", "password": "clave-vigilante-77"}
+        "/auth/login", data={"username": "5550002", "password": "clave-guarda-77"}
     ).json()["access_token"]
 
     respuesta = cliente.get("/logs", headers={"Authorization": f"Bearer {token}"})

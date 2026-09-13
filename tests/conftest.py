@@ -100,6 +100,7 @@ def _crear_dispositivo(db, tipo_equipo, admin, serial: str) -> Dispositivo:
         sistema="Windows 11",
         id_tipo_dispositivo=tipo_equipo.id,
         responsable="Laura Vargas",
+        documento_responsable="1098765432",
     )
     db.add(dispositivo)
     db.commit()

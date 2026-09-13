@@ -71,11 +71,11 @@ def test_el_bloqueo_no_afecta_a_otros_usuarios(cliente, db, admin, encabezados_a
         "/usuarios",
         headers=encabezados_admin,
         json={
-            "nombres": "Vigilante",
+            "nombres": "Guarda",
             "apellidos": "Turno",
             "id_tipo_documento": tipo.id,
             "documento": "9009001",
-            "contrasena": "clave-del-vigilante",
+            "contrasena": "clave-del-guarda",
         },
     )
     _fallar(cliente, documento="9009001", veces=MAX_FALLIDOS + 1)

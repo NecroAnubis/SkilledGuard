@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Skilled Guard</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="estilo.css?v=8">
+  <link rel="stylesheet" href="estilo.css?v=9">
 </head>
 <body>
 
@@ -230,6 +230,11 @@
               <label for="eq-responsable">Responsable</label>
               <input id="eq-responsable" placeholder="Nombre de quien trae el equipo" required maxlength="150">
             </div>
+            <div class="campo">
+              <label for="eq-doc-responsable">Documento del responsable</label>
+              <input id="eq-doc-responsable" placeholder="Número de documento" required maxlength="50"
+                     inputmode="numeric" autocomplete="off">
+            </div>
           </div>
           <button class="boton" type="submit">Registrar equipo</button>
         </form>
@@ -241,7 +246,7 @@
           <table>
             <thead>
               <tr>
-                <th>Serial</th><th>Equipo</th><th>Responsable</th><th>Sistema</th><th>Estado</th><th>Código QR</th>
+                <th>Serial</th><th>Equipo</th><th>Documento</th><th>Sistema</th><th>Estado</th><th>Código QR</th>
               </tr>
             </thead>
             <tbody id="tabla-equipos"></tbody>
@@ -372,6 +377,6 @@
 <div id="zona-impresion" class="oculto"></div>
 
 <script src="jsQR.js?v=3"></script>
-<script src="app.js?v=8"></script>
+<script src="app.js?v=9"></script>
 </body>
 </html>
