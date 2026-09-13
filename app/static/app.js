@@ -152,7 +152,10 @@ function cambiarVista(vista, registrar = true) {
   }
   // La cámara solo debe estar encendida mientras se está en portería.
   if (vista !== "porteria") detenerCamara();
-  if (vista === "porteria") cargarPorterias();
+  if (vista === "porteria") {
+    cargarPorterias();
+    cargarTurno();
+  }
   if (vista === "inicio") cargarInicio();
   if (vista === "equipos") cargarEquipos();
   if (vista === "usuarios") cargarUsuarios();
@@ -214,6 +217,70 @@ async function cargarPorterias() {
     $("pista-porteria").textContent = "No se pudo cargar la lista de porterías.";
   }
 }
+
+// ------------------------------------------------------------------ turno
+
+// Qué entró y qué salió hoy, al lado del escáner: el encargado lo necesita de
+// un vistazo, no navegando al historial.
+let ultimoRegistrado = null;
+
+function filaTurno(m, tipo) {
+  const fila = document.createElement("li");
+  fila.className = tipo;
+  if (ultimoRegistrado && m.id === ultimoRegistrado) fila.classList.add("nuevo");
+  const hora = new Date(m.fecha).toLocaleTimeString("es-CO", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  fila.innerHTML = `
+    <span class="hora">${hora}</span>
+    <span class="equipo">${m.serial}</span>
+    <span class="quien">${m.responsable}</span>`;
+  return fila;
+}
+
+function pintarColumna(lista, movimientos, tipo, vacio) {
+  lista.innerHTML = "";
+  if (movimientos.length === 0) {
+    const nada = document.createElement("li");
+    nada.className = "vacio";
+    nada.textContent = vacio;
+    lista.appendChild(nada);
+    return;
+  }
+  for (const m of movimientos) lista.appendChild(filaTurno(m, tipo));
+}
+
+async function cargarTurno() {
+  try {
+    // La fecha local, no UTC: a las 8 pm en Colombia "hoy" todavía es hoy.
+    const hoy = new Date().toLocaleDateString("en-CA");
+    const movimientos = await json(`/movimientos?desde=${hoy}&hasta=${hoy}&limite=200`);
+    const ingresos = movimientos.filter((m) => m.tipo === "Ingreso");
+    const salidas = movimientos.filter((m) => m.tipo === "Salida");
+
+    pintarColumna($("lista-ingresos"), ingresos, "ingreso", "Sin ingresos todavía.");
+    pintarColumna($("lista-salidas"), salidas, "salida", "Sin salidas todavía.");
+    for (const id of ["conteo-ingreso", "conteo-ingreso-ancho"]) $(id).textContent = ingresos.length;
+    for (const id of ["conteo-salida", "conteo-salida-ancho"]) $(id).textContent = salidas.length;
+    ultimoRegistrado = null;
+  } catch {
+    // El turno es informativo: si falla, la portería sigue registrando.
+  }
+}
+
+// En pantalla angosta las dos columnas no caben lado a lado, así que se alternan.
+for (const tab of document.querySelectorAll(".segmentado button")) {
+  tab.addEventListener("click", () => {
+    for (const otro of document.querySelectorAll(".segmentado button")) {
+      otro.setAttribute("aria-selected", String(otro === tab));
+    }
+    for (const columna of document.querySelectorAll(".turno-col")) {
+      columna.hidden = columna.dataset.lado !== tab.dataset.lado;
+    }
+  });
+}
+document.querySelector('.turno-col[data-lado="salida"]').hidden = true;
 
 async function cargarInicio() {
   try {
@@ -406,6 +473,8 @@ async function registrarMovimiento(tipo) {
     );
     $("observacion").value = "";
     $("qr-manual").value = "";
+    ultimoRegistrado = movimiento.id;
+    cargarTurno();
 
     const estado = await json(`/dispositivos/${equipoActual.id}/estado`);
     equipoActual = { ...equipoActual, ...estado };
