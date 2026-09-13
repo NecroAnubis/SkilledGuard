@@ -38,6 +38,7 @@ def movimientos(
         # Sin esto cada fila dispara cuatro consultas más al leer el equipo, su
         # responsable, el vigilante y el tipo: 50 movimientos = 201 consultas.
         joinedload(AuditoriaNegocio.dispositivo),
+        joinedload(AuditoriaNegocio.porteria),
         joinedload(AuditoriaNegocio.tipo_registro),
         joinedload(AuditoriaNegocio.vigilante),
     )
