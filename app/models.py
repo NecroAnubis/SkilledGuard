@@ -105,6 +105,11 @@ class Usuario(Timestamps, Base):
     apellidos: Mapped[str] = mapped_column(String(100))
     id_tipo_documento: Mapped[int] = mapped_column(ForeignKey("tipo_documento.id"))
     documento: Mapped[str] = mapped_column(String(50), unique=True)
+    # Correo institucional. Es el identificador al que migra el inicio de
+    # sesión; queda nullable porque las cuentas creadas antes de esta columna
+    # no lo tienen, y se guarda siempre en minúsculas para que el índice único
+    # no permita "Admin@" y "admin@" como cuentas distintas.
+    correo: Mapped[str | None] = mapped_column(String(150), unique=True, index=True)
     direccion: Mapped[str | None] = mapped_column(String(255))
     contrasena_hash: Mapped[str] = mapped_column(String(255))
 
