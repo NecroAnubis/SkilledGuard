@@ -112,9 +112,33 @@ async function iniciarAplicacion() {
   SESION.roles = yo.roles;
   // La tablet de autoservicio vive en una sola pantalla: escanear e ingresar.
   // Ocultar el resto es comodidad; los permisos reales los exige el servidor.
-  SESION.kiosco = yo.roles.includes("Entrada") && !yo.roles.includes("Administrador") && !yo.roles.includes("Seguridad");
+  const tiene = (rol) => yo.roles.includes(rol);
+  SESION.admin = tiene("Administrador");
+  SESION.opera = SESION.admin || tiene("Seguridad");
+  SESION.kiosco = tiene("Entrada") && !SESION.opera;
+  // Sin rol de operación ni de entrada, la cuenta es de quien responde por un
+  // equipo: solo ve lo suyo. Mostrarle el resto sería prometer lo que el
+  // servidor le va a negar.
+  SESION.propietario = !SESION.opera && !SESION.kiosco;
   document.body.classList.toggle("kiosco", SESION.kiosco);
-  $("nav-usuarios").classList.toggle("oculto", !yo.roles.includes("Administrador"));
+
+  // Las pestañas y las acciones del inicio se muestran según el rol. Es
+  // honestidad de interfaz, no seguridad: la barrera real la pone el servidor.
+  const visible = {
+    inicio: SESION.opera,
+    porteria: SESION.opera,
+    equipos: SESION.opera,
+    usuarios: SESION.admin,
+    historial: SESION.opera,
+    "mis-equipos": SESION.propietario,
+  };
+  for (const boton of document.querySelectorAll("nav button")) {
+    boton.classList.toggle("oculto", visible[boton.dataset.vista] === false);
+  }
+  for (const accion of document.querySelectorAll(".accion[data-roles]")) {
+    const permitidos = accion.dataset.roles.split(" ");
+    accion.classList.toggle("oculto", !permitidos.some((r) => yo.roles.includes(r)));
+  }
   if (SESION.kiosco) {
     document.querySelector("#vista-porteria h1").textContent = "Registre su ingreso";
     document.querySelector("#vista-porteria .subtitulo").textContent =
@@ -128,7 +152,7 @@ async function iniciarAplicacion() {
   });
   $("pantalla-login").classList.add("oculto");
   $("aplicacion").classList.remove("oculto");
-  const inicial = SESION.kiosco ? "porteria" : "inicio";
+  const inicial = SESION.kiosco ? "porteria" : SESION.propietario ? "mis-equipos" : "inicio";
   cambiarVista(inicial, false);
   history.replaceState({ vista: inicial }, "", `#${inicial}`);
 }
@@ -137,16 +161,21 @@ async function iniciarAplicacion() {
 
 function cambiarVista(vista, registrar = true) {
   if (SESION.kiosco) vista = "porteria";
+  if (SESION.propietario) vista = "mis-equipos";
   for (const boton of document.querySelectorAll("nav button")) {
     boton.toggleAttribute("aria-current", boton.dataset.vista === vista);
     if (boton.dataset.vista === vista) boton.setAttribute("aria-current", "page");
   }
-  for (const nombre of ["inicio", "porteria", "equipos", "historial", "usuarios"]) {
+  for (const nombre of ["inicio", "porteria", "equipos", "historial", "usuarios", "mis-equipos"]) {
     $(`vista-${nombre}`).classList.toggle("oculto", nombre !== vista);
   }
   // Cada vista es una entrada del historial: el botón atrás del navegador (y
   // del teléfono) navega entre vistas en vez de sacar al usuario de la app.
-  $("boton-volver").classList.toggle("oculto", vista === "inicio");
+  // Sin otras vistas a las que volver, el botón sobra.
+  $("boton-volver").classList.toggle(
+    "oculto",
+    vista === "inicio" || SESION.propietario || SESION.kiosco,
+  );
   if (registrar && location.hash !== `#${vista}`) {
     history.pushState({ vista }, "", `#${vista}`);
   }
@@ -159,6 +188,7 @@ function cambiarVista(vista, registrar = true) {
   if (vista === "inicio") cargarInicio();
   if (vista === "equipos") cargarEquipos();
   if (vista === "usuarios") cargarUsuarios();
+  if (vista === "mis-equipos") cargarMisEquipos();
   if (vista === "historial") cargarHistorial();
 }
 
@@ -215,6 +245,53 @@ async function cargarPorterias() {
   } catch {
     // Sin catálogo de porterías el movimiento se registra igual, sin declararla.
     $("pista-porteria").textContent = "No se pudo cargar la lista de porterías.";
+  }
+}
+
+// ------------------------------------------------------- equipos propios
+
+async function cargarMisEquipos() {
+  ocultarMensaje("mensaje-mios");
+  try {
+    const [equipos, movimientos] = await Promise.all([
+      json("/dispositivos/mios"),
+      json("/movimientos/mios?limite=20"),
+    ]);
+
+    const cuerpo = $("tabla-mis-equipos");
+    cuerpo.innerHTML = "";
+    if (equipos.length === 0) {
+      cuerpo.innerHTML =
+        '<tr><td colspan="4" class="vacio">No hay equipos registrados a su documento. Diríjase a la administración para registrarlos.</td></tr>';
+    }
+    for (const e of equipos) {
+      const fila = document.createElement("tr");
+      fila.innerHTML = `
+        <td>${e.serial}</td>
+        <td>${e.marca} ${e.modelo}</td>
+        <td>${e.sistema ?? "—"}</td>
+        <td><span class="pastilla ${e.estado}">${e.estado}</span></td>`;
+      cuerpo.appendChild(fila);
+    }
+
+    const lista = $("lista-mis-movimientos");
+    lista.innerHTML = "";
+    if (movimientos.length === 0) {
+      lista.innerHTML = '<li class="vacio">Sin movimientos todavía.</li>';
+      return;
+    }
+    for (const m of movimientos) {
+      const fila = document.createElement("li");
+      const detalle = document.createElement("span");
+      detalle.innerHTML = `<strong>${m.tipo}</strong> · ${m.serial} — ${m.equipo}`;
+      const cuando = document.createElement("span");
+      cuando.className = "cuando";
+      cuando.textContent = fecha(m.fecha);
+      fila.append(detalle, cuando);
+      lista.appendChild(fila);
+    }
+  } catch (error) {
+    mostrarMensaje("mensaje-mios", error.message, "error");
   }
 }
 

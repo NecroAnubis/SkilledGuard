@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Skilled Guard</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="estilo.css?v=12">
+  <link rel="stylesheet" href="estilo.css?v=13">
 </head>
 <body>
 
@@ -47,6 +47,7 @@
       <button title="Portería" aria-label="Portería" data-vista="porteria"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg><span class="etiqueta-nav">Portería</span></button>
       <button title="Equipos" aria-label="Equipos" data-vista="equipos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg><span class="etiqueta-nav">Equipos</span></button>
       <button title="Usuarios" aria-label="Usuarios" data-vista="usuarios" id="nav-usuarios" class="oculto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="etiqueta-nav">Usuarios</span></button>
+      <button title="Mis equipos" aria-label="Mis equipos" data-vista="mis-equipos" id="nav-mis-equipos" class="oculto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="12" x="3" y="4" rx="2"/><path d="M7 20h10"/><path d="M9 16v4"/><path d="M15 16v4"/></svg><span class="etiqueta-nav">Mis equipos</span></button>
       <button title="Historial" aria-label="Historial" data-vista="historial"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg><span class="etiqueta-nav">Historial</span></button>
     </nav>
     <div class="sesion">
@@ -90,19 +91,19 @@
       <h3 class="titulo-seccion">Acciones disponibles</h3>
       <p class="subtitulo">Funciones habilitadas para tu rol</p>
       <div class="acciones-inicio">
-        <button class="accion" data-vista="porteria">
+        <button class="accion" data-roles="Administrador Seguridad" data-vista="porteria">
           <span class="chip-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg></span>
           <span><strong>Verificar por QR</strong><span>Escanear el código del equipo en portería</span></span>
         </button>
-        <button class="accion" data-vista="equipos">
+        <button class="accion" data-roles="Administrador" data-vista="equipos">
           <span class="chip-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg></span>
           <span><strong>Registrar equipo</strong><span>Agregar nuevos equipos y ver su código QR</span></span>
         </button>
-        <button class="accion" data-vista="historial">
+        <button class="accion" data-roles="Administrador Seguridad" data-vista="historial">
           <span class="chip-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span>
           <span><strong>Ver historial</strong><span>Trazabilidad de ingresos y salidas</span></span>
         </button>
-        <button class="accion" data-vista="historial">
+        <button class="accion" data-roles="Administrador Seguridad" data-vista="historial">
           <span class="chip-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></span>
           <span><strong>Reportes completos</strong><span>Descargar los movimientos en Excel o PDF</span></span>
         </button>
@@ -400,6 +401,32 @@
       </div>
     </section>
 
+
+    <!-- ---------- Pantalla 6: mis equipos (aprendiz) ---------- -->
+    <section id="vista-mis-equipos" class="oculto">
+      <h1>Mis equipos</h1>
+      <p class="subtitulo">Los equipos registrados a su nombre y sus últimos movimientos.</p>
+
+      <div id="mensaje-mios" class="mensaje oculto"></div>
+
+      <div class="tarjeta">
+        <h2>Equipos a su nombre</h2>
+        <div class="contenedor-tabla">
+          <table>
+            <thead>
+              <tr><th>Serial</th><th>Equipo</th><th>Sistema</th><th>Estado</th></tr>
+            </thead>
+            <tbody id="tabla-mis-equipos"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tarjeta">
+        <h2>Movimientos de sus equipos</h2>
+        <ul class="actividad" id="lista-mis-movimientos"></ul>
+      </div>
+    </section>
+
   </main>
 </div>
 
@@ -407,6 +434,6 @@
 <div id="zona-impresion" class="oculto"></div>
 
 <script src="jsQR.js?v=3"></script>
-<script src="app.js?v=12"></script>
+<script src="app.js?v=13"></script>
 </body>
 </html>

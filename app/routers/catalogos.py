@@ -20,7 +20,7 @@ from app.schemas import (
     TipoDocumentoCrear,
     TipoDocumentoLeer,
 )
-from app.security import ROL_ADMINISTRADOR, exige_rol
+from app.security import ROL_ADMINISTRADOR, exige_rol, usuario_actual
 
 roles = APIRouter(prefix="/roles", tags=["Roles"])
 porterias = APIRouter(prefix="/porterias", tags=["Porterías"])
@@ -28,6 +28,10 @@ tipos_documento = APIRouter(prefix="/tipos-documento", tags=["Tipos de documento
 tipos_dispositivo = APIRouter(prefix="/tipos-dispositivo", tags=["Tipos de dispositivo"])
 
 _solo_admin = [Depends(exige_rol(ROL_ADMINISTRADOR))]
+# Leer un catálogo no expone datos personales, pero sí el mapa del sistema:
+# cómo se llaman las porterías de la sede y qué roles existen. Sin sesión no
+# hay nada que consultar aquí.
+_autenticado = [Depends(usuario_actual)]
 
 
 def _guardar(db: Session, registro, nombre: str):
@@ -43,7 +47,7 @@ def _guardar(db: Session, registro, nombre: str):
     return registro
 
 
-@porterias.get("", response_model=list[CatalogoLeer])
+@porterias.get("", response_model=list[CatalogoLeer], dependencies=_autenticado)
 def listar_porterias(db: Annotated[Session, Depends(get_db)]) -> list[Porteria]:
     return list(db.scalars(select(Porteria)).all())
 
@@ -55,7 +59,7 @@ def crear_porteria(datos: CatalogoCrear, db: Annotated[Session, Depends(get_db)]
     return _guardar(db, Porteria(**datos.model_dump()), datos.nombre)
 
 
-@roles.get("", response_model=list[CatalogoLeer])
+@roles.get("", response_model=list[CatalogoLeer], dependencies=_autenticado)
 def listar_roles(db: Annotated[Session, Depends(get_db)]) -> list[Rol]:
     return list(db.scalars(select(Rol)).all())
 
@@ -67,7 +71,7 @@ def crear_rol(datos: CatalogoCrear, db: Annotated[Session, Depends(get_db)]) -> 
     return _guardar(db, Rol(**datos.model_dump()), datos.nombre)
 
 
-@tipos_documento.get("", response_model=list[TipoDocumentoLeer])
+@tipos_documento.get("", response_model=list[TipoDocumentoLeer], dependencies=_autenticado)
 def listar_tipos_documento(db: Annotated[Session, Depends(get_db)]) -> list[TipoDocumento]:
     return list(db.scalars(select(TipoDocumento)).all())
 
@@ -84,7 +88,7 @@ def crear_tipo_documento(
     return _guardar(db, TipoDocumento(**datos.model_dump()), datos.nombre)
 
 
-@tipos_dispositivo.get("", response_model=list[CatalogoLeer])
+@tipos_dispositivo.get("", response_model=list[CatalogoLeer], dependencies=_autenticado)
 def listar_tipos_dispositivo(db: Annotated[Session, Depends(get_db)]) -> list[TipoDispositivo]:
     return list(db.scalars(select(TipoDispositivo)).all())
 
