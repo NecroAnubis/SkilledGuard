@@ -2,7 +2,7 @@
 
 El kiosco puede registrar ingresos (el dueño escanea su propio equipo) pero
 nunca salidas ni consultas del historial: la salida exige el cotejo físico de
-un vigilante, y la restricción vive en el servidor — ocultar botones en la
+un guarda de seguridad, y la restricción vive en el servidor — ocultar botones en la
 tablet no es seguridad.
 """
 
@@ -47,7 +47,7 @@ def test_el_kiosco_registra_un_ingreso(cliente, dispositivo, encabezados_kiosco)
 
 
 def test_el_kiosco_no_puede_registrar_salidas(cliente, dispositivo, encabezados_kiosco):
-    """Ni siquiera de un equipo que está dentro: la salida es del vigilante."""
+    """Ni siquiera de un equipo que está dentro: la salida es del guarda de seguridad."""
     cliente.post(
         "/movimientos", headers=encabezados_kiosco, json={"qr": dispositivo.qr, "tipo": "Ingreso"}
     )
@@ -85,7 +85,7 @@ def test_el_kiosco_no_gestiona_equipos_ni_usuarios(cliente, encabezados_kiosco):
     assert cliente.get("/usuarios", headers=encabezados_kiosco).status_code == 403
 
 
-def test_un_vigilante_si_registra_salidas(cliente, db, dispositivo, encabezados_admin):
+def test_un_guarda_si_registra_salidas(cliente, db, dispositivo, encabezados_admin):
     """La regla restringe al kiosco, no a los roles de siempre."""
     cliente.post(
         "/movimientos", headers=encabezados_admin, json={"qr": dispositivo.qr, "tipo": "Ingreso"}

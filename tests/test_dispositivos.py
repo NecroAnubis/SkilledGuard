@@ -13,6 +13,7 @@ def test_crear_dispositivo_genera_su_codigo_qr(
             "modelo": "ThinkPad",
             "id_tipo_dispositivo": catalogos_porteria.id,
             "responsable": "Laura Vargas",
+            "documento_responsable": "1098765432",
         },
     )
     assert respuesta.status_code == 201, respuesta.text
@@ -40,6 +41,7 @@ def test_serial_duplicado_da_409(
             "modelo": "Otro",
             "id_tipo_dispositivo": catalogos_porteria.id,
             "responsable": "Laura Vargas",
+            "documento_responsable": "1098765432",
         },
     )
     assert respuesta.status_code == 409
@@ -185,3 +187,41 @@ def test_la_trazabilidad_se_filtra_por_equipo(
 def test_registrar_movimiento_exige_autenticacion(cliente, dispositivo):
     respuesta = cliente.post("/movimientos", json={"qr": dispositivo.qr, "tipo": "Ingreso"})
     assert respuesta.status_code == 401
+
+
+def test_el_equipo_declara_el_documento_de_su_responsable(
+    cliente, catalogos_porteria, encabezados_admin
+):
+    """El nombre ubica, el documento identifica: la portería coteja contra el carné."""
+    respuesta = cliente.post(
+        "/dispositivos",
+        headers=encabezados_admin,
+        json={
+            "serial": "DOC-00001",
+            "marca": "Dell",
+            "modelo": "Latitude",
+            "id_tipo_dispositivo": catalogos_porteria.id,
+            "responsable": "Laura Vargas",
+            "documento_responsable": "1098765432",
+        },
+    )
+    assert respuesta.status_code == 201, respuesta.text
+    assert respuesta.json()["documento_responsable"] == "1098765432"
+
+
+def test_registrar_un_equipo_sin_documento_es_rechazado(
+    cliente, catalogos_porteria, encabezados_admin
+):
+    """Un equipo nuevo sin documento deja a la portería sin qué cotejar."""
+    respuesta = cliente.post(
+        "/dispositivos",
+        headers=encabezados_admin,
+        json={
+            "serial": "DOC-00002",
+            "marca": "Dell",
+            "modelo": "Latitude",
+            "id_tipo_dispositivo": catalogos_porteria.id,
+            "responsable": "Laura Vargas",
+        },
+    )
+    assert respuesta.status_code == 422

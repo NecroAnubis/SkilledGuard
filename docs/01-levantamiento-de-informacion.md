@@ -31,7 +31,7 @@ El registro manual consiste en anotar, por cada persona:
 
 ### Causa raíz
 
-El registro depende por completo de la escritura manual y de la memoria del vigilante. **No existe un identificador confiable del equipo** que pueda verificarse en segundos.
+El registro depende por completo de la escritura manual y de la memoria del guarda de seguridad. **No existe un identificador confiable del equipo** que pueda verificarse en segundos.
 
 ## 3. Técnicas de recolección aplicadas
 

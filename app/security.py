@@ -21,7 +21,7 @@ ROL_ADMINISTRADOR = "Administrador"
 ROL_SEGURIDAD = "Seguridad"
 ROL_USUARIO = "Usuario"
 # Sesión de la tablet de autoservicio en la entrada: el dueño del equipo
-# registra su propio ingreso. Solo ingresos — la salida exige a un vigilante.
+# registra su propio ingreso. Solo ingresos — la salida exige a un guarda de seguridad.
 ROL_ENTRADA = "Entrada"
 
 
