@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from app import consultas
 from app.auditoria import Accion, registrar_accion
 from app.database import get_db
-from app.models import AuditoriaNegocio, Dispositivo, Usuario
+from app.models import AuditoriaNegocio, Dispositivo, Porteria, Usuario
 from app.porteria import MovimientoInvalido, TipoMovimiento, registrar
 from app.schemas import MovimientoLeer, MovimientoRegistrar
 from app.security import (
@@ -40,6 +40,7 @@ def a_esquema(movimiento: AuditoriaNegocio) -> MovimientoLeer:
         equipo=f"{dispositivo.marca} {dispositivo.modelo}",
         responsable=dispositivo.responsable,
         registrado_por=movimiento.vigilante.nombre_completo,
+        porteria=movimiento.porteria.nombre if movimiento.porteria else None,
         observacion=movimiento.observacion,
         fecha=movimiento.fecha_creado,
     )
@@ -68,9 +69,17 @@ def registrar_movimiento(
             "El autoservicio solo registra ingresos; la salida la registra el personal de seguridad",
         )
 
+    if datos.id_porteria is not None and db.get(Porteria, datos.id_porteria) is None:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Portería inexistente")
+
     try:
         movimiento = registrar(
-            db, dispositivo, TipoMovimiento(datos.tipo), vigilante.id, datos.observacion
+            db,
+            dispositivo,
+            TipoMovimiento(datos.tipo),
+            vigilante.id,
+            datos.observacion,
+            datos.id_porteria,
         )
     except MovimientoInvalido as error:
         raise HTTPException(status.HTTP_409_CONFLICT, str(error)) from None
