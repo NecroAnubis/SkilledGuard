@@ -776,3 +776,9 @@ body.kiosco #boton-ingreso {
   padding: 0.35rem 0.5rem;
   font-size: 0.88rem;
 }
+
+.pista {
+  color: var(--tinta-suave);
+  font-size: 0.82rem;
+  margin: 0.35rem 0 0;
+}
