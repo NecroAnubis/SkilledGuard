@@ -55,6 +55,28 @@ def listar(
     ]
 
 
+@router.get("/mios", response_model=list[DispositivoLeer])
+def mios(
+    db: Annotated[Session, Depends(get_db)],
+    usuario: Annotated[Usuario, Depends(usuario_actual)],
+) -> list[DispositivoLeer]:
+    """Los equipos que responden al documento de quien consulta.
+
+    No exige rol: cualquiera con sesión puede ver lo suyo, y lo suyo se define
+    por su propio documento — no hay forma de pedir los equipos de otro.
+    """
+    equipos = db.scalars(
+        select(Dispositivo).where(Dispositivo.documento_responsable == usuario.documento)
+    ).all()
+    estados = estados_de_todos(db)
+    return [
+        DispositivoLeer.model_validate(equipo).model_copy(
+            update={"estado": estados.get(equipo.id, EstadoDispositivo.FUERA).value}
+        )
+        for equipo in equipos
+    ]
+
+
 @router.get("/{id_dispositivo}", response_model=DispositivoLeer, dependencies=_consulta)
 def obtener(id_dispositivo: int, db: Annotated[Session, Depends(get_db)]) -> Dispositivo:
     return _obtener(db, id_dispositivo)

@@ -33,6 +33,7 @@ def movimientos(
     tipo: str | None = None,
     desde: date | None = None,
     hasta: date | None = None,
+    documento_responsable: str | None = None,
 ) -> Select[tuple[AuditoriaNegocio]]:
     consulta = select(AuditoriaNegocio).options(
         # Sin esto cada fila dispara cuatro consultas más al leer el equipo, su
@@ -45,8 +46,14 @@ def movimientos(
 
     if id_dispositivo is not None:
         consulta = consulta.where(AuditoriaNegocio.id_dispositivo == id_dispositivo)
+    # Un solo join aunque se filtre por las dos vías: repetirlo produce un
+    # producto cartesiano en vez de una condición más.
+    if responsable is not None or documento_responsable is not None:
+        consulta = consulta.join(Dispositivo)
+    if documento_responsable is not None:
+        consulta = consulta.where(Dispositivo.documento_responsable == documento_responsable)
     if responsable is not None:
-        consulta = consulta.join(Dispositivo).where(Dispositivo.responsable.ilike(f"%{responsable}%"))
+        consulta = consulta.where(Dispositivo.responsable.ilike(f"%{responsable}%"))
     if tipo is not None:
         consulta = consulta.join(TipoRegistro).where(TipoRegistro.nombre == tipo)
     if desde is not None:

@@ -96,6 +96,18 @@ def registrar_movimiento(
     return a_esquema(movimiento)
 
 
+@router.get("/mios", response_model=list[MovimientoLeer])
+def mios(
+    db: Annotated[Session, Depends(get_db)],
+    usuario: Annotated[Usuario, Depends(usuario_actual)],
+    limite: Annotated[int, Query(ge=1, le=200)] = 50,
+) -> list[MovimientoLeer]:
+    """Los movimientos de los equipos que responden al documento de quien consulta."""
+    consulta = consultas.movimientos(documento_responsable=usuario.documento)
+    movimientos = db.scalars(consulta.limit(limite)).unique().all()
+    return [a_esquema(m) for m in movimientos]
+
+
 @router.get("", response_model=list[MovimientoLeer], dependencies=_porteria)
 def listar(
     db: Annotated[Session, Depends(get_db)],
