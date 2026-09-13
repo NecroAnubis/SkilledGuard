@@ -27,6 +27,7 @@ from app.models import (
 )
 from app.porteria import TipoMovimiento
 from app.security import (
+    DOMINIO_CORPORATIVO,
     ROL_ADMINISTRADOR,
     ROL_ENTRADA,
     ROL_SEGURIDAD,
@@ -84,7 +85,9 @@ def _obtener_o_crear(db: Session, modelo, **campos):
     return registro
 
 
-def sembrar(db: Session, documento_admin: str, contrasena_admin: str) -> None:
+def sembrar(
+    db: Session, documento_admin: str, contrasena_admin: str, correo_admin: str | None = None
+) -> None:
     for nombre, acronimo, descripcion in TIPOS_DOCUMENTO:
         _obtener_o_crear(
             db, TipoDocumento, nombre=nombre, acronimo=acronimo, descripcion=descripcion
@@ -113,17 +116,26 @@ def sembrar(db: Session, documento_admin: str, contrasena_admin: str) -> None:
             apellidos="del Sistema",
             id_tipo_documento=cedula.id,
             documento=documento_admin,
+            # El rol Administrador exige un correo del dominio corporativo; sin
+            # él, la cuenta sembrada no podría recuperar su propio rol.
+            correo=(correo_admin or f"admin@{DOMINIO_CORPORATIVO}").strip().lower(),
             contrasena_hash=hashear_contrasena(contrasena_admin),
         )
         db.add(admin)
         db.flush()
         db.add(UsuarioRol(id_usuario=admin.id, id_rol=roles[ROL_ADMINISTRADOR].id))
+    elif admin.correo is None:
+        # La cuenta se sembró antes de que existiera el correo institucional.
+        # Sin él quedaría administrando sin cumplir la regla que el propio
+        # sistema exige, así que el arranque la completa.
+        admin.correo = (correo_admin or f"admin@{DOMINIO_CORPORATIVO}").strip().lower()
 
     db.commit()
 
 
 def main() -> None:
     documento = os.environ.get("ADMIN_DOCUMENTO", "1000000000")
+    correo = os.environ.get("ADMIN_CORREO")
     contrasena = os.environ.get("ADMIN_CONTRASENA")
     if not contrasena:
         sys.exit(
@@ -132,7 +144,7 @@ def main() -> None:
         )
 
     with SessionLocal() as db:
-        sembrar(db, documento, contrasena)
+        sembrar(db, documento, contrasena, correo)
     print(f"Datos iniciales cargados. Administrador: documento {documento}")
 
 

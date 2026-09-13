@@ -1,5 +1,6 @@
 """Hash de contraseñas (bcrypt) y autenticación por JWT con control de roles."""
 
+import re
 from datetime import UTC, datetime, timedelta
 from typing import Annotated
 
@@ -29,6 +30,23 @@ ROL_ENTRADA = "Entrada"
 # largo en bytes (no en caracteres: "ñ" ocupa dos) para que el recorte sea
 # imposible en vez de invisible.
 MAX_BYTES_CONTRASENA = 72
+
+# Solo estos correos pueden administrar el sistema. Es una regla del negocio,
+# no una preferencia de formato: quien administra pertenece a la organización,
+# y un correo personal no prueba pertenencia.
+DOMINIO_CORPORATIVO = "skilledguard.co"
+
+# Validación deliberadamente simple: la puerta real es el dominio, no la
+# gramática del correo. Evita sumar una dependencia para lo que aquí no decide.
+_FORMA_CORREO = re.compile(r"^[^@\s]+@[^@\s]+\.[a-z]{2,}$")
+
+
+def correo_valido(correo: str) -> bool:
+    return bool(_FORMA_CORREO.match(correo.strip().lower()))
+
+
+def es_corporativo(correo: str | None) -> bool:
+    return bool(correo) and correo.strip().lower().endswith(f"@{DOMINIO_CORPORATIVO}")
 
 
 def hashear_contrasena(contrasena: str) -> str:
