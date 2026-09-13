@@ -108,6 +108,7 @@ class DispositivoCrear(BaseModel):
     sistema: str | None = Field(default=None, max_length=50)
     id_tipo_dispositivo: int
     responsable: str = Field(min_length=1, max_length=150)
+    documento_responsable: str = Field(min_length=1, max_length=50)
 
 
 class DispositivoLeer(_DesdeORM):
@@ -118,6 +119,7 @@ class DispositivoLeer(_DesdeORM):
     sistema: str | None
     id_tipo_dispositivo: int
     responsable: str
+    documento_responsable: str | None
     qr: str
     estado: str = EstadoDispositivo.FUERA.value
     fecha_creado: datetime
@@ -160,6 +162,7 @@ class MovimientoLeer(_DesdeORM):
     serial: str
     equipo: str
     responsable: str
+    documento_responsable: str | None
     registrado_por: str
     porteria: str | None
     observacion: str | None

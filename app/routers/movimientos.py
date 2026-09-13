@@ -39,6 +39,7 @@ def a_esquema(movimiento: AuditoriaNegocio) -> MovimientoLeer:
         serial=dispositivo.serial,
         equipo=f"{dispositivo.marca} {dispositivo.modelo}",
         responsable=dispositivo.responsable,
+        documento_responsable=dispositivo.documento_responsable,
         registrado_por=movimiento.vigilante.nombre_completo,
         porteria=movimiento.porteria.nombre if movimiento.porteria else None,
         observacion=movimiento.observacion,

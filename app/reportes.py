@@ -21,6 +21,7 @@ ENCABEZADOS = [
     "Serial",
     "Equipo",
     "Responsable",
+    "Documento",
     "Registrado por",
     "Portería",
     "Observación",
@@ -35,6 +36,7 @@ def _filas(movimientos: list[AuditoriaNegocio]) -> list[list[str]]:
             m.dispositivo.serial,
             f"{m.dispositivo.marca} {m.dispositivo.modelo}",
             m.dispositivo.responsable,
+            m.dispositivo.documento_responsable or "-",
             m.vigilante.nombre_completo,
             m.porteria.nombre if m.porteria else "-",
             m.observacion or "",
@@ -96,7 +98,7 @@ class _ReportePDF(FPDF):
 
 
 # Anchos en mm; suman 277, el ancho útil de una hoja carta apaisada.
-_ANCHOS = [28, 18, 28, 46, 46, 46, 30, 35]
+_ANCHOS = [26, 16, 26, 40, 40, 26, 40, 26, 37]
 
 
 def generar_pdf(movimientos: list[AuditoriaNegocio]) -> bytes:
