@@ -177,6 +177,11 @@ class Dispositivo(Timestamps, Base):
     # en el sistema — cuentas solo tienen quienes lo operan, y la trazabilidad
     # de quién registró qué ya la da el vigilante en cada movimiento.
     responsable: Mapped[str] = mapped_column(String(150))
+    # Documento de quien responde por el equipo. Es el identificador que la
+    # portería puede cotejar contra un carné; el nombre solo, en un centro con
+    # miles de personas, no distingue a dos homónimos. Nullable porque los
+    # equipos registrados antes de esta columna no lo declararon.
+    documento_responsable: Mapped[str | None] = mapped_column(String(50), index=True)
     # Identificador que se codifica en el QR pegado al equipo. Es un token
     # aleatorio y no el serial: el serial está impreso en el chasis a la vista
     # de cualquiera, y además así se puede reemplazar el código sin tocar el
