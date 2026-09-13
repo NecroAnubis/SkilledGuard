@@ -117,15 +117,15 @@ def test_usuario_sin_rol_admin_no_puede_listar(cliente, db, admin, encabezados_a
         "/usuarios",
         headers=encabezados_admin,
         json={
-            "nombres": "Vigilante",
+            "nombres": "Guarda",
             "apellidos": "Portería",
             "id_tipo_documento": tipo.id,
             "documento": "1002003007",
-            "contrasena": "clave-vigilante-1",
+            "contrasena": "clave-guarda-1",
         },
     )
     token = cliente.post(
-        "/auth/login", data={"username": "1002003007", "password": "clave-vigilante-1"}
+        "/auth/login", data={"username": "1002003007", "password": "clave-guarda-1"}
     ).json()["access_token"]
 
     respuesta = cliente.get("/usuarios", headers={"Authorization": f"Bearer {token}"})

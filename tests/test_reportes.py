@@ -120,7 +120,7 @@ def test_la_consulta_no_dispara_una_avalancha_de_queries(db, dispositivo, otro_d
                 m.dispositivo.serial,
                 m.dispositivo.responsable,
                 m.tipo_registro.nombre,
-                m.vigilante.nombre_completo,
+                m.guarda.nombre_completo,
             )
     finally:
         event.remove(db.get_bind(), "before_cursor_execute", contar)

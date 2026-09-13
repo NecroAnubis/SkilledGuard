@@ -8,7 +8,7 @@ Este manual explica cómo usar el sistema según el rol asignado. No requiere co
 
 ## 1. Qué hace el sistema
 
-Reemplaza el cuaderno de portería donde se anotan a mano los equipos que entran y salen. Cada equipo lleva un **código QR** pegado; el vigilante lo escanea y el sistema registra el movimiento en segundos.
+Reemplaza el cuaderno de portería donde se anotan a mano los equipos que entran y salen. Cada equipo lleva un **código QR** pegado; el guarda de seguridad lo escanea y el sistema registra el movimiento en segundos.
 
 El sistema también **impide errores**: si alguien intenta registrar la salida de un equipo que nunca entró, lo rechaza y avisa.
 
@@ -189,7 +189,7 @@ El serial está impreso en el chasis, a la vista de cualquiera. El código QR es
 **¿Alguien puede borrar un movimiento registrado?**
 No. El sistema no ofrece forma de eliminar movimientos: el historial es un registro, no una lista editable.
 
-**¿Qué pasa si dos vigilantes escanean el mismo equipo al mismo tiempo?**
+**¿Qué pasa si dos guardas de seguridad escanean el mismo equipo al mismo tiempo?**
 El sistema registra un solo movimiento y rechaza el segundo. Está previsto.
 
 **¿La contraseña se puede recuperar?**

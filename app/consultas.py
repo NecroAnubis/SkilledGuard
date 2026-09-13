@@ -36,11 +36,11 @@ def movimientos(
 ) -> Select[tuple[AuditoriaNegocio]]:
     consulta = select(AuditoriaNegocio).options(
         # Sin esto cada fila dispara cuatro consultas más al leer el equipo, su
-        # responsable, el vigilante y el tipo: 50 movimientos = 201 consultas.
+        # responsable, el guarda y el tipo: 50 movimientos = 201 consultas.
         joinedload(AuditoriaNegocio.dispositivo),
         joinedload(AuditoriaNegocio.porteria),
         joinedload(AuditoriaNegocio.tipo_registro),
-        joinedload(AuditoriaNegocio.vigilante),
+        joinedload(AuditoriaNegocio.guarda),
     )
 
     if id_dispositivo is not None:

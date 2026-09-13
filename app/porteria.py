@@ -91,14 +91,14 @@ def registrar(
     db: Session,
     dispositivo: Dispositivo,
     movimiento: TipoMovimiento,
-    id_vigilante: int,
+    id_guarda: int,
     observacion: str | None = None,
     id_porteria: int | None = None,
 ) -> AuditoriaNegocio:
     # Bloquea la fila del equipo hasta que termine la transacción. Sin esto, dos
     # peticiones simultáneas del mismo equipo leen ambas "fuera" y ambas
     # registran el ingreso: el equipo entra dos veces y la trazabilidad queda
-    # mintiendo. Pasa con dos vigilantes escaneando a la vez, o con un doble clic.
+    # mintiendo. Pasa con dos guardas escaneando a la vez, o con un doble clic.
     db.execute(select(Dispositivo.id).where(Dispositivo.id == dispositivo.id).with_for_update())
 
     validar_transicion(estado_actual(db, dispositivo.id), movimiento)
@@ -111,7 +111,7 @@ def registrar(
         id_porteria=id_porteria,
         id_dispositivo=dispositivo.id,
         id_tipo_registro=tipo.id,
-        registrado_por=id_vigilante,
+        registrado_por=id_guarda,
         observacion=observacion,
     )
     db.add(registro)

@@ -8,7 +8,7 @@ Términos técnicos y del negocio usados en la documentación y el código del p
 
 Un patrón de consulta ineficiente: para traer una lista de N elementos se ejecuta **una** consulta inicial, y luego **una consulta adicional por cada elemento** para completar sus datos relacionados. De ahí el nombre: 1 + N consultas.
 
-**Ejemplo real de este proyecto.** El listado de movimientos de portería trae 50 registros. Al mostrar cada uno se necesita el equipo, el responsable del equipo, el vigilante y el tipo de movimiento — cuatro datos que viven en otras tablas:
+**Ejemplo real de este proyecto.** El listado de movimientos de portería trae 50 registros. Al mostrar cada uno se necesita el equipo, el responsable del equipo, el guarda de seguridad y el tipo de movimiento — cuatro datos que viven en otras tablas:
 
 | Enfoque | Consultas |
 |---|---|

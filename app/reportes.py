@@ -37,7 +37,7 @@ def _filas(movimientos: list[AuditoriaNegocio]) -> list[list[str]]:
             f"{m.dispositivo.marca} {m.dispositivo.modelo}",
             m.dispositivo.responsable,
             m.dispositivo.documento_responsable or "-",
-            m.vigilante.nombre_completo,
+            m.guarda.nombre_completo,
             m.porteria.nombre if m.porteria else "-",
             m.observacion or "",
         ]
