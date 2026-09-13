@@ -248,6 +248,89 @@ async function cargarPorterias() {
   }
 }
 
+// -------------------------------------------------------------- mi cuenta
+
+for (const boton of document.querySelectorAll("[data-cerrar]")) {
+  boton.addEventListener("click", () => $(boton.dataset.cerrar).close());
+}
+
+$("boton-cuenta").addEventListener("click", () => {
+  ocultarMensaje("mensaje-contrasena");
+  $("form-contrasena").reset();
+  $("dialogo-contrasena").showModal();
+});
+
+$("cc-guardar").addEventListener("click", async () => {
+  ocultarMensaje("mensaje-contrasena");
+  const actual = $("cc-actual").value;
+  const nueva = $("cc-nueva").value;
+  if (!actual || nueva.length < 8) {
+    mostrarMensaje("mensaje-contrasena", "Escriba su contraseña actual y una nueva de al menos 8 caracteres.", "error");
+    return;
+  }
+  try {
+    await api("/auth/contrasena", {
+      method: "POST",
+      body: JSON.stringify({ contrasena_actual: actual, contrasena_nueva: nueva }),
+    });
+    $("dialogo-contrasena").close();
+    mostrarMensaje("mensaje-porteria", "Su contraseña quedó cambiada.", "exito");
+  } catch (error) {
+    mostrarMensaje("mensaje-contrasena", error.message, "error");
+  }
+});
+
+let usuarioEditado = null;
+
+function abrirEdicion(usuario) {
+  usuarioEditado = usuario;
+  ocultarMensaje("mensaje-editar");
+  $("titulo-editar").textContent = `Editar a ${usuario.nombres} ${usuario.apellidos}`;
+  $("ed-nombres").value = usuario.nombres;
+  $("ed-apellidos").value = usuario.apellidos;
+  $("ed-correo").value = usuario.correo ?? "";
+  $("ed-clave").value = "";
+  $("dialogo-usuario").showModal();
+}
+
+$("ed-guardar").addEventListener("click", async () => {
+  ocultarMensaje("mensaje-editar");
+  try {
+    await json(`/usuarios/${usuarioEditado.id}`, {
+      method: "PATCH",
+      body: JSON.stringify({
+        nombres: $("ed-nombres").value.trim(),
+        apellidos: $("ed-apellidos").value.trim(),
+        correo: $("ed-correo").value.trim() || null,
+      }),
+    });
+    $("dialogo-usuario").close();
+    mostrarMensaje("mensaje-usuarios", "Los datos quedaron actualizados.");
+    cargarUsuarios();
+  } catch (error) {
+    mostrarMensaje("mensaje-editar", error.message, "error");
+  }
+});
+
+$("ed-restablecer").addEventListener("click", async () => {
+  ocultarMensaje("mensaje-editar");
+  const clave = $("ed-clave").value;
+  if (clave.length < 8) {
+    mostrarMensaje("mensaje-editar", "La contraseña nueva debe tener al menos 8 caracteres.", "error");
+    return;
+  }
+  try {
+    await api(`/usuarios/${usuarioEditado.id}/contrasena`, {
+      method: "POST",
+      body: JSON.stringify({ contrasena_nueva: clave }),
+    });
+    $("dialogo-usuario").close();
+    mostrarMensaje("mensaje-usuarios", `Contraseña restablecida a ${usuarioEditado.documento}.`);
+  } catch (error) {
+    mostrarMensaje("mensaje-editar", error.message, "error");
+  }
+});
+
 // ------------------------------------------------------- equipos propios
 
 async function cargarMisEquipos() {
@@ -774,6 +857,7 @@ async function cargarUsuarios() {
         <td>${u.correo ?? "—"}</td>
         <td>${u.documento}</td>
         <td>${pastillas}</td>
+        <td></td>
         <td></td>`;
 
       // Solo se ofrecen los roles que el usuario aún no tiene.
@@ -793,8 +877,14 @@ async function cargarUsuarios() {
         boton.textContent = "Agregar";
         boton.addEventListener("click", () => asignarRol(u, Number(selector.value)));
         zona.append(selector, boton);
-        fila.lastElementChild.appendChild(zona);
+        fila.children[4].appendChild(zona);
       }
+
+      const editar = document.createElement("button");
+      editar.className = "boton secundario";
+      editar.textContent = "Editar";
+      editar.addEventListener("click", () => abrirEdicion(u));
+      fila.lastElementChild.appendChild(editar);
       cuerpo.appendChild(fila);
     }
   } catch (error) {

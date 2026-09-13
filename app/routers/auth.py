@@ -8,8 +8,15 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.intentos import DemasiadosIntentos, registrar_intento, verificar_bloqueo
 from app.models import Usuario
-from app.schemas import Token, UsuarioAutenticado
-from app.security import crear_token, roles_de, usuario_actual, verificar_contrasena
+from app.auditoria import Accion, registrar_accion
+from app.schemas import CambioContrasena, Token, UsuarioAutenticado
+from app.security import (
+    crear_token,
+    hashear_contrasena,
+    roles_de,
+    usuario_actual,
+    verificar_contrasena,
+)
 
 router = APIRouter(prefix="/auth", tags=["Autenticación"])
 
@@ -61,6 +68,28 @@ def login(
         )
 
     return Token(access_token=crear_token(usuario, roles_de(db, usuario.id)))
+
+
+@router.post("/contrasena", status_code=status.HTTP_204_NO_CONTENT)
+def cambiar_contrasena(
+    datos: CambioContrasena,
+    db: Annotated[Session, Depends(get_db)],
+    usuario: Annotated[Usuario, Depends(usuario_actual)],
+) -> None:
+    """Cambia la contraseña de quien tiene la sesión abierta.
+
+    Exige la contraseña actual aunque la sesión ya esté autenticada: sin eso,
+    una sesión olvidada en un equipo compartido —la portería lo es— bastaría
+    para apropiarse de la cuenta.
+    """
+    if not verificar_contrasena(datos.contrasena_actual, usuario.contrasena_hash):
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "La contraseña actual no es correcta")
+
+    usuario.contrasena_hash = hashear_contrasena(datos.contrasena_nueva)
+    # El rastro registra que hubo cambio, nunca el valor: un log de auditoría
+    # no es lugar para un secreto, ni siquiera hasheado.
+    registrar_accion(db, usuario.id, Accion.ACTUALIZACION, "usuario", {"contrasena": (None, None)})
+    db.commit()
 
 
 @router.get("/yo", response_model=UsuarioAutenticado)
