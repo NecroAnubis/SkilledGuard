@@ -39,7 +39,7 @@ Cada requerimiento indica el sprint en que se implementó y cómo se verifica. L
 | RF-14 | **El sistema debe impedir el ingreso de un equipo que ya está dentro** | 2 | `test_no_permite_dos_ingresos_seguidos` |
 | RF-15 | **El sistema debe impedir la salida de un equipo que no ha ingresado** | 2 | `test_no_permite_salir_sin_haber_ingresado` |
 | RF-16 | Un código QR no registrado debe ser rechazado | 2 | `test_qr_desconocido_da_404` |
-| RF-17 | Cada movimiento debe quedar asociado al vigilante que lo registró | 2 | `test_registrar_ingreso_por_qr` |
+| RF-17 | Cada movimiento debe quedar asociado al guarda de seguridad que lo registró | 2 | `test_registrar_ingreso_por_qr` |
 
 > **RF-14 y RF-15 son el núcleo del sistema.** Son la diferencia entre una minuta digital y un control real: sin ellas el registro acepta cualquier cosa, igual que el papel.
 

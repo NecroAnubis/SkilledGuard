@@ -117,7 +117,7 @@ def test_los_filtros_no_permiten_inyeccion_sql(cliente, dispositivo, encabezados
 
 
 def test_dos_ingresos_simultaneos_solo_registran_uno(db, dispositivo, admin):
-    """Dos vigilantes escaneando a la vez no deben duplicar el ingreso.
+    """Dos guardas escaneando a la vez no deben duplicar el ingreso.
 
     Cada hilo necesita su propia conexión: el bloqueo se resuelve en la base,
     no en Python.

@@ -175,7 +175,7 @@ class Dispositivo(Timestamps, Base):
     # Nombre de quien trae el equipo, tal como lo anota el registrador. No es
     # una llave foránea a propósito: estudiantes y visitantes no tienen cuenta
     # en el sistema — cuentas solo tienen quienes lo operan, y la trazabilidad
-    # de quién registró qué ya la da el vigilante en cada movimiento.
+    # de quién registró qué ya la da el guarda de seguridad en cada movimiento.
     responsable: Mapped[str] = mapped_column(String(150))
     # Documento de quien responde por el equipo. Es el identificador que la
     # portería puede cotejar contra un carné; el nombre solo, en un centro con
@@ -230,7 +230,7 @@ class AuditoriaNegocio(Timestamps, Base):
 
     dispositivo: Mapped[Dispositivo] = relationship(back_populates="movimientos")
     tipo_registro: Mapped[TipoRegistro] = relationship()
-    vigilante: Mapped[Usuario] = relationship()
+    guarda: Mapped[Usuario] = relationship()
     porteria: Mapped[Porteria | None] = relationship()
 
 

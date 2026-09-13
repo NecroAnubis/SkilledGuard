@@ -218,7 +218,7 @@ El flujo central del sistema.
 
 ```mermaid
 sequenceDiagram
-    actor V as Vigilante
+    actor V as Guarda de seguridad
     participant API as MovimientosController
     participant SEG as security.py
     participant POR as porteria.py
@@ -227,7 +227,7 @@ sequenceDiagram
     V->>API: POST /movimientos (qr, tipo)
     API->>SEG: usuario_actual(token)
     SEG->>BD: SELECT usuario
-    SEG-->>API: vigilante
+    SEG-->>API: guarda de seguridad
 
     API->>SEG: exige_rol(Administrador, Seguridad)
     alt Rol no autorizado
@@ -239,7 +239,7 @@ sequenceDiagram
         BD-->>API: nada
         API-->>V: 404 "El código QR no corresponde a un equipo"
     else Equipo encontrado
-        API->>POR: registrar(dispositivo, tipo, vigilante)
+        API->>POR: registrar(dispositivo, tipo, guarda de seguridad)
         POR->>BD: SELECT ... FOR UPDATE (bloquea la fila)
         Note over POR,BD: El bloqueo evita que dos escaneos<br/>simultáneos dupliquen el movimiento
         POR->>BD: SELECT último movimiento
@@ -265,7 +265,7 @@ sequenceDiagram
 
 ```mermaid
 flowchart TD
-    INICIO([El equipo llega a portería]) --> ESCANEAR[El vigilante escanea el código QR]
+    INICIO([El equipo llega a portería]) --> ESCANEAR[El guarda de seguridad escanea el código QR]
     ESCANEAR --> BUSCAR{¿El código<br/>está registrado?}
 
     BUSCAR -->|No| ERROR1[Mostrar: equipo no registrado]
@@ -274,8 +274,8 @@ flowchart TD
 
     BUSCAR -->|Sí| ESTADO{¿Cuál es el<br/>estado del equipo?}
 
-    ESTADO -->|Fuera| SENTIDO1{¿Qué registra<br/>el vigilante?}
-    ESTADO -->|Dentro| SENTIDO2{¿Qué registra<br/>el vigilante?}
+    ESTADO -->|Fuera| SENTIDO1{¿Qué registra<br/>el guarda de seguridad?}
+    ESTADO -->|Dentro| SENTIDO2{¿Qué registra<br/>el guarda de seguridad?}
 
     SENTIDO1 -->|Ingreso| OK1[Registrar ingreso]
     SENTIDO1 -->|Salida| RECHAZO1[Rechazar:<br/>el equipo no ha ingresado]
@@ -285,10 +285,10 @@ flowchart TD
 
     OK1 --> AUDITAR[Dejar rastro de auditoría]
     OK2 --> AUDITAR
-    AUDITAR --> CONFIRMAR[Confirmar al vigilante]
+    AUDITAR --> CONFIRMAR[Confirmar al guarda de seguridad]
     CONFIRMAR --> FIN2([Fin])
 
-    RECHAZO1 --> REVISAR[El vigilante verifica<br/>la situación del equipo]
+    RECHAZO1 --> REVISAR[El guarda de seguridad verifica<br/>la situación del equipo]
     RECHAZO2 --> REVISAR
     REVISAR --> FIN3([Fin])
 ```
@@ -371,7 +371,7 @@ graph TB
 
 ```mermaid
 graph TB
-    subgraph DISPOSITIVO[Dispositivo del vigilante]
+    subgraph DISPOSITIVO[Dispositivo del guarda de seguridad]
         BROWSER[Navegador<br/>con cámara]
     end
 

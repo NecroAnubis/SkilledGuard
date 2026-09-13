@@ -136,7 +136,7 @@ class DispositivoEstado(BaseModel):
 
 
 class MovimientoRegistrar(BaseModel):
-    """El vigilante escanea el QR del equipo y declara si entra o sale."""
+    """El guarda de seguridad escanea el QR del equipo y declara si entra o sale."""
 
     qr: str = Field(min_length=1, max_length=255)
     tipo: Literal["Ingreso", "Salida"]

@@ -323,7 +323,7 @@ async function pintarEquipo(equipo) {
   $("chk-cotejo").checked = false;
   actualizarBotonSalida();
 
-  // El nombre ubica, el documento identifica: el vigilante coteja contra el
+  // El nombre ubica, el documento identifica: el guarda de seguridad coteja contra el
   // carné, y dos homónimos no se distinguen solo por el nombre.
   $("det-responsable").textContent = equipo.documento_responsable
     ? `${equipo.responsable} · ${equipo.documento_responsable}`
@@ -340,7 +340,7 @@ for (const [boton, tipo] of [
   $(boton).addEventListener("click", () => registrarMovimiento(tipo));
 }
 
-// La salida exige que el vigilante confirme el cotejo físico del equipo.
+// La salida exige que el guarda de seguridad confirme el cotejo físico del equipo.
 function actualizarBotonSalida() {
   const puede = equipoActual && equipoActual.estado === "dentro" && $("chk-cotejo").checked;
   $("boton-salida").disabled = !puede;
