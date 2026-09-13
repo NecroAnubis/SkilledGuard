@@ -199,7 +199,7 @@ h1 {
 
 .rejilla-2 {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
   gap: 1.25rem;
   align-items: start;
 }
@@ -237,7 +237,7 @@ button:focus-visible {
 
 .fila {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(10rem, 100%), 1fr));
   gap: 1rem;
 }
 
@@ -610,7 +610,7 @@ header .logo {
 
 .estadisticas {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
   gap: 1.5rem;
   margin-bottom: 2.5rem;
 }
@@ -659,7 +659,7 @@ header .logo {
 
 .acciones-inicio {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(24rem, 100%), 1fr));
   gap: 1.5rem;
   margin: 1.25rem 0 2.5rem;
 }
