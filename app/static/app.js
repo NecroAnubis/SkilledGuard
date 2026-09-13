@@ -152,6 +152,7 @@ function cambiarVista(vista, registrar = true) {
   }
   // La cámara solo debe estar encendida mientras se está en portería.
   if (vista !== "porteria") detenerCamara();
+  if (vista === "porteria") cargarPorterias();
   if (vista === "inicio") cargarInicio();
   if (vista === "equipos") cargarEquipos();
   if (vista === "usuarios") cargarUsuarios();
@@ -179,6 +180,39 @@ function hace(iso) {
   const horas = Math.round(minutos / 60);
   if (horas < 24) return `Hace ${horas} h`;
   return fecha(iso);
+}
+
+// La tablet vive en una entrada fija: se recuerda cuál en este dispositivo
+// para que nadie tenga que elegirla en cada movimiento. Es una comodidad
+// local, no un permiso: el servidor valida la portería que llegue.
+const PORTERIA_RECORDADA = "porteria";
+
+async function cargarPorterias() {
+  const selector = $("sel-porteria");
+  if (selector.options.length) return;
+  try {
+    const porterias = await json("/porterias");
+    rellenarSelector("sel-porteria", porterias, (p) => p.nombre);
+    let recordada = null;
+    try {
+      recordada = localStorage.getItem(PORTERIA_RECORDADA);
+    } catch {
+      /* el navegador puede tener el almacenamiento bloqueado */
+    }
+    if (recordada && porterias.some((p) => String(p.id) === recordada)) {
+      selector.value = recordada;
+    }
+    selector.addEventListener("change", () => {
+      try {
+        localStorage.setItem(PORTERIA_RECORDADA, selector.value);
+      } catch {
+        /* sin almacenamiento se elige en cada sesión; el registro no se frena */
+      }
+    });
+  } catch {
+    // Sin catálogo de porterías el movimiento se registra igual, sin declararla.
+    $("pista-porteria").textContent = "No se pudo cargar la lista de porterías.";
+  }
 }
 
 async function cargarInicio() {
@@ -358,6 +392,7 @@ async function registrarMovimiento(tipo) {
       body: JSON.stringify({
         qr: equipoActual.qr,
         tipo,
+        id_porteria: Number($("sel-porteria").value) || null,
         observacion:
           tipo === "Salida"
             ? ["Serial cotejado físicamente", $("observacion").value.trim()].filter(Boolean).join(" — ")
@@ -518,7 +553,7 @@ async function cargarHistorial() {
 
     if (movimientos.length === 0) {
       cuerpo.innerHTML =
-        '<tr><td colspan="7" class="vacio">No hay movimientos para estos filtros.</td></tr>';
+        '<tr><td colspan="8" class="vacio">No hay movimientos para estos filtros.</td></tr>';
       return;
     }
 
@@ -531,6 +566,7 @@ async function cargarHistorial() {
         <td>${m.equipo}</td>
         <td>${m.responsable}</td>
         <td>${m.registrado_por}</td>
+        <td>${m.porteria ?? "—"}</td>
         <td>${m.observacion ?? "—"}</td>`;
       cuerpo.appendChild(fila);
     }

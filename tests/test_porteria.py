@@ -63,3 +63,40 @@ def test_el_estado_de_un_equipo_no_afecta_a_otro(db, dispositivo, otro_dispositi
     """Regresión: el estado debe consultarse por equipo, no globalmente."""
     registrar(db, dispositivo, TipoMovimiento.INGRESO, admin.id)
     assert estado_actual(db, otro_dispositivo.id) == EstadoDispositivo.FUERA
+
+
+def test_el_movimiento_declara_su_porteria(cliente, db, dispositivo, encabezados_admin):
+    """La sede tiene varias entradas: el movimiento registra por cuál pasó."""
+    from app.models import Porteria
+
+    porteria = db.query(Porteria).first()
+    if porteria is None:
+        porteria = Porteria(nombre="Portería 1", descripcion="Entrada principal")
+        db.add(porteria)
+        db.commit()
+
+    respuesta = cliente.post(
+        "/movimientos",
+        headers=encabezados_admin,
+        json={"qr": dispositivo.qr, "tipo": "Ingreso", "id_porteria": porteria.id},
+    )
+    assert respuesta.status_code == 201, respuesta.text
+    assert respuesta.json()["porteria"] == porteria.nombre
+
+
+def test_una_porteria_inexistente_es_rechazada(cliente, dispositivo, encabezados_admin):
+    respuesta = cliente.post(
+        "/movimientos",
+        headers=encabezados_admin,
+        json={"qr": dispositivo.qr, "tipo": "Ingreso", "id_porteria": 9999},
+    )
+    assert respuesta.status_code == 422
+
+
+def test_un_movimiento_sin_porteria_sigue_siendo_valido(cliente, dispositivo, encabezados_admin):
+    """No se frena el registro por un dato que la sede puede no haber definido."""
+    respuesta = cliente.post(
+        "/movimientos", headers=encabezados_admin, json={"qr": dispositivo.qr, "tipo": "Ingreso"}
+    )
+    assert respuesta.status_code == 201
+    assert respuesta.json()["porteria"] is None
