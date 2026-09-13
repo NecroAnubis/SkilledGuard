@@ -15,7 +15,7 @@ from app.porteria import MovimientoInvalido, TipoMovimiento, registrar
 from app.schemas import MovimientoLeer, MovimientoRegistrar
 from app.security import (
     ROL_ADMINISTRADOR,
-    ROL_KIOSCO,
+    ROL_ENTRADA,
     ROL_SEGURIDAD,
     exige_rol,
     roles_de,
@@ -27,7 +27,7 @@ router = APIRouter(prefix="/movimientos", tags=["Portería"])
 _porteria = [Depends(exige_rol(ROL_ADMINISTRADOR, ROL_SEGURIDAD))]
 # El kiosco de autoservicio puede CREAR movimientos (la validación de que solo
 # sean ingresos vive en el handler), pero no consultar el historial.
-_registro = [Depends(exige_rol(ROL_ADMINISTRADOR, ROL_SEGURIDAD, ROL_KIOSCO))]
+_registro = [Depends(exige_rol(ROL_ADMINISTRADOR, ROL_SEGURIDAD, ROL_ENTRADA))]
 
 
 def a_esquema(movimiento: AuditoriaNegocio) -> MovimientoLeer:
@@ -62,7 +62,7 @@ def registrar_movimiento(
     # una salida — la salida exige el cotejo físico de un vigilante. La regla
     # vive en el servidor porque ocultar el botón en la tablet no es seguridad.
     roles = set(roles_de(db, vigilante.id))
-    if datos.tipo != TipoMovimiento.INGRESO.value and roles == {ROL_KIOSCO}:
+    if datos.tipo != TipoMovimiento.INGRESO.value and roles == {ROL_ENTRADA}:
         raise HTTPException(
             status.HTTP_403_FORBIDDEN,
             "El autoservicio solo registra ingresos; la salida la registra el personal de seguridad",

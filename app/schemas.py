@@ -67,6 +67,18 @@ class UsuarioLeer(_DesdeORM):
     documento: str
     direccion: str | None
     fecha_creado: datetime
+    roles: list[str] = []
+
+    @field_validator("roles", mode="before")
+    @classmethod
+    def _nombres_de_roles(cls, valor):
+        """Acepta la relación del ORM (objetos UsuarioRol) o una lista de nombres.
+
+        El modelo Usuario tiene una relación `roles` con la tabla puente; al
+        serializar un ORM directo (obtener, crear) hay que traducirla a los
+        nombres. El listado la evita con una consulta agrupada y pasa strings.
+        """
+        return [v if isinstance(v, str) else v.rol.nombre for v in valor]
 
 
 class RolAsignar(BaseModel):
