@@ -782,3 +782,286 @@ body.kiosco #boton-ingreso {
   font-size: 0.82rem;
   margin: 0.35rem 0 0;
 }
+
+/* ---------- Movimientos del turno ---------- */
+
+:root {
+  /* Las curvas del navegador son flojas; estas tienen intención. */
+  --salida-rapida: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.tablero-porteria {
+  display: grid;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+/* El turno se va al costado solo cuando hay ancho para que se lea; antes de
+   eso queda debajo, que es mejor que dos columnas apretadas. */
+@media (min-width: 66rem) {
+  .tablero-porteria {
+    grid-template-columns: minmax(0, 1fr) 22rem;
+  }
+
+  .turno {
+    position: sticky;
+    top: 5rem;
+    max-height: calc(100vh - 7rem);
+    overflow-y: auto;
+  }
+}
+
+.turno-columnas {
+  display: grid;
+  gap: 1.25rem;
+}
+
+/* Dos columnas dentro del panel cuando cabe; si no, manda el segmentado. */
+@media (min-width: 66rem) {
+  .turno-columnas {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.9rem;
+  }
+}
+
+.turno-encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: 0 0 0.6rem;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.turno-encabezado.ingreso { color: var(--exito); }
+.turno-encabezado.salida { color: var(--alerta); }
+
+.conteo {
+  background: var(--fondo-fin);
+  color: var(--tinta);
+  border-radius: 999px;
+  padding: 0.05rem 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.turno-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.turno-lista li {
+  border-left: 3px solid var(--borde);
+  border-radius: 0 8px 8px 0;
+  background: var(--fondo-inicio);
+  padding: 0.5rem 0.7rem;
+  font-size: 0.88rem;
+}
+
+.turno-lista li.ingreso { border-left-color: var(--exito); }
+.turno-lista li.salida { border-left-color: var(--alerta); }
+
+.turno-lista .hora {
+  color: var(--tinta-suave);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.turno-lista .equipo {
+  display: block;
+  font-weight: 600;
+}
+
+.turno-lista .quien {
+  color: var(--tinta-suave);
+  font-size: 0.8rem;
+}
+
+.turno-lista .vacio {
+  border-left-color: transparent;
+  background: transparent;
+  color: var(--tinta-suave);
+  font-size: 0.85rem;
+  padding-left: 0;
+}
+
+/* El movimiento recién registrado se señala una vez y se apaga: confirma que
+   el sistema lo recibió sin convertir cada refresco en una función de luces. */
+.turno-lista li.nuevo {
+  animation: aparece 220ms var(--salida-rapida);
+}
+
+@keyframes aparece {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+    background: var(--exito-fondo);
+  }
+}
+
+/* ---------- Segmentado (manda en pantallas angostas) ---------- */
+
+.segmentado {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.25rem;
+  background: var(--fondo-fin);
+  border-radius: 10px;
+  padding: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.segmentado button {
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  padding: 0.5rem;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--tinta-suave);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.segmentado button[aria-selected="true"] {
+  background: var(--panel);
+  color: var(--tinta);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Con las dos columnas a la vista el segmentado no tiene nada que alternar, y
+   el atributo hidden que usa en angosto no debe ocultar nada aquí. */
+@media (min-width: 66rem) {
+  .segmentado { display: none; }
+  .turno-col[hidden] { display: block; }
+}
+
+@media (max-width: 65.99rem) {
+  .turno-col[hidden] { display: none; }
+  .turno-encabezado { display: none; }
+}
+
+/* ---------- Respuesta al tacto ---------- */
+
+/* Un botón debe acusar recibo del dedo antes de que llegue la respuesta. */
+.boton,
+.segmentado button,
+nav button,
+.accion {
+  transition: transform 160ms var(--salida-rapida), background 160ms ease;
+}
+
+.boton:active:not(:disabled),
+.segmentado button:active,
+nav button:active,
+.accion:active {
+  transform: scale(0.97);
+}
+
+/* El hover solo existe donde hay puntero: en una tablet se dispara al tocar. */
+@media (hover: none) {
+  .boton:hover:not(:disabled) { background: var(--azul); }
+  nav button:hover { background: transparent; }
+  .accion:hover { box-shadow: var(--sombra); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .turno-lista li.nuevo { animation: none; }
+  .boton:active:not(:disabled),
+  .segmentado button:active,
+  nav button:active,
+  .accion:active { transform: none; }
+}
+
+/* ---------- Teléfono: la navegación baja al pulgar ---------- */
+
+/* En pantalla angosta el menú del encabezado se partía en tres filas y se
+   comía media pantalla antes de llegar al escáner. Abajo ocupa una sola
+   franja, queda al alcance del pulgar y deja la pantalla para el trabajo. */
+@media (max-width: 48rem) {
+  header {
+    padding: 0.5rem 0.9rem;
+  }
+
+  header .marca {
+    font-size: 1.15rem !important;
+  }
+
+  header nav {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 60;
+    background: var(--tinta);
+    display: flex;
+    gap: 0;
+    padding: 0.35rem 0.25rem;
+    padding-bottom: calc(0.35rem + env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 -2px 14px rgba(15, 23, 42, 0.25);
+  }
+
+  nav button {
+    flex: 1;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.4rem 0.15rem;
+    border-radius: 10px;
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: #94a3b8;
+  }
+
+  nav button svg {
+    width: 1.35rem;
+    height: 1.35rem;
+  }
+
+  nav button[aria-current="page"] {
+    background: rgba(37, 99, 235, 0.2);
+    color: #fff;
+  }
+
+  /* El nombre se va: con él, el encabezado se parte en dos filas y roba una
+     franja de pantalla en cada vista. Quien está en sesión se ve en Inicio,
+     que saluda por su nombre. */
+  #usuario-sesion {
+    display: none;
+  }
+
+  .sesion .boton.secundario {
+    padding: 0.45rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  /* Espacio para que la barra no tape el final del contenido. */
+  main {
+    padding-bottom: 5.5rem;
+  }
+
+  body.kiosco main {
+    padding-bottom: 2rem;
+  }
+
+  h1 {
+    font-size: 1.6rem;
+  }
+
+  .subtitulo {
+    margin-bottom: 1.25rem;
+  }
+
+  /* El escáner manda: que quepa sin scroll junto al botón de activarla. */
+  .visor {
+    aspect-ratio: 1;
+  }
+}

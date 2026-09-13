@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Skilled Guard</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="estilo.css?v=9">
+  <link rel="stylesheet" href="estilo.css?v=10">
 </head>
 <body>
 
@@ -121,7 +121,8 @@
 
       <div id="mensaje-porteria" class="mensaje oculto"></div>
 
-      <div class="rejilla-2">
+      <div class="tablero-porteria">
+      <div class="rejilla-2 zona-operacion">
         <div class="tarjeta">
           <h2>Escáner</h2>
           <div class="visor" id="visor">
@@ -180,6 +181,35 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <aside class="tarjeta turno" aria-labelledby="titulo-turno">
+        <h2 id="titulo-turno">Movimientos de hoy</h2>
+
+        <div class="segmentado" role="tablist" aria-label="Tipo de movimiento">
+          <button role="tab" aria-selected="true" data-lado="ingreso" id="tab-ingreso">
+            Ingresos <span class="conteo" id="conteo-ingreso">0</span>
+          </button>
+          <button role="tab" aria-selected="false" data-lado="salida" id="tab-salida">
+            Salidas <span class="conteo" id="conteo-salida">0</span>
+          </button>
+        </div>
+
+        <div class="turno-columnas">
+          <div class="turno-col" data-lado="ingreso">
+            <h3 class="turno-encabezado ingreso">
+              Ingresos <span class="conteo" id="conteo-ingreso-ancho">0</span>
+            </h3>
+            <ul class="turno-lista" id="lista-ingresos"></ul>
+          </div>
+          <div class="turno-col" data-lado="salida">
+            <h3 class="turno-encabezado salida">
+              Salidas <span class="conteo" id="conteo-salida-ancho">0</span>
+            </h3>
+            <ul class="turno-lista" id="lista-salidas"></ul>
+          </div>
+        </div>
+      </aside>
       </div>
     </section>
 
@@ -377,6 +407,6 @@
 <div id="zona-impresion" class="oculto"></div>
 
 <script src="jsQR.js?v=3"></script>
-<script src="app.js?v=9"></script>
+<script src="app.js?v=10"></script>
 </body>
 </html>
