@@ -9,7 +9,14 @@ from app.auditoria import Accion, detalles_de_creacion, registrar_accion
 from app.database import get_db
 from app.models import Rol, TipoDocumento, Usuario, UsuarioRol
 from app.schemas import RolAsignar, UsuarioCrear, UsuarioLeer
-from app.security import ROL_ADMINISTRADOR, exige_rol, hashear_contrasena, usuario_actual
+from app.security import (
+    DOMINIO_CORPORATIVO,
+    ROL_ADMINISTRADOR,
+    es_corporativo,
+    exige_rol,
+    hashear_contrasena,
+    usuario_actual,
+)
 
 router = APIRouter(
     prefix="/usuarios",
@@ -71,7 +78,8 @@ def crear(
     except IntegrityError:
         db.rollback()
         raise HTTPException(
-            status.HTTP_409_CONFLICT, f"Ya existe un usuario con documento {datos.documento}"
+            status.HTTP_409_CONFLICT,
+            "Ya existe un usuario con ese documento o ese correo",
         ) from None
 
     # La contraseña se omite del rastro: un log de auditoría no es lugar para
@@ -94,10 +102,21 @@ def asignar_rol(
     db: Annotated[Session, Depends(get_db)],
     autor: Annotated[Usuario, Depends(usuario_actual)],
 ) -> None:
-    if db.get(Usuario, id_usuario) is None:
+    usuario = db.get(Usuario, id_usuario)
+    if usuario is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Usuario no encontrado")
-    if db.get(Rol, datos.id_rol) is None:
+    rol = db.get(Rol, datos.id_rol)
+    if rol is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Rol no encontrado")
+
+    # Administrar el sistema exige pertenecer a la organización, y el correo
+    # institucional es la prueba de esa pertenencia. La regla se aplica aquí
+    # —no solo al crear la cuenta— porque el rol se puede otorgar después.
+    if rol.nombre == ROL_ADMINISTRADOR and not es_corporativo(usuario.correo):
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            f"Solo un correo @{DOMINIO_CORPORATIVO} puede tener el rol Administrador",
+        )
 
     db.add(UsuarioRol(id_usuario=id_usuario, id_rol=datos.id_rol))
     try:

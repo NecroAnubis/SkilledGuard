@@ -4,7 +4,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.porteria import EstadoDispositivo
-from app.security import MAX_BYTES_CONTRASENA
+from app.security import MAX_BYTES_CONTRASENA, correo_valido
 
 
 class _DesdeORM(BaseModel):
@@ -42,8 +42,20 @@ class UsuarioCrear(BaseModel):
     apellidos: str = Field(min_length=1, max_length=100)
     id_tipo_documento: int
     documento: str = Field(min_length=1, max_length=50)
+    correo: str | None = Field(default=None, max_length=150)
     direccion: str | None = Field(default=None, max_length=255)
     contrasena: str = Field(min_length=8)
+
+    @field_validator("correo")
+    @classmethod
+    def correo_normalizado(cls, valor: str | None) -> str | None:
+        """Guarda el correo en minúsculas: el índice único no distingue mayúsculas."""
+        if valor is None or not valor.strip():
+            return None
+        limpio = valor.strip().lower()
+        if not correo_valido(limpio):
+            raise ValueError("El correo no tiene un formato válido")
+        return limpio
 
     @field_validator("contrasena")
     @classmethod
@@ -65,6 +77,7 @@ class UsuarioLeer(_DesdeORM):
     apellidos: str
     id_tipo_documento: int
     documento: str
+    correo: str | None
     direccion: str | None
     fecha_creado: datetime
     roles: list[str] = []

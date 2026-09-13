@@ -584,6 +584,7 @@ async function cargarUsuarios() {
         : '<span class="pastilla fuera">Sin rol</span>';
       fila.innerHTML = `
         <td>${u.nombres} ${u.apellidos}</td>
+        <td>${u.correo ?? "—"}</td>
         <td>${u.documento}</td>
         <td>${pastillas}</td>
         <td></td>`;
@@ -640,6 +641,7 @@ $("form-usuario").addEventListener("submit", async (evento) => {
         apellidos: $("us-apellidos").value.trim(),
         id_tipo_documento: Number($("us-tipo-doc").value),
         documento: $("us-documento").value.trim(),
+        correo: $("us-correo").value.trim() || null,
         contrasena: $("us-contrasena").value,
       }),
     });

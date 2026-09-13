@@ -50,6 +50,7 @@ def admin(db) -> Usuario:
         apellidos="Restrepo",
         id_tipo_documento=tipo.id,
         documento="1002003001",
+        correo="admin@skilledguard.co",
         contrasena_hash=hashear_contrasena("clave-segura-123"),
     )
     db.add(usuario)

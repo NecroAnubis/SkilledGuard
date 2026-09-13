@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -20,12 +20,27 @@ def login(
     datos: Annotated[OAuth2PasswordRequestForm, Depends()],
     db: Annotated[Session, Depends(get_db)],
 ) -> Token:
-    """`username` es el número de documento del usuario."""
-    documento = datos.username.strip()
+    """`username` es el correo institucional o el número de documento."""
+    identificador = datos.username.strip()
     origen = peticion.client.host if peticion.client else None
 
+    # Se aceptan las dos formas: el correo es el identificador al que migra el
+    # sistema, y el documento sigue sirviendo mientras haya cuentas sin correo.
+    usuario = db.scalar(
+        select(Usuario).where(
+            or_(Usuario.documento == identificador, Usuario.correo == identificador.lower())
+        )
+    )
+
+    # El conteo de intentos se lleva por el documento del usuario cuando la
+    # cuenta existe: contarlo por lo que se escribió le daría a un atacante
+    # cinco intentos por el correo y otros cinco por el documento de la misma
+    # persona. Se recorta al ancho de la columna porque un correo inexistente
+    # puede ser más largo que cualquier documento.
+    llave = (usuario.documento if usuario else identificador)[:50]
+
     try:
-        verificar_bloqueo(db, documento)
+        verificar_bloqueo(db, llave)
     except DemasiadosIntentos as bloqueo:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
@@ -33,16 +48,15 @@ def login(
             headers={"Retry-After": str(bloqueo.segundos_restantes)},
         ) from None
 
-    usuario = db.scalar(select(Usuario).where(Usuario.documento == documento))
     valido = usuario is not None and verificar_contrasena(datos.password, usuario.contrasena_hash)
-    registrar_intento(db, documento, valido, origen)
+    registrar_intento(db, llave, valido, origen)
 
     # Mismo mensaje para usuario inexistente y contraseña errada: distinguirlos
-    # le confirma a un atacante qué documentos están registrados.
+    # le confirma a un atacante qué cuentas están registradas.
     if not valido:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Documento o contraseña incorrectos",
+            detail="Credenciales incorrectas",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
