@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Skilled Guard</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="estilo.css?v=13">
+  <link rel="stylesheet" href="estilo.css?v=14">
 </head>
 <body>
 
@@ -51,7 +51,7 @@
       <button title="Historial" aria-label="Historial" data-vista="historial"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg><span class="etiqueta-nav">Historial</span></button>
     </nav>
     <div class="sesion">
-      <span class="avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+      <button class="avatar" id="boton-cuenta" title="Mi cuenta" aria-label="Mi cuenta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></button>
       <span id="usuario-sesion"></span>
       <button class="boton secundario" id="boton-salir">Cerrar sesión</button>
     </div>
@@ -392,7 +392,7 @@
           <table>
             <thead>
               <tr>
-                <th>Nombre</th><th>Correo</th><th>Documento</th><th>Roles</th><th>Agregar rol</th>
+                <th>Nombre</th><th>Correo</th><th>Documento</th><th>Roles</th><th>Agregar rol</th><th></th>
               </tr>
             </thead>
             <tbody id="tabla-usuarios"></tbody>
@@ -431,9 +431,63 @@
 </div>
 
 <!-- Zona usada solo al imprimir un código QR -->
+<dialog id="dialogo-contrasena">
+  <form method="dialog" id="form-contrasena">
+    <h2>Cambiar mi contraseña</h2>
+    <div id="mensaje-contrasena" class="mensaje oculto"></div>
+    <div class="campo">
+      <label for="cc-actual">Contraseña actual</label>
+      <input id="cc-actual" type="password" required autocomplete="current-password">
+    </div>
+    <div class="campo">
+      <label for="cc-nueva">Contraseña nueva</label>
+      <input id="cc-nueva" type="password" required minlength="8" autocomplete="new-password">
+      <p class="pista">Mínimo 8 caracteres.</p>
+    </div>
+    <div class="acciones">
+      <button class="boton" id="cc-guardar" type="button">Cambiar contraseña</button>
+      <button class="boton secundario" type="button" data-cerrar="dialogo-contrasena">Cancelar</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dialogo-usuario">
+  <form method="dialog" id="form-editar-usuario">
+    <h2 id="titulo-editar">Editar usuario</h2>
+    <div id="mensaje-editar" class="mensaje oculto"></div>
+    <div class="fila">
+      <div class="campo">
+        <label for="ed-nombres">Nombres</label>
+        <input id="ed-nombres" maxlength="100">
+      </div>
+      <div class="campo">
+        <label for="ed-apellidos">Apellidos</label>
+        <input id="ed-apellidos" maxlength="100">
+      </div>
+    </div>
+    <div class="campo">
+      <label for="ed-correo">Correo institucional</label>
+      <input id="ed-correo" type="email" maxlength="150" placeholder="nombre@skilledguard.co">
+    </div>
+    <div class="acciones">
+      <button class="boton" id="ed-guardar" type="button">Guardar cambios</button>
+      <button class="boton secundario" type="button" data-cerrar="dialogo-usuario">Cancelar</button>
+    </div>
+
+    <hr class="separador">
+    <h3 class="titulo-menor">Restablecer su contraseña</h3>
+    <p class="pista">Para cuando la persona la olvidó. Queda registrado quién la restableció.</p>
+    <div class="campo">
+      <label for="ed-clave">Contraseña nueva</label>
+      <input id="ed-clave" type="password" minlength="8" autocomplete="new-password">
+    </div>
+    <button class="boton secundario" id="ed-restablecer" type="button">Restablecer contraseña</button>
+  </form>
+</dialog>
+
 <div id="zona-impresion" class="oculto"></div>
 
 <script src="jsQR.js?v=3"></script>
-<script src="app.js?v=13"></script>
+<script src="app.js?v=14"></script>
 </body>
 </html>

@@ -59,11 +59,22 @@ def test_el_reporte_respeta_el_filtro_por_tipo(
 
 
 def test_el_filtro_de_fecha_es_inclusivo(cliente, dispositivo, encabezados_admin):
-    """Filtrar 'hasta hoy' debe incluir los movimientos de hoy."""
-    from datetime import date
+    """Filtrar 'hasta hoy' debe incluir los movimientos de hoy.
+
+    "Hoy" es el de Bogotá, no el del reloj de quien corre la prueba. Con
+    `date.today()` esto pasaba en un equipo colombiano y fallaba en el CI entre
+    las 00:00 y las 05:00 UTC —o sea, cuando en Colombia son las 7 de la noche y
+    todavía es el día anterior—: la prueba pedía el día siguiente y el
+    movimiento recién creado no estaba ahí. El filtro no tenía nada malo; la
+    prueba se medía con otro reloj que la aplicación. Misma lección que
+    `test_el_filtro_incluye_el_turno_de_la_noche`, desde el otro lado.
+    """
+    from datetime import datetime
+
+    from app.consultas import ZONA_LOCAL
 
     _mover(cliente, encabezados_admin, dispositivo.qr, "Ingreso")
-    hoy = date.today().isoformat()
+    hoy = datetime.now(ZONA_LOCAL).date().isoformat()
 
     movimientos = cliente.get(
         f"/movimientos?desde={hoy}&hasta={hoy}", headers=encabezados_admin

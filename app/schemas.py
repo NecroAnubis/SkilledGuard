@@ -69,6 +69,48 @@ class UsuarioCrear(BaseModel):
         return valor
 
 
+class UsuarioEditar(BaseModel):
+    """Lo que se puede corregir de una cuenta.
+
+    El documento no está: es la identidad de la persona, y cambiarlo convertiría
+    la cuenta en otra sin que el rastro de auditoría lo note. La contraseña
+    tampoco: tiene su propio camino, porque exige la actual o ser administrador.
+    """
+
+    nombres: str | None = Field(default=None, min_length=1, max_length=100)
+    apellidos: str | None = Field(default=None, min_length=1, max_length=100)
+    correo: str | None = Field(default=None, max_length=150)
+    direccion: str | None = Field(default=None, max_length=255)
+
+    _normaliza_correo = field_validator("correo")(UsuarioCrear.correo_normalizado.__func__)
+
+
+class CambioContrasena(BaseModel):
+    """Cambio de la contraseña propia."""
+
+    contrasena_actual: str
+    contrasena_nueva: str = Field(min_length=8)
+
+    @field_validator("contrasena_nueva")
+    @classmethod
+    def cabe_en_bcrypt(cls, valor: str) -> str:
+        if len(valor.encode()) > MAX_BYTES_CONTRASENA:
+            raise ValueError(
+                f"La contraseña supera {MAX_BYTES_CONTRASENA} bytes "
+                "(las tildes y la ñ ocupan dos cada una)"
+            )
+        return valor
+
+
+class ContrasenaRestablecida(BaseModel):
+    """Restablecimiento hecho por un administrador: no exige la contraseña
+    anterior, justamente porque se usa cuando nadie la recuerda."""
+
+    contrasena_nueva: str = Field(min_length=8)
+
+    _cabe = field_validator("contrasena_nueva")(CambioContrasena.cabe_en_bcrypt.__func__)
+
+
 class UsuarioLeer(_DesdeORM):
     """Nunca expone `contrasena_hash`: no está declarado, así que no se serializa."""
 
