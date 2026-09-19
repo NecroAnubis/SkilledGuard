@@ -4,7 +4,6 @@ Los bordes importan más que el caso feliz: una contraseña se cambia poco, pero
 cada camino equivocado entrega una cuenta.
 """
 
-from app.models import Usuario
 from app.security import DOMINIO_CORPORATIVO, verificar_contrasena
 
 CLAVE = "clave-segura-123"
@@ -64,15 +63,11 @@ def test_el_rastro_del_cambio_nunca_guarda_la_contrasena(cliente, db, encabezado
         headers=encabezados_admin,
         json={"contrasena_actual": CLAVE, "contrasena_nueva": "una-clave-nueva-9"},
     )
-    valores = [
-        (d.valor_anterior or "") + (d.valor_nuevo or "") for d in db.query(LogDetalle).all()
-    ]
+    valores = [(d.valor_anterior or "") + (d.valor_nuevo or "") for d in db.query(LogDetalle).all()]
     assert not any("una-clave-nueva-9" in v for v in valores)
 
 
-def test_el_administrador_restablece_una_contrasena_olvidada(
-    cliente, db, admin, encabezados_admin
-):
+def test_el_administrador_restablece_una_contrasena_olvidada(cliente, db, admin, encabezados_admin):
     tipo = admin.id_tipo_documento
     creado = cliente.post(
         "/usuarios",

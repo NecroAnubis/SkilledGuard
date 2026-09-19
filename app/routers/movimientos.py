@@ -67,7 +67,8 @@ def registrar_movimiento(
     if datos.tipo != TipoMovimiento.INGRESO.value and roles == {ROL_ENTRADA}:
         raise HTTPException(
             status.HTTP_403_FORBIDDEN,
-            "El autoservicio solo registra ingresos; la salida la registra el personal de seguridad",
+            "El autoservicio solo registra ingresos; "
+            "la salida la registra el personal de seguridad",
         )
 
     if datos.id_porteria is not None and db.get(Porteria, datos.id_porteria) is None:

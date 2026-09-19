@@ -5,10 +5,10 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
+from app.auditoria import Accion, registrar_accion
 from app.database import get_db
 from app.intentos import DemasiadosIntentos, registrar_intento, verificar_bloqueo
 from app.models import Usuario
-from app.auditoria import Accion, registrar_accion
 from app.schemas import CambioContrasena, Token, UsuarioAutenticado
 from app.security import (
     crear_token,

@@ -20,8 +20,8 @@ from app.security import (
     ROL_ADMINISTRADOR,
     es_corporativo,
     exige_rol,
-    roles_de,
     hashear_contrasena,
+    roles_de,
     usuario_actual,
 )
 
@@ -43,11 +43,15 @@ def listar(
 
     # Los roles de todos en una sola consulta: pedirlos usuario por usuario
     # convertiría este listado en una consulta por fila.
-    filas = db.execute(
-        select(UsuarioRol.id_usuario, Rol.nombre)
-        .join(Rol, Rol.id == UsuarioRol.id_rol)
-        .where(UsuarioRol.id_usuario.in_([u.id for u in usuarios]))
-    ).all() if usuarios else []
+    filas = (
+        db.execute(
+            select(UsuarioRol.id_usuario, Rol.nombre)
+            .join(Rol, Rol.id == UsuarioRol.id_rol)
+            .where(UsuarioRol.id_usuario.in_([u.id for u in usuarios]))
+        ).all()
+        if usuarios
+        else []
+    )
     por_usuario: dict[int, list[str]] = {}
     for id_usuario, nombre in filas:
         por_usuario.setdefault(id_usuario, []).append(nombre)
@@ -119,12 +123,15 @@ def editar(
     # Si la cuenta administra, su correo sigue teniendo que ser corporativo:
     # de lo contrario esta ruta sería la puerta trasera de la regla que el
     # endpoint de roles hace cumplir.
-    if "correo" in cambios and ROL_ADMINISTRADOR in roles_de(db, usuario.id):
-        if not es_corporativo(cambios["correo"]):
-            raise HTTPException(
-                status.HTTP_422_UNPROCESSABLE_ENTITY,
-                f"Una cuenta con rol Administrador exige un correo @{DOMINIO_CORPORATIVO}",
-            )
+    if (
+        "correo" in cambios
+        and ROL_ADMINISTRADOR in roles_de(db, usuario.id)
+        and not es_corporativo(cambios["correo"])
+    ):
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            f"Una cuenta con rol Administrador exige un correo @{DOMINIO_CORPORATIVO}",
+        )
 
     detalles = {}
     for campo, nuevo in cambios.items():
